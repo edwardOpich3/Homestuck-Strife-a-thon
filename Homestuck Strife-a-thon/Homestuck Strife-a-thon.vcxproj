@@ -1,0 +1,257 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project DefaultTargets="Build" ToolsVersion="14.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup Label="ProjectConfigurations">
+    <ProjectConfiguration Include="Debug|Win32">
+      <Configuration>Debug</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+    <ProjectConfiguration Include="Release|Win32">
+      <Configuration>Release</Configuration>
+      <Platform>Win32</Platform>
+    </ProjectConfiguration>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="Source\BoundingBox.cpp" />
+    <ClCompile Include="Source\Character.cpp" />
+    <ClCompile Include="Source\Cursor.cpp" />
+    <ClCompile Include="Source\Game.cpp" />
+    <ClCompile Include="Source\John.cpp" />
+    <ClCompile Include="Source\Reader.cpp" />
+    <ClCompile Include="Source\Rose.cpp" />
+    <ClCompile Include="Source\Source.cpp" />
+    <ClCompile Include="Source\Tile.cpp" />
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Header\BoundingBox.h" />
+    <ClInclude Include="Header\Character.h" />
+    <ClInclude Include="Header\Cursor.h" />
+    <ClInclude Include="Header\Game.h" />
+    <ClInclude Include="Header\John.h" />
+    <ClInclude Include="Header\Reader.h" />
+    <ClInclude Include="Header\Rose.h" />
+    <ClInclude Include="Header\Tile.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Graphics\Fonts\mainFnt.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Fonts\mainFnt_2X.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Fonts\mainFnt_3X.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Fonts\mainFnt_4X.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Menu\cursor.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Menu\title.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Sprites\dave.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Sprites\jade.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Sprites\john.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Sprites\rose.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_0.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_1.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_2.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_3.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_4.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_5.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_6.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_7.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="Audio\Music\character_select.ogg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Audio\Music\dave.ogg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Audio\Music\jade.ogg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Audio\Music\john.ogg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Audio\Music\rose.ogg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Audio\Music\title.ogg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\Battlefield.lvl" />
+    <None Include="Levels\test.lvl" />
+    <None Include="Levels\test3.lvl" />
+    <None Include="Levels\test4.lvl" />
+    <None Include="Levels\tiles128\tiles128_0.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_1.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_0.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_1.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_10.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_11.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_12.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_13.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_14.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_15.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_2.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_3.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_4.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_5.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_6.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_7.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_8.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles32\tiles32_9.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles64\tiles64_0.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles64\tiles64_1.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles64\tiles64_2.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles64\tiles64_3.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles64\tiles64_4.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles64\tiles64_5.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles64\tiles64_6.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles64\tiles64_7.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles64\tiles64_8.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+  </ItemGroup>
+  <PropertyGroup Label="Globals">
+    <ProjectGuid>{37243277-0252-4BEA-AA44-B2D4BCB2A3A3}</ProjectGuid>
+    <RootNamespace>Homestuck Strife-a-thon</RootNamespace>
+    <ProjectName>Homestuck Strife-a-thon</ProjectName>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.Default.props" />
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>true</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <PropertyGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'" Label="Configuration">
+    <ConfigurationType>Application</ConfigurationType>
+    <UseDebugLibraries>false</UseDebugLibraries>
+    <PlatformToolset>v140</PlatformToolset>
+    <WholeProgramOptimization>true</WholeProgramOptimization>
+    <CharacterSet>MultiByte</CharacterSet>
+  </PropertyGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.props" />
+  <ImportGroup Label="ExtensionSettings">
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <ImportGroup Label="PropertySheets" Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <Import Project="$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props" Condition="exists('$(UserRootDir)\Microsoft.Cpp.$(Platform).user.props')" Label="LocalAppDataPlatform" />
+  </ImportGroup>
+  <PropertyGroup Label="UserMacros" />
+  <PropertyGroup />
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>Disabled</Optimization>
+      <AdditionalIncludeDirectories>C:\allegro\include; C:\Users\Edward-Game\Documents\Visual Studio 2015\Projects\Personal\Homestuck Strife-a-thon\Homestuck Strife-a-thon</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;allegro_monolith-debug.lib;%(AdditionalDependencies)</AdditionalDependencies>
+      <SubSystem>Windows</SubSystem>
+      <AdditionalLibraryDirectories>c:\allegro\lib</AdditionalLibraryDirectories>
+    </Link>
+  </ItemDefinitionGroup>
+  <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
+    <ClCompile>
+      <WarningLevel>Level3</WarningLevel>
+      <Optimization>MaxSpeed</Optimization>
+      <FunctionLevelLinking>true</FunctionLevelLinking>
+      <IntrinsicFunctions>true</IntrinsicFunctions>
+      <AdditionalIncludeDirectories>c:/allegro/include</AdditionalIncludeDirectories>
+    </ClCompile>
+    <Link>
+      <GenerateDebugInformation>true</GenerateDebugInformation>
+      <EnableCOMDATFolding>true</EnableCOMDATFolding>
+      <OptimizeReferences>true</OptimizeReferences>
+      <AdditionalLibraryDirectories>c:/allegro/lib</AdditionalLibraryDirectories>
+      <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;allegro_monolith.lib%(AdditionalDependencies)</AdditionalDependencies>
+    </Link>
+  </ItemDefinitionGroup>
+  <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
+  <ImportGroup Label="ExtensionTargets">
+  </ImportGroup>
+</Project>
