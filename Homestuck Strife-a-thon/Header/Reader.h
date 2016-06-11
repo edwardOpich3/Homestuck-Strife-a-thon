@@ -13,10 +13,10 @@ public:
 	~Reader();
 
 	void LoadTiles(std::vector<ALLEGRO_BITMAP*> *tile16List, std::vector<std::vector<Tile>> *tile32List, std::vector<std::vector<Tile>> *tile64List, std::vector<std::vector<Tile>> *tile128List);
-	void LoadLevel(std::vector<std::vector<Tile>> *levels, int *width, int *height);
+	void LoadLevel(std::vector<Tile> *level, int *width, int *height);
 
 	int ReadInt(unsigned char temp[4]);
 	std::vector<Tile> SeparateTiles(std::vector<Tile> myLevel, std::vector<std::vector<Tile>> tile32List, std::vector<std::vector<Tile>> tile64List, std::vector<std::vector<Tile>> tile128List);
-	void SectionLevel(std::vector<std::vector<Tile>> *levels,  int width, int height);
+	void SectionLevel(std::vector<Tile> level, std::vector<std::vector<Tile>> *levelCollision, int width, int height);
 };
 

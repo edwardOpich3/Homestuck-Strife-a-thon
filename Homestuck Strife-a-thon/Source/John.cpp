@@ -4,6 +4,7 @@
 
 John::John(ALLEGRO_BITMAP *sprite) : Character(sprite)
 {
+	collisionBox = BoundingBox(36, 9, 91, 115);
 	walkSpeed = 3;
 	runSpeed = 6;
 	jumpSquat = 6;

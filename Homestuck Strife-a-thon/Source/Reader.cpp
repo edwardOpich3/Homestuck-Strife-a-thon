@@ -105,12 +105,11 @@ void Reader::LoadTiles(std::vector<ALLEGRO_BITMAP*> *tile16List, std::vector<std
 	}
 }
 
-void Reader::LoadLevel(std::vector<std::vector<Tile>> *levels, int *width, int *height)
+void Reader::LoadLevel(std::vector<Tile> *level, int *width, int *height)
 {
 	std::ifstream myStream;
 	unsigned char temp[4];
 	myStream.open("Levels/test3.lvl", myStream.binary | myStream.in);
-	levels->push_back(std::vector<Tile>());
 
 	myStream.read((char*)temp, 4);
 	*width = ReadInt(temp);
@@ -132,7 +131,7 @@ void Reader::LoadLevel(std::vector<std::vector<Tile>> *levels, int *width, int *
 		myStream.read((char*)temp, 4);
 		int size = ReadInt(temp);
 
-		levels[0][0].push_back(Tile(type, x, y, size));
+		level->push_back(Tile(type, x, y, size));
 	}
 	myStream.close();
 }
@@ -191,21 +190,16 @@ std::vector<Tile> Reader::SeparateTiles(std::vector<Tile> myLevel, std::vector<s
 	return temp;
 }
 
-void Reader::SectionLevel(std::vector<std::vector<Tile>> *levels, int width, int height)
+void Reader::SectionLevel(std::vector<Tile> level, std::vector<std::vector<Tile>> *levelCollision, int width, int height)
 {
-	std::vector<std::vector<Tile>> temp;
-	for (unsigned int i = 0; i < levels[0][0].size(); i++)
+	levelCollision->clear();
+	for (int t = (width / 128) * (height / 128); t > 0; t--)
 	{
-		for (int t = (width / 128) * (height / 128); t > 0; t--)
-		{
-			temp.push_back(std::vector<Tile>());
-		}
-		int index = (levels[0][0][i].y / 128) * (levels[0][0][i].x / 128);
-		temp[index].push_back(levels[0][0][i]);
+		levelCollision->push_back(std::vector<Tile>());
 	}
-	levels[0].clear();
-	for (unsigned int i = 0; i < temp.size(); i++)
+	for (unsigned int i = 0; i < level.size(); i++)
 	{
-		levels->push_back(temp[i]);
+		int index = (level[i].y / 128) * (level[i].x / 128);
+		levelCollision[0][index].push_back(level[i]);
 	}
 }

@@ -32,7 +32,7 @@ public:
 	ALLEGRO_BITMAP *cursorSpr;
 
 	// Music
-	ALLEGRO_SAMPLE *soundtrack[6];
+	ALLEGRO_SAMPLE *soundtrack;
 
 	ALLEGRO_SAMPLE_INSTANCE *BGM;
 
@@ -41,10 +41,10 @@ public:
 	ALLEGRO_BITMAP *roseSpr;
 
 	// Players
-	Character player1;
-	Character player2;
-	Character player3;
-	Character player4;
+	Character *player1;
+	Character *player2;
+	Character *player3;
+	Character *player4;
 
 	// Tiles
 	std::vector<ALLEGRO_BITMAP*> tile16List;
@@ -53,14 +53,15 @@ public:
 	std::vector<std::vector<Tile>> tile128List;
 
 	// Levels
-	std::vector<std::vector<Tile>> level;
+	std::vector<Tile> levelTiles;
+	std::vector<std::vector<Tile>> levelCollision;
 	int levelWidth, levelHeight;
 
 	// Cursor
-	Cursor cursor;
+	Cursor *cursor;
 
 	// Reader
-	Reader reader;
+	Reader *reader;
 
 	// Technical Variables
 	enum BUTTONS { RIGHT, UP, LEFT, DOWN, ENTER, Z };

@@ -3,13 +3,12 @@
 
 
 
-BoundingBox::BoundingBox(int x, int y, int width, int height, int type)
+BoundingBox::BoundingBox(int x, int y, int width, int height)
 {
 	BoundingBox::x = x;
 	BoundingBox::y = y;
 	BoundingBox::width = width;
 	BoundingBox::height = height;
-	BoundingBox::type = type;
 }
 
 BoundingBox::BoundingBox()

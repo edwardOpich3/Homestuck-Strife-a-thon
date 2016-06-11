@@ -20,10 +20,7 @@ Game::Game()
 	johnSpr = NULL;
 	roseSpr = NULL;
 
-	for (int i = 0; i < 6; i++)
-	{
-		soundtrack[i] = NULL;
-	}
+	soundtrack = NULL;
 
 	currentState = TITLE;
 	currentMenu = MAIN;
@@ -107,23 +104,19 @@ bool Game::Initialize()
 	//soundtrack[2] = al_load_sample("Audio/Music/dave.ogg");
 	//soundtrack[3] = al_load_sample("Audio/Music/jade.ogg");
 	//soundtrack[4] = al_load_sample("Audio/Music/character_select.ogg");
-	soundtrack[5] = al_load_sample("Audio/Music/title.ogg");
+	soundtrack = al_load_sample("Audio/Music/title.ogg");
 
-	BGM = al_create_sample_instance(soundtrack[5]);
+	BGM = al_create_sample_instance(soundtrack);
 	al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 	al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 
 	// NOTE: Later on, move these so that they only happen upon loading any/a level for the first time, respectively
 	//	Also, LoadLevels needs to be changed to load only a single level, based on a number passed in.
-	reader.LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
-	reader.LoadLevel(&level, &levelWidth, &levelHeight);
+	reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
+	reader->LoadLevel(&levelTiles, &levelWidth, &levelHeight);
+	levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
 
-	for (unsigned int i = 0; i < level.size(); i++)
-	{
-		level[i] = reader.SeparateTiles(level[i], tile32List, tile64List, tile128List);
-	}
-
-	reader.SectionLevel(&level, width, height);
+	reader->SectionLevel(levelTiles, &levelCollision, width, height);
 
 	// Set up your window!
 
@@ -271,7 +264,7 @@ void Game::Update()
 		{
 			if (!al_get_sample_instance_playing(BGM))
 			{
-				BGM = al_create_sample_instance(soundtrack[5]);
+				BGM = al_create_sample_instance(soundtrack);
 				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 				al_play_sample_instance(BGM);
@@ -279,21 +272,22 @@ void Game::Update()
 			if (buttons[ENTER])
 			{
 				buttons[ENTER] = false;
-				if (soundtrack[4] == NULL)
-				{
-					soundtrack[4] = al_load_sample("Audio/Music/character_select.ogg");
-				}
-				if (cursorSpr == NULL)
-				{
-					cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
-				}
-				currentState = MENU;
-				cursor = Cursor(((5 * width) / 12), 320, cursorSpr);
 				al_stop_sample_instance(BGM);
-				BGM = al_create_sample_instance(soundtrack[4]);
+
+				// Unload all content being used for the title screen
+				al_destroy_sample_instance(BGM);
+				al_destroy_sample(soundtrack);
+
+				// Then load everything for the menu
+				cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
+				cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
+				soundtrack = al_load_sample("Audio/Music/character_select.ogg");
+				BGM = al_create_sample_instance(soundtrack);
 				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 				al_play_sample_instance(BGM);
+
+				currentState = MENU;
 			}
 			break;
 		}
@@ -303,49 +297,37 @@ void Game::Update()
 			{
 				buttons[ENTER] = false;
 				al_stop_sample_instance(BGM);
-				switch (cursor.selection)
+
+				// Unload all content being used for the menu
+				al_destroy_sample_instance(BGM);
+				al_destroy_sample(soundtrack);
+				al_destroy_bitmap(cursorSpr);
+				
+				switch (cursor->selection)
 				{
 					case 0:
 					{
-						if (johnSpr == NULL)
-						{
-							johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
-						}
-						if (roseSpr == NULL)
-						{
-							roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
-						}
-						player1 = John(johnSpr);
-						player2 = Rose(roseSpr);
-						if (soundtrack[0] == NULL)
-						{
-							soundtrack[0] = al_load_sample("Audio/Music/john.ogg");
-						}
-						BGM = al_create_sample_instance(soundtrack[0]);
+						johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
+						roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
+						player1 = new John(johnSpr);
+						player2 = new John(johnSpr);
+						soundtrack = al_load_sample("Audio/Music/john.ogg");
+						BGM = al_create_sample_instance(soundtrack);
 						break;
 					}
 					case 1:
 					{
-						if (johnSpr == NULL)
-						{
-							johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
-						}
-						if (roseSpr == NULL)
-						{
-							roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
-						}
-						player1 = Rose(roseSpr);
-						player2 = John(johnSpr);
-						if (soundtrack[1] == NULL)
-						{
-							soundtrack[1] = al_load_sample("Audio/Music/rose.ogg");
-						}
-						BGM = al_create_sample_instance(soundtrack[1]);
+						johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
+						roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
+						player1 = new John(johnSpr);
+						player2 = new John(johnSpr);
+						soundtrack = al_load_sample("Audio/Music/rose.ogg");
+						BGM = al_create_sample_instance(soundtrack);
 						break;
 					}
 				}
-				player2.x = 896 - player2.width;
-				player2.direction = -1;
+				player2->x = 896 - player2->width;
+				player2->direction = -1;
 				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 				al_play_sample_instance(BGM);
@@ -354,19 +336,19 @@ void Game::Update()
 			if (buttons[UP])
 			{
 				buttons[UP] = false;
-				cursor.selection--;
-				if (cursor.selection < 0)
+				cursor->selection--;
+				if (cursor->selection < 0)
 				{
-					cursor.selection = 1;
+					cursor->selection = 1;
 				}
 			}
 			if (buttons[DOWN])
 			{
 				buttons[DOWN] = false;
-				cursor.selection++;
-				if (cursor.selection > 1)
+				cursor->selection++;
+				if (cursor->selection > 1)
 				{
-					cursor.selection = 0;
+					cursor->selection = 0;
 				}
 			}
 			break;
@@ -381,46 +363,46 @@ void Game::Update()
 			}
 			if (buttons[LEFT])
 			{
-				player1.Run(buttons[LEFT], buttonsPrev[LEFT]);
-				player1.Move(-1);
+				player1->Run(buttons[LEFT], buttonsPrev[LEFT]);
+				player1->Move(-1);
 			}
 			if (buttons[RIGHT])
 			{
-				player1.Run(buttons[RIGHT], buttonsPrev[RIGHT]);
-				player1.Move(1);
+				player1->Run(buttons[RIGHT], buttonsPrev[RIGHT]);
+				player1->Move(1);
 			}
 			if (buttons[DOWN])
 			{
-				player1.FastFall();
+				player1->FastFall();
 			}
 			if (buttons[Z])
 			{
-				player1.Jump();
+				player1->Jump();
 			}
 
-			// Here goes checking if any buttons are UP.
+			// Here goes checking if any buttons are UP->
 
 			if (!buttons[LEFT])
 			{
-				player1.Run(buttons[LEFT], buttonsPrev[LEFT]);
+				player1->Run(buttons[LEFT], buttonsPrev[LEFT]);
 			}
 			if (!buttons[RIGHT])
 			{
-				player1.Run(buttons[RIGHT], buttonsPrev[RIGHT]);
+				player1->Run(buttons[RIGHT], buttonsPrev[RIGHT]);
 			}
 			if (!buttons[DOWN])
 			{
-				if (player1.isCrouching)
+				if (player1->isCrouching)
 				{
-					player1.isCrouching = false;
+					player1->isCrouching = false;
 				}
 			}
 
-			// Insert interaction calculations here.
+			// Insert interaction calculations here->
 
-			// Insert position updates here.
-			player1.Update(buttons, Z);
-			player2.Update(buttons, Z);
+			// Insert position updates here->
+			player1->Update(buttons, Z);
+			player2->Update(buttons, Z);
 
 			break;
 		}
@@ -460,7 +442,7 @@ void Game::Draw()
 					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE YOUR CHARACTER");
 					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "John Egbert");
 					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "Rose Lalonde");
-					al_draw_bitmap(cursor.sprite, cursor.x - cursor.width, cursor.y + (cursor.selection * 32) - (cursor.height / 4), NULL);
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					al_flip_display();
 					break;
 				}
@@ -471,43 +453,40 @@ void Game::Draw()
 		{
 			al_clear_to_color(al_map_rgb(128, 128, 128));
 
-			for (unsigned int i = 0; i < level.size(); i++)
+			for (unsigned int i = 0; i < levelTiles.size(); i++)
 			{
-				for (unsigned int t = 0; t < level[i].size(); t++)
-				{
-					al_draw_bitmap(tile16List[level[i][t].type], level[i][t].x, level[i][t].y, NULL);
-				}
+				al_draw_bitmap(tile16List[levelTiles[i].type], levelTiles[i].x, levelTiles[i].y, NULL);
 			}
 
-			switch (player1.direction)
+			switch (player1->direction)
 			{
 				case 1:
 				{
-					al_draw_bitmap(player1.sprite, player1.x, player1.y, NULL);
+					al_draw_bitmap(player1->sprite, player1->x, player1->y, NULL);
 					break;
 				}
 				case -1:
 				{
-					al_draw_bitmap(player1.sprite, player1.x, player1.y, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_bitmap(player1->sprite, player1->x, player1->y, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}
-			switch (player2.direction)
+			switch (player2->direction)
 			{
 				case 1:
 				{
-					al_draw_bitmap(player2.sprite, player2.x, player2.y, NULL);
+					al_draw_bitmap(player2->sprite, player2->x, player2->y, NULL);
 					break;
 				}
 				case -1:
 				{
-					al_draw_bitmap(player2.sprite, player2.x, player2.y, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_bitmap(player2->sprite, player2->x, player2->y, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}
 
 			// DEBUG!
-			//al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%i %i %i", player1.runTimer, buttonsPrev[RIGHT], player1.isRunning);
+			//al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%i %i %i", player1->runTimer, buttonsPrev[RIGHT], player1->isRunning);
 
 			al_flip_display();
 			break;
@@ -518,7 +497,7 @@ void Game::Draw()
 
 void Game::End()
 {
-	// The user has quit; time to clean up and end the program.
+	// The user has quit; time to clean up and end the program->
 
 	al_destroy_display(display);
 	al_destroy_timer(timer);
@@ -531,8 +510,6 @@ void Game::End()
 
 	al_destroy_bitmap(titleSpr);
 
-	al_destroy_bitmap(cursorSpr);
-
 	al_destroy_bitmap(johnSpr);
 	al_destroy_bitmap(roseSpr);
 
@@ -541,9 +518,6 @@ void Game::End()
 		al_destroy_bitmap(tile16List[i]);
 	}
 
-	for (int i = 0; i < 6; i++)
-	{
-		al_destroy_sample(soundtrack[i]);
-	}
 	al_destroy_sample_instance(BGM);
+	al_destroy_sample(soundtrack);
 }

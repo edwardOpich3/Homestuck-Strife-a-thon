@@ -129,6 +129,24 @@ void Character::Run(bool current, bool previous)
 	}
 }
 
+void Character::Collision(std::vector<std::vector<Tile>> levelCollision, std::vector<ALLEGRO_BITMAP*> tile16List, int levelWidth, int levelHeight)
+{
+	for (unsigned int i = 0; i < levelCollision.size(); i++)
+	{
+		if (collisionBox.x / 128 != i % (levelWidth / 128) && (collisionBox.x + collisionBox.width) / 128 != i % (levelWidth / 128) && collisionBox.y / 128 != i % (levelWidth / 128) && (collisionBox.y + collisionBox.height) / 128 != i % (levelWidth / 128))
+		{
+			continue;
+		}
+		for (unsigned int t = 0; t < levelCollision[i].size(); t++)
+		{
+			for (int k = collisionBox.x; k <= collisionBox.x + collisionBox.width; k++)
+			{
+
+			}
+		}
+	}
+}
+
 void Character::Update(bool buttons[6], int Z)
 {
 	if (jumpSquatTimer > 0)

@@ -1,10 +1,13 @@
 #pragma once
 #include "Header\BoundingBox.h"
 #include "allegro5\allegro.h"
+#include <vector>
+#include "Header\Tile.h"
+
 class Character
 {
 public:
-	BoundingBox hurtBox;
+	BoundingBox collisionBox;
 	ALLEGRO_BITMAP *sprite;
 
 	// Grounded Attributes
@@ -47,12 +50,13 @@ public:
 
 	Character(ALLEGRO_BITMAP *sprite);
 	Character();
-	~Character();
+	virtual ~Character();
 
 	virtual void Move(int vector);
 	virtual void Jump();
 	virtual void FastFall();
 	virtual void Run(bool current, bool previous);
+	virtual void Collision(std::vector<std::vector<Tile>> levelCollision, std::vector<ALLEGRO_BITMAP*> tile16List, int levelWidth, int levelHeight);
 	virtual void Update(bool buttons[6], int Z);
 };
 
