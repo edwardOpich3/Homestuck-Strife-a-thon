@@ -47,14 +47,16 @@ public:
 	Character *player4;
 
 	// Tiles
-	std::vector<ALLEGRO_BITMAP*> tile16List;
+	std::vector<ALLEGRO_BITMAP*> tile16List;	// Collision Tiles
+	std::vector<ALLEGRO_BITMAP*> levelTileList;	// Pretty Tiles
 	std::vector<std::vector<Tile>> tile32List;
 	std::vector<std::vector<Tile>> tile64List;
 	std::vector<std::vector<Tile>> tile128List;
 
 	// Levels
 	std::vector<Tile> levelTiles;
-	std::vector<std::vector<Tile>> levelCollision;
+	ALLEGRO_BITMAP *levelBitmap;
+	ALLEGRO_BITMAP *collisionBitmap;
 	int levelWidth, levelHeight;
 
 	// Cursor

@@ -105,11 +105,19 @@ void Reader::LoadTiles(std::vector<ALLEGRO_BITMAP*> *tile16List, std::vector<std
 	}
 }
 
-void Reader::LoadLevel(std::vector<Tile> *level, int *width, int *height)
+void Reader::LoadLevel(std::vector<Tile> *level, std::vector<ALLEGRO_BITMAP*> *levelTileList, int *width, int *height)
 {
+	// Load in the size 16 tiles
+	std::string path = "Graphics/Levels/0 - LOWAS/tiles/0.png";
+	for (int i = 1; al_filename_exists(path.c_str()); i++)
+	{
+		levelTileList->push_back(al_load_bitmap(path.c_str()));
+		path = "Graphics/Levels/0 - LOWAS/tiles/"; path += std::to_string(i); path += ".png";
+	}
+
 	std::ifstream myStream;
 	unsigned char temp[4];
-	myStream.open("Levels/test3.lvl", myStream.binary | myStream.in);
+	myStream.open("Levels/test.lvl", myStream.binary | myStream.in);
 
 	myStream.read((char*)temp, 4);
 	*width = ReadInt(temp);
@@ -190,16 +198,34 @@ std::vector<Tile> Reader::SeparateTiles(std::vector<Tile> myLevel, std::vector<s
 	return temp;
 }
 
-void Reader::SectionLevel(std::vector<Tile> level, std::vector<std::vector<Tile>> *levelCollision, int width, int height)
+// Outdated code; Delete when it's confirmed we won't need it again
+/*void Reader::SectionLevel(std::vector<std::vector<Tile>> *level, int width, int height)
 {
-	levelCollision->clear();
+	std::vector<std::vector<Tile>> temp;
 	for (int t = (width / 128) * (height / 128); t > 0; t--)
 	{
-		levelCollision->push_back(std::vector<Tile>());
+		temp.push_back(std::vector<Tile>());
 	}
+	for (unsigned int i = 0; i < level[0][0].size(); i++)
+	{
+		int index = (level[0][0][i].y / 128) * (level[0][0][i].x / 128);
+		temp[index].push_back(level[0][0][i]);
+	}
+	level->clear();
+	for (unsigned int i = 0; i < temp.size(); i++)
+	{
+		level->push_back(temp[i]);
+	}
+}*/
+
+void Reader::DrawLevel(std::vector<Tile> level, ALLEGRO_BITMAP **levelBitmap, int width, int height, std::vector<ALLEGRO_BITMAP*> tile16List)
+{
+	*levelBitmap = al_create_bitmap(width, height);
+	al_set_target_bitmap(*levelBitmap);
+	al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+
 	for (unsigned int i = 0; i < level.size(); i++)
 	{
-		int index = (level[i].y / 128) * (level[i].x / 128);
-		levelCollision[0][index].push_back(level[i]);
+		al_draw_bitmap(tile16List[level[i].type], level[i].x, level[i].y, NULL);
 	}
 }

@@ -24,9 +24,6 @@
     <Filter Include="Resource Files\Graphics\Sprites">
       <UniqueIdentifier>{b581302a-391f-4c43-844b-6954147de32a}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Graphics\Level">
-      <UniqueIdentifier>{b4a2e4d3-8e9a-43a5-bf80-63b85f44703d}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Graphics\Menu">
       <UniqueIdentifier>{7c3e46d9-ad68-49a6-b6b6-3fa11b9daf94}</UniqueIdentifier>
     </Filter>
@@ -61,6 +58,15 @@
     </Filter>
     <Filter Include="Resource Files\Levels\tiles128">
       <UniqueIdentifier>{14d16c13-dd4a-454d-b1d5-f65ad5a5ddb6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Graphics\Levels">
+      <UniqueIdentifier>{b4a2e4d3-8e9a-43a5-bf80-63b85f44703d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Graphics\Levels\0 - LOWAS">
+      <UniqueIdentifier>{fc0b9ef9-1132-4bc9-9bda-082aa2167d3d}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Graphics\Levels\0 - LOWAS\tiles">
+      <UniqueIdentifier>{b3ea2986-7be5-490f-9ea2-15c26bf99e1e}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -173,6 +179,30 @@
     <Image Include="Graphics\Sprites\jade.png">
       <Filter>Resource Files\Graphics\Sprites</Filter>
     </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\0.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\1.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\2.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\3.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\4.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\5.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\6.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\7.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Levels\tiles32\tiles32_0.tile">
@@ -284,6 +314,9 @@
       <Filter>Resource Files\Levels</Filter>
     </None>
     <None Include="Levels\test4.lvl">
+      <Filter>Resource Files\Levels</Filter>
+    </None>
+    <None Include="Levels\test2.lvl">
       <Filter>Resource Files\Levels</Filter>
     </None>
   </ItemGroup>

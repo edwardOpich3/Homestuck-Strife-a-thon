@@ -113,10 +113,18 @@ bool Game::Initialize()
 	// NOTE: Later on, move these so that they only happen upon loading any/a level for the first time, respectively
 	//	Also, LoadLevels needs to be changed to load only a single level, based on a number passed in.
 	reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
-	reader->LoadLevel(&levelTiles, &levelWidth, &levelHeight);
+	reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight);
 	levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
 
-	reader->SectionLevel(levelTiles, &levelCollision, width, height);
+	//reader->SectionLevel(&levelTiles, width, height);	Take this out?
+
+	reader->DrawLevel(levelTiles, &collisionBitmap, levelWidth, levelHeight, tile16List);
+	reader->DrawLevel(levelTiles, &levelBitmap, levelWidth, levelHeight, levelTileList);
+	for (unsigned int i = 0; i < levelTileList.size(); i++)
+	{
+		al_destroy_bitmap(levelTileList[i]);
+	}
+	levelTileList.clear();
 
 	// Set up your window!
 
@@ -402,7 +410,10 @@ void Game::Update()
 
 			// Insert position updates here->
 			player1->Update(buttons, Z);
+			player1->Collision(&collisionBitmap);
+
 			player2->Update(buttons, Z);
+			player2->Collision(&collisionBitmap);
 
 			break;
 		}
@@ -417,6 +428,7 @@ void Game::Update()
 
 void Game::Draw()
 {
+	al_set_target_backbuffer(display);
 	switch (currentState)
 	{
 		case TITLE:
@@ -453,10 +465,7 @@ void Game::Draw()
 		{
 			al_clear_to_color(al_map_rgb(128, 128, 128));
 
-			for (unsigned int i = 0; i < levelTiles.size(); i++)
-			{
-				al_draw_bitmap(tile16List[levelTiles[i].type], levelTiles[i].x, levelTiles[i].y, NULL);
-			}
+			al_draw_bitmap(collisionBitmap, 0, 0, NULL);
 
 			switch (player1->direction)
 			{

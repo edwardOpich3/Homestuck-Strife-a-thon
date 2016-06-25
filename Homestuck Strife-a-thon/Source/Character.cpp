@@ -129,22 +129,211 @@ void Character::Run(bool current, bool previous)
 	}
 }
 
-void Character::Collision(std::vector<std::vector<Tile>> levelCollision, std::vector<ALLEGRO_BITMAP*> tile16List, int levelWidth, int levelHeight)
+void Character::Collision(ALLEGRO_BITMAP** collisionBitmap)
 {
-	for (unsigned int i = 0; i < levelCollision.size(); i++)
-	{
-		if (collisionBox.x / 128 != i % (levelWidth / 128) && (collisionBox.x + collisionBox.width) / 128 != i % (levelWidth / 128) && collisionBox.y / 128 != i % (levelWidth / 128) && (collisionBox.y + collisionBox.height) / 128 != i % (levelWidth / 128))
-		{
-			continue;
-		}
-		for (unsigned int t = 0; t < levelCollision[i].size(); t++)
-		{
-			for (int k = collisionBox.x; k <= collisionBox.x + collisionBox.width; k++)
-			{
+	al_lock_bitmap(*collisionBitmap, al_get_bitmap_format(*collisionBitmap), ALLEGRO_LOCK_READONLY);
+	ALLEGRO_COLOR levelPixel;
+	unsigned char r, g, b, a;
 
+	if (isGrounded)
+	{
+		// First we check for walls
+		// Left
+		bool collision = false;
+		for (int leftWall = x + collisionBox.x + (collisionBox.width / 2); leftWall > x + collisionBox.x - 1 && !collision; leftWall--)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, leftWall, y + collisionBox.y + (collisionBox.height / 2));
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				x++;
+				if (xSpeed < 0)
+				{
+					xSpeed = 0;
+				}
+				collision = true;
 			}
 		}
+
+		// Right
+		collision = false;
+		for (int rightWall = x + collisionBox.x + (collisionBox.width / 2); rightWall < x + collisionBox.x + collisionBox.width + 1 && !collision; rightWall++)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, rightWall, y + collisionBox.y + (collisionBox.height / 2));
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				x--;
+				if (xSpeed > 0)
+				{
+					xSpeed = 0;
+				}
+				collision = true;
+			}
+		}
+
+		// Then we check the ground below us
+		// Left Sensor
+		int leftGround, rightGround;
+		collision = false;
+		for (leftGround = y + collisionBox.y + (collisionBox.height / 2); leftGround < y + collisionBox.y + collisionBox.height + 16; leftGround++)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftGround);
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				y = leftGround - collisionBox.height;
+				collision = true;
+				break;
+			}
+		}
+
+		// Right Sensor
+		for (rightGround = y + collisionBox.y + (collisionBox.height / 2); rightGround < y + collisionBox.y + collisionBox.height + 16; rightGround++)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightGround);
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				if (rightGround < y)
+				{
+					y = rightGround;
+				}
+				collision = true;
+				break;
+			}
+		}
+
+		if (!collision)
+		{
+			isGrounded = false;
+			isAerial = true;
+		}
 	}
+
+	else if (isAerial)
+	{
+		// First we check the walls
+		// Left
+		bool collision = false;
+		for (int leftWall = x + collisionBox.x + (collisionBox.width / 4); leftWall > x + collisionBox.x - 1 && !collision; leftWall--)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, leftWall, y + collisionBox.y + (collisionBox.height / 2));
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				x++;
+				if (xSpeed < 0)
+				{
+					xSpeed = 0;
+				}
+				collision = true;
+			}
+		}
+
+		// Right
+		collision = false;
+		for (int rightWall = x + collisionBox.x + ((3 * collisionBox.width) / 4); rightWall < x + collisionBox.x + collisionBox.width + 1 && !collision; rightWall++)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, rightWall, y + collisionBox.y + (collisionBox.height / 2));
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				x--;
+				if (xSpeed > 0)
+				{
+					xSpeed = 0;
+				}
+				collision = true;
+			}
+		}
+
+		// Then we check the air above us
+		// Left Sensor
+		int leftAir, rightAir;
+		for (leftAir = y + collisionBox.y + (collisionBox.height / 4); leftAir > y + collisionBox.y - 16; leftAir--)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftAir);
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				y = leftAir;
+				if (ySpeed < 0)
+				{
+					ySpeed = 0;
+				}
+				break;
+			}
+		}
+
+		// Right Sensor
+		for (rightAir = y + collisionBox.y + (collisionBox.height / 4); rightAir > y + collisionBox.y + collisionBox.height + 16; rightAir--)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightAir);
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				if (rightAir > y)
+				{
+					y = rightAir;
+				}
+				break;
+			}
+		}
+
+		// Finally, we check the ground below us
+		// Left Sensor
+		int leftGround, rightGround;
+		collision = false;
+		for (leftGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < y + collisionBox.y + collisionBox.height + 16; leftGround++)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftGround);
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				y = leftGround - collisionBox.height;
+				collision = true;
+				break;
+			}
+		}
+
+		// Right Sensor
+		for (rightGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < y + collisionBox.y + collisionBox.height + 16; rightGround++)
+		{
+			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightGround);
+			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+			if (a > 0)
+			{
+				if (rightGround < y)
+				{
+					y = rightGround;
+				}
+				collision = true;
+				break;
+			}
+		}
+
+		if (collision)
+		{
+			isGrounded = true;
+			isAerial = false;
+			canDoubleJump = true;
+			isFastFalling = false;
+			ySpeed = 0;
+		}
+		
+	}
+	al_unlock_bitmap(*collisionBitmap);
 }
 
 void Character::Update(bool buttons[6], int Z)
@@ -264,7 +453,8 @@ void Character::Update(bool buttons[6], int Z)
 	x += xSpeed;
 	y += ySpeed;
 
-	if (y + height > 420)
+	// Psuedo collision; comment out when testing legit collision
+	/*if (y + height > 420)
 	{
 		y = 420 - height;
 		isGrounded = true;
@@ -272,5 +462,5 @@ void Character::Update(bool buttons[6], int Z)
 		canDoubleJump = true;
 		isFastFalling = false;
 		ySpeed = 0;
-	}
+	}*/
 }

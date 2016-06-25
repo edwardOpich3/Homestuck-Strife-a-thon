@@ -56,7 +56,7 @@ public:
 	virtual void Jump();
 	virtual void FastFall();
 	virtual void Run(bool current, bool previous);
-	virtual void Collision(std::vector<std::vector<Tile>> levelCollision, std::vector<ALLEGRO_BITMAP*> tile16List, int levelWidth, int levelHeight);
+	virtual void Collision(ALLEGRO_BITMAP** collisionBitmap);
 	virtual void Update(bool buttons[6], int Z);
 };
 
