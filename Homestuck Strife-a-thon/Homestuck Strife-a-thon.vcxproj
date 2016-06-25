@@ -130,11 +130,24 @@
     <None Include="Audio\Music\title.ogg">
       <DeploymentContent>true</DeploymentContent>
     </None>
-    <None Include="Levels\Battlefield.lvl" />
-    <None Include="Levels\test.lvl" />
-    <None Include="Levels\test2.lvl" />
-    <None Include="Levels\test3.lvl" />
-    <None Include="Levels\test4.lvl" />
+    <None Include="Levels\ceilingTest.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\flatTest.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\heightTest.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\slopeTest1.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\slopeTest2.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\slopeTest3.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Levels\tiles128\tiles128_0.tile">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -214,6 +227,9 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Levels\tiles64\tiles64_8.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\wallTest.lvl">
       <DeploymentContent>true</DeploymentContent>
     </None>
   </ItemGroup>

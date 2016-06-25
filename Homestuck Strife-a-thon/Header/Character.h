@@ -53,7 +53,7 @@ public:
 	virtual ~Character();
 
 	virtual void Move(int vector);
-	virtual void Jump();
+	virtual void Jump(bool buttons[6], int Z);
 	virtual void FastFall();
 	virtual void Run(bool current, bool previous);
 	virtual void Collision(ALLEGRO_BITMAP** collisionBitmap);

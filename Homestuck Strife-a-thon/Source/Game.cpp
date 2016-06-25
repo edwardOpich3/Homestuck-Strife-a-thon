@@ -385,7 +385,7 @@ void Game::Update()
 			}
 			if (buttons[Z])
 			{
-				player1->Jump();
+				player1->Jump(buttons, Z);
 			}
 
 			// Here goes checking if any buttons are UP->
@@ -465,7 +465,7 @@ void Game::Draw()
 		{
 			al_clear_to_color(al_map_rgb(128, 128, 128));
 
-			al_draw_bitmap(collisionBitmap, 0, 0, NULL);
+			al_draw_bitmap(levelBitmap, 0, 0, NULL);
 
 			switch (player1->direction)
 			{
