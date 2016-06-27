@@ -497,7 +497,7 @@ void Game::Draw()
 				}
 				case -1:
 				{
-					al_draw_bitmap(player2->sprite, player2->x, player2->y, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_bitmap(player2->sprite, player2->x - player2->mirrorOffset, player2->y, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}
