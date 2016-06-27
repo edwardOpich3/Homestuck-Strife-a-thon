@@ -4,6 +4,7 @@
 
 Rose::Rose(ALLEGRO_BITMAP *sprite) : Character(sprite)
 {
+	collisionBox = BoundingBox(74, 7, 48, 116);
 	walkSpeed = 4;
 	runSpeed = 6;
 	jumpSquat = 4;
@@ -20,6 +21,8 @@ Rose::Rose(ALLEGRO_BITMAP *sprite) : Character(sprite)
 	airSpeed = 5;
 	fallSpeed = 6;
 	fastfallSpeed = 8;
+
+	mirrorOffset = 0;
 }
 
 Rose::Rose()

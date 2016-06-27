@@ -48,6 +48,9 @@ public:
 	// Drawing purposes
 	int x, y, width, height;
 
+	// Animation Variables
+	int mirrorOffset;
+
 	Character(ALLEGRO_BITMAP *sprite);
 	Character();
 	virtual ~Character();
@@ -56,7 +59,7 @@ public:
 	virtual void Jump(bool buttons[6], int Z);
 	virtual void FastFall();
 	virtual void Run(bool current, bool previous);
-	virtual void Collision(ALLEGRO_BITMAP** collisionBitmap);
+	virtual void Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int levelHeight);
 	virtual void Update(bool buttons[6], int Z);
 };
 

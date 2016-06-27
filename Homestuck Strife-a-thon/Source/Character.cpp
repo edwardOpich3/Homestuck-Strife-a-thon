@@ -130,7 +130,7 @@ void Character::Run(bool current, bool previous)
 	}
 }
 
-void Character::Collision(ALLEGRO_BITMAP** collisionBitmap)
+void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int levelHeight)
 {
 	al_lock_bitmap(*collisionBitmap, al_get_bitmap_format(*collisionBitmap), ALLEGRO_LOCK_READONLY);
 	ALLEGRO_COLOR levelPixel;
@@ -143,17 +143,20 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap)
 		bool collision = false;
 		for (int leftWall = x + collisionBox.x + (collisionBox.width / 2); leftWall > x + collisionBox.x - 1 && !collision; leftWall--)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, leftWall, y + collisionBox.y + (collisionBox.height / 2));
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0)
+			if (leftWall > 0 && leftWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
 			{
-				x = leftWall - collisionBox.x + 1;
-				if (xSpeed < 0)
+				levelPixel = al_get_pixel(*collisionBitmap, leftWall, y + collisionBox.y + collisionBox.height - 20);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0)
 				{
-					xSpeed = 0;
+					x = leftWall - collisionBox.x + 1;
+					if (xSpeed < 0)
+					{
+						xSpeed = 0;
+					}
+					collision = true;
 				}
-				collision = true;
 			}
 		}
 
@@ -161,17 +164,20 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap)
 		collision = false;
 		for (int rightWall = x + collisionBox.x + (collisionBox.width / 2); rightWall < x + collisionBox.x + collisionBox.width + 1 && !collision; rightWall++)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, rightWall, y + collisionBox.y + (collisionBox.height / 2));
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0)
+			if (rightWall > 0 && rightWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
 			{
-				x = rightWall - collisionBox.x - collisionBox.width - 1;
-				if (xSpeed > 0)
+				levelPixel = al_get_pixel(*collisionBitmap, rightWall, y + collisionBox.y + collisionBox.height - 20);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0)
 				{
-					xSpeed = 0;
+					x = rightWall - collisionBox.x - collisionBox.width - 1;
+					if (xSpeed > 0)
+					{
+						xSpeed = 0;
+					}
+					collision = true;
 				}
-				collision = true;
 			}
 		}
 
@@ -181,31 +187,88 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap)
 		collision = false;
 		for (leftGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < y + collisionBox.y + collisionBox.height + 16; leftGround++)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftGround);
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0)
+			if (leftGround == y + collisionBox.y + collisionBox.height)
 			{
-				y = leftGround - collisionBox.height - collisionBox.y;
-				collision = true;
-				break;
+				for (int i = collisionBox.width / 2; i >= 0; i--)
+				{
+					if (leftGround > 0 && leftGround < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
+					{
+						levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, leftGround);
+						al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+						if (a > 0)
+						{
+							y = leftGround - collisionBox.height - collisionBox.y;
+							collision = true;
+							i = (collisionBox.width / 2) + 1;
+							leftGround--;
+							continue;
+						}
+					}
+				}
+				if (collision)
+				{
+					break;
+				}
+			}
+			else if (leftGround > 0 && leftGround < levelHeight && x + collisionBox.x > 0 && x + collisionBox.x < levelWidth)
+			{
+				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftGround);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0)
+				{
+					y = leftGround - collisionBox.height - collisionBox.y;
+					collision = true;
+					break;
+				}
 			}
 		}
 
 		// Right Sensor
 		for (rightGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < y + collisionBox.y + collisionBox.height + 16; rightGround++)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightGround);
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0)
+			if (rightGround == y + collisionBox.y + collisionBox.height)
 			{
-				if (rightGround < leftGround)
+				for (int i = collisionBox.width / 2; i >= 0; i--)
 				{
-					y = rightGround - collisionBox.height - collisionBox.y;
+					if (rightGround > 0 && rightGround < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
+					{
+						levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, rightGround);
+						al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+						if (a > 0)
+						{
+							if (rightGround < leftGround)
+							{
+								y = rightGround - collisionBox.height - collisionBox.y;
+							}
+							collision = true;
+							i = (collisionBox.width / 2) + 1;
+							rightGround--;
+							continue;
+						}
+					}
 				}
-				collision = true;
-				break;
+				if (collision)
+				{
+					break;
+				}
+			}
+			else if (rightGround > 0 && rightGround < levelHeight && x + collisionBox.x + collisionBox.width > 0 && x + collisionBox.x + collisionBox.width < levelWidth)
+			{
+				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightGround);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0)
+				{
+					if (rightGround < leftGround)
+					{
+						y = rightGround - collisionBox.height - collisionBox.y;
+					}
+					collision = true;
+					break;
+				}
 			}
 		}
 
@@ -223,17 +286,20 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap)
 		bool collision = false;
 		for (int leftWall = x + collisionBox.x + (collisionBox.width / 4); leftWall > x + collisionBox.x - 1 && !collision; leftWall--)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, leftWall, y + collisionBox.y + (collisionBox.height / 2));
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0)
+			if (leftWall > 0 && leftWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
 			{
-				x = leftWall - collisionBox.x + 1;
-				if (xSpeed < 0)
+				levelPixel = al_get_pixel(*collisionBitmap, leftWall, y + collisionBox.y + collisionBox.height - 20);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0)
 				{
-					xSpeed = 0;
+					x = leftWall - collisionBox.x + 1;
+					if (xSpeed < 0)
+					{
+						xSpeed = 0;
+					}
+					collision = true;
 				}
-				collision = true;
 			}
 		}
 
@@ -241,17 +307,20 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap)
 		collision = false;
 		for (int rightWall = x + collisionBox.x + ((3 * collisionBox.width) / 4); rightWall < x + collisionBox.x + collisionBox.width + 1 && !collision; rightWall++)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, rightWall, y + collisionBox.y + (collisionBox.height / 2));
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0)
+			if (rightWall > 0 && rightWall < levelWidth &&  y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
 			{
-				x = rightWall - collisionBox.x - collisionBox.width - 1;
-				if (xSpeed > 0)
+				levelPixel = al_get_pixel(*collisionBitmap, rightWall, y + collisionBox.y + collisionBox.height - 20);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0)
 				{
-					xSpeed = 0;
+					x = rightWall - collisionBox.x - collisionBox.width - 1;
+					if (xSpeed > 0)
+					{
+						xSpeed = 0;
+					}
+					collision = true;
 				}
-				collision = true;
 			}
 		}
 
@@ -260,37 +329,43 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap)
 		int leftAir, rightAir;
 		for (leftAir = y + collisionBox.y + (collisionBox.height / 4); leftAir > y + collisionBox.y - 16; leftAir--)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftAir);
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0 && leftAir > y + collisionBox.y)
+			if (leftAir > 0 && leftAir < levelHeight && x + collisionBox.x > 0 && x + collisionBox.x < levelWidth)
 			{
-				y = leftAir - collisionBox.y;
-				if (ySpeed < 0)
+				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftAir);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0 && leftAir > y + collisionBox.y)
 				{
-					ySpeed = 0;
+					y = leftAir - collisionBox.y;
+					if (ySpeed < 0)
+					{
+						ySpeed = 0;
+					}
+					break;
 				}
-				break;
 			}
 		}
 
 		// Right Sensor
 		for (rightAir = y + collisionBox.y + (collisionBox.height / 4); rightAir > y + collisionBox.y - 16; rightAir--)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightAir);
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0 && rightAir > y + collisionBox.y)
+			if (rightAir > 0 && rightAir < levelHeight && x + collisionBox.x + collisionBox.width > 0 && x + collisionBox.x + collisionBox.width < levelWidth)
 			{
-				if (rightAir > leftAir)
+				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightAir);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0 && rightAir > y + collisionBox.y)
 				{
-					y = rightAir - collisionBox.y;
-					if (ySpeed < 0)
+					if (rightAir > leftAir)
 					{
-						ySpeed = 0;
+						y = rightAir - collisionBox.y;
+						if (ySpeed < 0)
+						{
+							ySpeed = 0;
+						}
 					}
+					break;
 				}
-				break;
 			}
 		}
 
@@ -300,31 +375,88 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap)
 		collision = false;
 		for (leftGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < y + collisionBox.y + collisionBox.height + 16; leftGround++)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftGround);
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0 && ySpeed > 0 && leftGround < y + collisionBox.y + collisionBox.height)
+			if (leftGround == y + collisionBox.y + collisionBox.height)
 			{
-				y = leftGround - collisionBox.height - collisionBox.y;
-				collision = true;
-				break;
+				for (int i = collisionBox.width / 2; i >= 0; i--)
+				{
+					if (leftGround > 0 && leftGround < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
+					{
+						levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, leftGround);
+						al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+						if (a > 0 && ySpeed > 0)
+						{
+							y = leftGround - collisionBox.height - collisionBox.y;
+							collision = true;
+							i = (collisionBox.width / 2) + 1;
+							leftGround--;
+							continue;
+						}
+					}
+				}
+				if (collision)
+				{
+					break;
+				}
+			}
+			else if (leftGround > 0 && leftGround < levelHeight && x + collisionBox.x > 0 && x + collisionBox.x < levelWidth)
+			{
+				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftGround);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0 && ySpeed > 0 && leftGround <= y + collisionBox.y + collisionBox.height)
+				{
+					y = leftGround - collisionBox.height - collisionBox.y;
+					collision = true;
+					break;
+				}
 			}
 		}
 
 		// Right Sensor
 		for (rightGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < y + collisionBox.y + collisionBox.height + 16; rightGround++)
 		{
-			levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightGround);
-			al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-			if (a > 0 && ySpeed > 0 && rightGround < y + collisionBox.y + collisionBox.height)
+			if (rightGround == y + collisionBox.y + collisionBox.height)
 			{
-				if (rightGround < leftGround)
+				for (int i = collisionBox.width / 2; i >= 0; i--)
 				{
-					y = rightGround - collisionBox.height - collisionBox.y;
+					if (rightGround > 0 && rightGround < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
+					{
+						levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, rightGround);
+						al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+						if (a > 0 && ySpeed > 0)
+						{
+							if (rightGround < leftGround)
+							{
+								y = rightGround - collisionBox.height - collisionBox.y;
+							}
+							collision = true;
+							i = (collisionBox.width / 2) + 1;
+							rightGround--;
+							continue;
+						}
+					}
 				}
-				collision = true;
-				break;
+				if (collision)
+				{
+					break;
+				}
+			}
+			else if (rightGround > 0 && rightGround < levelHeight && x + collisionBox.x + collisionBox.width > 0 && x + collisionBox.x + collisionBox.width < levelWidth)
+			{
+				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightGround);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+				if (a > 0 && ySpeed > 0 && rightGround <= y + collisionBox.y + collisionBox.height)
+				{
+					if (rightGround < leftGround)
+					{
+						y = rightGround - collisionBox.height - collisionBox.y;
+					}
+					collision = true;
+					break;
+				}
 			}
 		}
 

@@ -327,7 +327,7 @@ void Game::Update()
 					{
 						johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
 						roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
-						player1 = new John(johnSpr);
+						player1 = new Rose(roseSpr);
 						player2 = new John(johnSpr);
 						soundtrack = al_load_sample("Audio/Music/rose.ogg");
 						BGM = al_create_sample_instance(soundtrack);
@@ -410,10 +410,18 @@ void Game::Update()
 
 			// Insert position updates here->
 			player1->Update(buttons, Z);
-			player1->Collision(&collisionBitmap);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
+
+			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
+			/*player1->Collision(&collisionBitmap, levelWidth, levelHeight);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight);*/
 
 			player2->Update(buttons, Z);
-			player2->Collision(&collisionBitmap);
+			player2->Collision(&collisionBitmap, levelWidth, levelHeight);
 
 			break;
 		}
@@ -476,7 +484,7 @@ void Game::Draw()
 				}
 				case -1:
 				{
-					al_draw_bitmap(player1->sprite, player1->x, player1->y, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_bitmap(player1->sprite, player1->x - player1->mirrorOffset, player1->y, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}

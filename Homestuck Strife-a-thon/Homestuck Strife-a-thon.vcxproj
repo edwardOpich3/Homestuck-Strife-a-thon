@@ -130,6 +130,9 @@
     <None Include="Audio\Music\title.ogg">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Levels\bumpTest.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Levels\ceilingTest.lvl">
       <DeploymentContent>true</DeploymentContent>
     </None>

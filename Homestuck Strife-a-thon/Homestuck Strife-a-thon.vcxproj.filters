@@ -325,5 +325,8 @@
     <None Include="Levels\ceilingTest.lvl">
       <Filter>Resource Files\Levels</Filter>
     </None>
+    <None Include="Levels\bumpTest.lvl">
+      <Filter>Resource Files\Levels</Filter>
+    </None>
   </ItemGroup>
 </Project>

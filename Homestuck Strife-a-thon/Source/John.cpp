@@ -21,6 +21,8 @@ John::John(ALLEGRO_BITMAP *sprite) : Character(sprite)
 	airSpeed = 4;
 	fallSpeed = 8;
 	fastfallSpeed = 12;
+
+	mirrorOffset = 37;
 }
 
 John::John()
