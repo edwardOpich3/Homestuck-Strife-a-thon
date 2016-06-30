@@ -7,8 +7,8 @@ Character::Character(ALLEGRO_BITMAP *sprite)
 	// Set the necessary base values to their starting values
 	Character::x = 128;
 	Character::y = 128;
-	Character::width = al_get_bitmap_width(sprite);
-	Character::height = al_get_bitmap_height(sprite);
+	Character::width = 256;
+	Character::height = 256;
 	Character::sprite = sprite;
 	direction = 1;
 	xSpeed = 0;
@@ -21,6 +21,8 @@ Character::Character(ALLEGRO_BITMAP *sprite)
 	isFastFalling = false;
 	isCrouching = false;
 	isRunning = false;
+	frame = 0;
+	animationState = FALL;
 }
 
 Character::Character()
@@ -587,15 +589,124 @@ void Character::Update(bool buttons[6], int Z)
 
 	x += xSpeed;
 	y += ySpeed;
+}
 
-	// Psuedo collision; comment out when testing legit collision
-	/*if (y + height > 420)
+void Character::Animate(bool buttons[6], int LEFT, int RIGHT)
+{
+	if (xSpeed == 0)
 	{
-		y = 420 - height;
-		isGrounded = true;
-		isAerial = false;
-		canDoubleJump = true;
-		isFastFalling = false;
-		ySpeed = 0;
-	}*/
+		if (isGrounded)
+		{
+			if (jumpSquatTimer > 0)
+			{
+				animationState = JUMPSQUAT;
+			}
+			else if (isCrouching)
+			{
+				animationState = CROUCH;
+			}
+			else
+			{
+				animationState = IDLE;
+			}
+		}
+		else
+		{
+			if (ySpeed >= 0)
+			{
+				animationState = FALL;
+			}
+			else
+			{
+				if (canDoubleJump)
+				{
+					animationState = JUMP;
+				}
+				else
+				{
+					animationState = DOUBLE_JUMP;
+				}
+			}
+		}
+	}
+	else
+	{
+		if (isGrounded)
+		{
+			if (jumpSquatTimer > 0)
+			{
+				animationState = JUMPSQUAT;
+			}
+			else if (xSpeed * direction > 0)
+			{
+				if ((buttons[RIGHT] && xSpeed > 0) || (buttons[LEFT] && xSpeed < 0))
+				{
+					if (isRunning)
+					{
+						animationState = RUN;
+					}
+					else
+					{
+						animationState = WALK;
+					}
+				}
+				else
+				{
+					if (isRunning)
+					{
+						animationState = SLIDE;
+					}
+				}
+			}
+			else
+			{
+				if (isRunning)
+				{
+					animationState = RUN_TURN;
+				}
+				else
+				{
+					animationState = WALK_TURN;
+				}
+			}
+		}
+		else
+		{
+			if (ySpeed < 0)
+			{
+				if (canDoubleJump)
+				{
+					if (xSpeed * direction > 0)
+					{
+						animationState = JUMP;
+					}
+					else if (xSpeed * direction < 0)
+					{
+						animationState = BACK_JUMP;
+					}
+				}
+				else
+				{
+					if (xSpeed * direction > 0)
+					{
+						animationState = DOUBLE_JUMP;
+					}
+					else if (xSpeed * direction < 0)
+					{
+						animationState = BACK_DOUBLE_JUMP;
+					}
+				}
+			}
+			else
+			{
+				animationState = FALL;
+			}
+		}
+	}
+	
+	frame++;
+	if (frame > 59)
+	{
+		frame = 0;
+	}
 }

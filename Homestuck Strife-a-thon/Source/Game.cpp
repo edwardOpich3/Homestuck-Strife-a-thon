@@ -411,7 +411,7 @@ void Game::Update()
 			// Insert position updates here->
 			player1->Update(buttons, Z);
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
-
+			player1->Animate(buttons, LEFT, RIGHT);
 			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
 			/*player1->Collision(&collisionBitmap, levelWidth, levelHeight);
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
@@ -479,12 +479,12 @@ void Game::Draw()
 			{
 				case 1:
 				{
-					al_draw_bitmap(player1->sprite, player1->x, player1->y, NULL);
+					al_draw_bitmap_region(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, player1->x, player1->y, NULL);
 					break;
 				}
 				case -1:
 				{
-					al_draw_bitmap(player1->sprite, player1->x - player1->mirrorOffset, player1->y, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_bitmap_region(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, player1->x - player1->mirrorOffset, player1->y, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}
@@ -492,12 +492,12 @@ void Game::Draw()
 			{
 				case 1:
 				{
-					al_draw_bitmap(player2->sprite, player2->x, player2->y, NULL);
+					al_draw_bitmap_region(player2->sprite, 0, 0, player2->width, player2->height, player2->x, player2->y, NULL);
 					break;
 				}
 				case -1:
 				{
-					al_draw_bitmap(player2->sprite, player2->x - player2->mirrorOffset, player2->y, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_bitmap_region(player2->sprite, 0, 0, player2->width, player2->height, player2->x - player2->mirrorOffset, player2->y, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}
