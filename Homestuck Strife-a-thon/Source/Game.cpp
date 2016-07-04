@@ -385,7 +385,7 @@ void Game::Update()
 			}
 			if (buttons[Z])
 			{
-				player1->Jump(buttons, Z);
+				player1->Jump(buttons, Z, LEFT, RIGHT);
 			}
 
 			// Here goes checking if any buttons are UP->
@@ -409,7 +409,7 @@ void Game::Update()
 			// Insert interaction calculations here->
 
 			// Insert position updates here->
-			player1->Update(buttons, Z);
+			player1->Update(buttons, Z, LEFT, RIGHT);
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
 			player1->Animate(buttons, LEFT, RIGHT);
 			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
@@ -420,7 +420,7 @@ void Game::Update()
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight);*/
 
-			player2->Update(buttons, Z);
+			player2->Update(buttons, Z, LEFT, RIGHT);
 			player2->Collision(&collisionBitmap, levelWidth, levelHeight);
 
 			break;
@@ -504,6 +504,7 @@ void Game::Draw()
 
 			// DEBUG!
 			//al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%i %i %i", player1->runTimer, buttonsPrev[RIGHT], player1->isRunning);
+			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f", player1->ySpeed);
 
 			al_flip_display();
 			break;

@@ -23,6 +23,11 @@ Character::Character(ALLEGRO_BITMAP *sprite)
 	isRunning = false;
 	frame = 0;
 	animationState = FALL;
+	// Later on this will be hard coded for each character (UGH)
+	for (int i = 0; i < 17; i++)
+	{
+		animationLengths[i] = 60;
+	}
 }
 
 Character::Character()
@@ -38,31 +43,38 @@ Character::~Character()
 void Character::Move(int vector)
 {
 	// If the player is on the ground and isn't about to jump
-	if (isGrounded && jumpSquatTimer == 0)
+	if (isGrounded && jumpSquatTimer == 0 && animationState != HARD_LAND)
 	{
 		// If they are running
 		if (isRunning)
 		{
 			// Increase their speed by the running acceleration (in the direction of movement)
 			xSpeed += vector * runAcc;
+			if (vector != direction)
+			{
+				if (animationState != RUN_TURN)
+				{
+					frame = 0;
+					direction = vector;
+				}
+				animationState = RUN_TURN;
+				return;
+			}
 		}
 		// Otherwise
 		else
 		{
 			// Increase their speed by the walking acceleration
 			xSpeed += vector * grndAcc;
-		}
-		// If they are going to the left
-		if (xSpeed < 0)
-		{
-			// Turn them to face the left
-			direction = -1;
-		}
-		// Otherwise if they are going to the right
-		else if (xSpeed > 0)
-		{
-			// Turn them to face the right
-			direction = 1;
+			if (vector != direction)
+			{
+				if (animationState != WALK_TURN)
+				{
+					frame = 0;
+				}
+				animationState = WALK_TURN;
+				return;
+			}
 		}
 	}
 	// Otherwise if they are in the air
@@ -74,20 +86,22 @@ void Character::Move(int vector)
 }
 
 // The player has hit the jump button, either put them into jumpsquat, make them double jump, or do nothing depending on the circumstances
-void Character::Jump(bool buttons[6], int Z)
+void Character::Jump(bool buttons[6], int Z, int LEFT, int RIGHT)
 {
 	// If they are on the ground
-	if (isGrounded)
+	if (isGrounded && animationState != HARD_LAND)
 	{
 		// If they aren't currently attempting to jump
 		if (jumpSquatTimer == 0)
 		{
 			// Start the jumpsquat
 			jumpSquatTimer = jumpSquat;
+			animationState = JUMPSQUAT;
+			frame = 0;
 		}
 	}
 	// Otherwise if they can double jump (implied to be in the air)
-	else if (canDoubleJump)
+	else if (canDoubleJump && animationState != HARD_LAND)
 	{
 		// Set their ySpeed to that of the jump speed
 		ySpeed = jump;
@@ -96,6 +110,15 @@ void Character::Jump(bool buttons[6], int Z)
 		canDoubleJump = false;
 		isFastFalling = false;
 		buttons[Z] = false;
+		frame = 0;
+		if (!(buttons[LEFT] && direction > 0) && !(buttons[RIGHT] && direction < 0))
+		{
+			animationState = DOUBLE_JUMP;
+		}
+		else
+		{
+			animationState = BACK_DOUBLE_JUMP;
+		}
 	}
 }
 
@@ -458,6 +481,15 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 			isAerial = false;
 			canDoubleJump = true;
 			isFastFalling = false;
+			if (ySpeed >= (float)fallSpeed)
+			{
+				animationState = HARD_LAND;
+			}
+			else
+			{
+				animationState = SOFT_LAND;
+			}
+			frame = 0;
 			ySpeed = 0;
 			if (leftGround <= rightGround)
 			{
@@ -473,7 +505,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 	al_unlock_bitmap(*collisionBitmap);
 }
 
-void Character::Update(bool buttons[6], int Z)
+void Character::Update(bool buttons[6], int Z, int LEFT, int RIGHT)
 {
 	if (jumpSquatTimer > 0)
 	{
@@ -492,6 +524,15 @@ void Character::Update(bool buttons[6], int Z)
 			isAerial = true;
 			isRunning = false;
 			buttons[Z] = false;
+			frame = 0;
+			if (!(buttons[LEFT] && direction > 0) && !(buttons[RIGHT] && direction < 0))
+			{
+				animationState = JUMP;
+			}
+			else
+			{
+				animationState = BACK_JUMP;
+			}
 		}
 	}
 
@@ -539,9 +580,13 @@ void Character::Update(bool buttons[6], int Z)
 			{
 				xSpeed = -runSpeed;
 			}
-			if (xSpeed == 0)
+			if (xSpeed == 0 && animationState != RUN_TURN)
 			{
 				isRunning = false;
+			}
+			if (animationState == RUN_TURN && xSpeed * direction > 0)
+			{
+				xSpeed = 0;
 			}
 		}
 	}
@@ -593,120 +638,185 @@ void Character::Update(bool buttons[6], int Z)
 
 void Character::Animate(bool buttons[6], int LEFT, int RIGHT)
 {
-	if (xSpeed == 0)
+	frame++;
+
+	if (isGrounded)
 	{
-		if (isGrounded)
+		if (buttons[RIGHT] || buttons[LEFT])
 		{
-			if (jumpSquatTimer > 0)
+			if (jumpSquatTimer == 0)
 			{
-				animationState = JUMPSQUAT;
-			}
-			else if (isCrouching)
-			{
-				animationState = CROUCH;
-			}
-			else
-			{
-				animationState = IDLE;
+				if (isRunning)
+				{
+					if (animationState != RUN_TURN && animationState != HARD_LAND)
+					{
+						if (animationState != RUN)
+						{
+							frame = 0;
+						}
+						animationState = RUN;
+					}
+				}
+				else if (animationState != WALK_TURN && animationState != HARD_LAND)
+				{
+					if (animationState != WALK)
+					{
+						frame = 0;
+					}
+					animationState = WALK;
+				}
 			}
 		}
 		else
 		{
-			if (ySpeed >= 0)
+			if (jumpSquatTimer == 0)
 			{
-				animationState = FALL;
-			}
-			else
-			{
-				if (canDoubleJump)
+				if (isRunning)
 				{
-					animationState = JUMP;
+					if (animationState != SLIDE)
+					{
+						frame = 0;
+					}
+					animationState = SLIDE;
+				}
+				else if (isCrouching)
+				{
+					if (animationState != CROUCH)
+					{
+						frame = 0;
+					}
+					animationState = CROUCH;
 				}
 				else
 				{
-					animationState = DOUBLE_JUMP;
+					if (animationState != SOFT_LAND && animationState != HARD_LAND)
+					{
+						if (animationState != IDLE)
+						{
+							frame = 0;
+						}
+						animationState = IDLE;
+					}
 				}
 			}
 		}
 	}
 	else
 	{
-		if (isGrounded)
+		if (ySpeed >= 0)
 		{
-			if (jumpSquatTimer > 0)
+			if ((buttons[RIGHT] && direction > 0) || (buttons[LEFT] && direction < 0))
 			{
-				animationState = JUMPSQUAT;
+				if (animationState != FORWARD_FALL)
+				{
+					frame = 0;
+				}
+				animationState = FORWARD_FALL;
 			}
-			else if (xSpeed * direction > 0)
+			else if ((buttons[RIGHT] && direction < 0) || (buttons[LEFT] && direction > 0))
 			{
-				if ((buttons[RIGHT] && xSpeed > 0) || (buttons[LEFT] && xSpeed < 0))
+				if (animationState != BACK_FALL)
 				{
-					if (isRunning)
-					{
-						animationState = RUN;
-					}
-					else
-					{
-						animationState = WALK;
-					}
+					frame = 0;
 				}
-				else
-				{
-					if (isRunning)
-					{
-						animationState = SLIDE;
-					}
-				}
+				animationState = BACK_FALL;
 			}
-			else
+			else if (!buttons[RIGHT] && !buttons[LEFT])
 			{
-				if (isRunning)
+				if (animationState != FALL)
 				{
-					animationState = RUN_TURN;
+					frame = 0;
 				}
-				else
-				{
-					animationState = WALK_TURN;
-				}
-			}
-		}
-		else
-		{
-			if (ySpeed < 0)
-			{
-				if (canDoubleJump)
-				{
-					if (xSpeed * direction > 0)
-					{
-						animationState = JUMP;
-					}
-					else if (xSpeed * direction < 0)
-					{
-						animationState = BACK_JUMP;
-					}
-				}
-				else
-				{
-					if (xSpeed * direction > 0)
-					{
-						animationState = DOUBLE_JUMP;
-					}
-					else if (xSpeed * direction < 0)
-					{
-						animationState = BACK_DOUBLE_JUMP;
-					}
-				}
-			}
-			else
-			{
 				animationState = FALL;
 			}
 		}
 	}
-	
-	frame++;
-	if (frame > 59)
+
+	if (frame == animationLengths[animationState] / 2)
 	{
-		frame = 0;
+		switch (animationState)
+		{
+			case WALK_TURN:
+			{
+				direction = -direction;
+				break;
+			}
+		}
+	}
+
+	else if (frame > animationLengths[animationState])
+	{
+		switch (animationState)
+		{
+			case WALK_TURN:
+			{
+				frame = 0;
+				if (buttons[LEFT] || buttons[RIGHT])
+				{
+					animationState = WALK;
+				}
+				else
+				{
+					animationState = IDLE;
+				}
+				break;
+			}
+			case CROUCH:
+			{
+				frame = 59;
+				break;
+			}
+			case RUN_TURN:
+			{
+				frame = 0;
+				if (buttons[LEFT] || buttons[RIGHT])
+				{
+					animationState = RUN;
+				}
+				else
+				{
+					animationState = IDLE;
+				}
+				break;
+			}
+			case SLIDE:
+			{
+				frame = 0;
+				animationState = IDLE;
+				break;
+			}
+			case FALL:
+			{
+				frame = 59;
+				break;
+			}
+			case FORWARD_FALL:
+			{
+				frame = 59;
+				break;
+			}
+			case BACK_FALL:
+			{
+				frame = 59;
+				break;
+			}
+			case SOFT_LAND:
+			{
+				frame = 0;
+				animationState = IDLE;
+				break;
+			}
+			case HARD_LAND:
+			{
+				frame = 0;
+				animationState = IDLE;
+				break;
+			}
+			default:
+			{
+				frame = 0;
+				break;
+			}
+		}
 	}
 }

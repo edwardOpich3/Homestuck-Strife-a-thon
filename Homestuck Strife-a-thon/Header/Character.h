@@ -52,6 +52,7 @@ public:
 	// Animation Variables
 	int mirrorOffset;
 	int animationState;
+	int animationLengths[17];
 	int frame;
 
 	Character(ALLEGRO_BITMAP *sprite);
@@ -59,11 +60,11 @@ public:
 	virtual ~Character();
 
 	virtual void Move(int vector);
-	virtual void Jump(bool buttons[6], int Z);
+	virtual void Jump(bool buttons[6], int Z, int LEFT, int RIGHT);
 	virtual void FastFall();
 	virtual void Run(bool current, bool previous);
 	virtual void Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int levelHeight);
-	virtual void Update(bool buttons[6], int Z);
+	virtual void Update(bool buttons[6], int Z, int LEFT, int RIGHT);
 	virtual void Animate(bool buttons[6], int LEFT, int RIGHT);
 };
 
