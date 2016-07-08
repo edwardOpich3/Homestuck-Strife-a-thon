@@ -317,8 +317,8 @@ void Game::Update()
 					{
 						johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
 						roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
-						player1 = new John(johnSpr);
-						player2 = new John(johnSpr);
+						player1 = new John(johnSpr, 128, 128);
+						player2 = new John(johnSpr, 896 - 256, 128);
 						soundtrack = al_load_sample("Audio/Music/john.ogg");
 						BGM = al_create_sample_instance(soundtrack);
 						break;
@@ -327,8 +327,8 @@ void Game::Update()
 					{
 						johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
 						roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
-						player1 = new Rose(roseSpr);
-						player2 = new John(johnSpr);
+						player1 = new Rose(roseSpr, 128, 128);
+						player2 = new John(johnSpr, 896 - 256, 128);
 						soundtrack = al_load_sample("Audio/Music/rose.ogg");
 						BGM = al_create_sample_instance(soundtrack);
 						break;

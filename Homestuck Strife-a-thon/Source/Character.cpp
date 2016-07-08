@@ -2,11 +2,13 @@
 
 
 
-Character::Character(ALLEGRO_BITMAP *sprite)
+Character::Character(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY)
 {
 	// Set the necessary base values to their starting values
-	Character::x = 128;
-	Character::y = 128;
+	Character::spawnX = spawnX;
+	Character::spawnY = spawnY;
+	Character::x = spawnX;
+	Character::y = spawnY;
 	Character::width = 256;
 	Character::height = 256;
 	Character::sprite = sprite;
@@ -17,17 +19,13 @@ Character::Character(ALLEGRO_BITMAP *sprite)
 	runTimer = 0;
 	isGrounded = false;
 	isAerial = true;
-	canDoubleJump = false;
+	isHanging = false;
+	canDoubleJump = true;
 	isFastFalling = false;
 	isCrouching = false;
 	isRunning = false;
 	frame = 0;
 	animationState = FALL;
-	// Later on this will be hard coded for each character (UGH)
-	for (int i = 0; i < 17; i++)
-	{
-		animationLengths[i] = 60;
-	}
 }
 
 Character::Character()
@@ -83,6 +81,24 @@ void Character::Move(int vector)
 		// Increase their speed by the aerial acceleration
 		xSpeed += vector * airAcc;
 	}
+
+	else if (isHanging)
+	{
+		if (vector == direction)
+		{
+			x += direction * collisionBox.width;
+			y -= collisionBox.height;
+			isGrounded = true;
+			isHanging = false;
+			frame = 0;
+		}
+		else
+		{
+			isAerial = true;
+			isHanging = false;
+			frame = 0;
+		}
+	}
 }
 
 // The player has hit the jump button, either put them into jumpsquat, make them double jump, or do nothing depending on the circumstances
@@ -101,7 +117,7 @@ void Character::Jump(bool buttons[6], int Z, int LEFT, int RIGHT)
 		}
 	}
 	// Otherwise if they can double jump (implied to be in the air)
-	else if (canDoubleJump && animationState != HARD_LAND)
+	else if (canDoubleJump && animationState != HARD_LAND && isAerial)
 	{
 		// Set their ySpeed to that of the jump speed
 		ySpeed = jump;
@@ -120,17 +136,36 @@ void Character::Jump(bool buttons[6], int Z, int LEFT, int RIGHT)
 			animationState = BACK_DOUBLE_JUMP;
 		}
 	}
+
+	// Otherwise if they're hanging from a ledge
+	else if (isHanging)
+	{
+		ySpeed = jump;
+		x += 4 * -direction;
+		isAerial = true;
+		isHanging = false;
+		buttons[Z] = false;
+		frame = 0;
+	}
 }
 
 // The player has hit the down button, for now this will be exclusively for fastfalling but later this should be appended for ducking as well
 void Character::FastFall()
 {
 	// If the player is falling and isn't already holding the down button
-	if (ySpeed > 0 && !isCrouching)
+	if (ySpeed > 0 && !isCrouching && isAerial)
 	{
 		// They are now fastfalling; adjust their yspeed accordingly
 		isFastFalling = true;
 		ySpeed = fastfallSpeed;
+	}
+	else if (isHanging)
+	{
+		isFastFalling = true;
+		ySpeed = fastfallSpeed;
+		isHanging = false;
+		isAerial = true;
+		x += 4 * -direction;
 	}
 	// They are now considered to be holding the down button
 	isCrouching = true;
@@ -330,12 +365,28 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 
 				if (a > 0)
 				{
-					x = leftWall - collisionBox.x + 1;
-					if (xSpeed < 0)
+					if (g == 0)
 					{
-						xSpeed = 0;
+						x = leftWall - collisionBox.x + 1;
+						if (xSpeed < 0)
+						{
+							xSpeed = 0;
+						}
+						collision = true;
 					}
-					collision = true;
+					else if (g == 1 && !isHanging)
+					{
+						x = leftWall - collisionBox.x + 1;
+						xSpeed = 0;
+						y = y + collisionBox.height - 20;
+						ySpeed = 0;
+						collision = true;
+						direction = -1;
+						canDoubleJump = true;
+						isAerial = false;
+						isFastFalling = false;
+						isHanging = true;
+					}
 				}
 			}
 		}
@@ -355,12 +406,28 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 
 				if (a > 0)
 				{
-					x = rightWall - collisionBox.x - collisionBox.width - 1;
-					if (xSpeed > 0)
+					if (g == 0)
 					{
-						xSpeed = 0;
+						x = rightWall - collisionBox.x - collisionBox.width - 1;
+						if (xSpeed > 0)
+						{
+							xSpeed = 0;
+						}
+						collision = true;
 					}
-					collision = true;
+					else if (g == 1 && !isHanging)
+					{
+						x = rightWall - collisionBox.x - collisionBox.width - 1;
+						xSpeed = 0;
+						y = y + collisionBox.height - 20;
+						ySpeed = 0;
+						collision = true;
+						direction = 1;
+						canDoubleJump = true;
+						isAerial = false;
+						isFastFalling = false;
+						isHanging = true;
+					}
 				}
 			}
 		}
@@ -368,53 +435,102 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		// Then we check the air above us
 		// Left Sensor
 		int leftAir, rightAir;
+		collision = false;
 		r = 0;
 		g = 0;
 		b = 0;
 		a = 0;
 		for (leftAir = y + collisionBox.y + (collisionBox.height / 4); leftAir > y + collisionBox.y - 16; leftAir--)
 		{
-			if (leftAir > 0 && leftAir < levelHeight && x + collisionBox.x > 0 && x + collisionBox.x < levelWidth)
+			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftAir);
-				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-				if (a > 0 && leftAir > y + collisionBox.y)
+				if (leftAir > 0 && leftAir < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
 				{
-					y = leftAir - collisionBox.y;
-					if (ySpeed < 0)
+					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, leftAir);
+					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+					if (a > 0 && leftAir > y + collisionBox.y)
 					{
-						ySpeed = 0;
+						if (g == 0)
+						{
+							y = leftAir - collisionBox.y;
+							if (ySpeed < 0)
+							{
+								ySpeed = 0;
+							}
+							collision = true;
+							break;
+						}
+						else if (g == 1 && !isHanging)
+						{
+							y = leftAir - collisionBox.y;
+							ySpeed = 0;
+							x = x + i + 1;
+							xSpeed = 0;
+							collision = true;
+							direction = -1;
+							canDoubleJump = true;
+							isAerial = false;
+							isFastFalling = false;
+							isHanging = true;
+							break;
+						}
 					}
-					break;
 				}
+			}
+			if (collision)
+			{
+				break;
 			}
 		}
 
 		// Right Sensor
+		collision = false;
 		r = 0;
 		g = 0;
 		b = 0;
 		a = 0;
 		for (rightAir = y + collisionBox.y + (collisionBox.height / 4); rightAir > y + collisionBox.y - 16; rightAir--)
 		{
-			if (rightAir > 0 && rightAir < levelHeight && x + collisionBox.x + collisionBox.width > 0 && x + collisionBox.x + collisionBox.width < levelWidth)
+			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightAir);
-				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-				if (a > 0 && rightAir > y + collisionBox.y)
+				if (rightAir > 0 && rightAir < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
 				{
-					if (rightAir > leftAir)
+					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, rightAir);
+					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+
+					if (a > 0 && rightAir > y + collisionBox.y && rightAir > leftAir)
 					{
-						y = rightAir - collisionBox.y;
-						if (ySpeed < 0)
+						if (g == 0)
 						{
+							y = rightAir - collisionBox.y;
+							if (ySpeed < 0)
+							{
+								ySpeed = 0;
+							}
+							collision = true;
+							break;
+						}
+						else if (g == 1 && !isHanging)
+						{
+							y = rightAir - collisionBox.y;
 							ySpeed = 0;
+							x = x - i - 1;
+							xSpeed = 0;
+							collision = true;
+							direction = 1;
+							canDoubleJump = true;
+							isAerial = false;
+							isFastFalling = false;
+							isHanging = true;
+							break;
 						}
 					}
-					break;
 				}
+			}
+			if (collision)
+			{
+				break;
 			}
 		}
 
@@ -503,6 +619,26 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		
 	}
 	al_unlock_bitmap(*collisionBitmap);
+
+	if (x + collisionBox.x + collisionBox.width < 0 || x + collisionBox.x > levelWidth || y + collisionBox.y > levelHeight || y + collisionBox.y + collisionBox.height < 0)
+	{
+		x = spawnX;
+		y = spawnY;
+		direction = 1;
+		xSpeed = 0;
+		ySpeed = 0;
+		jumpSquatTimer = 0;
+		runTimer = 0;
+		isGrounded = false;
+		isAerial = true;
+		isHanging = false;
+		canDoubleJump = true;
+		isFastFalling = false;
+		isCrouching = false;
+		isRunning = false;
+		frame = 0;
+		animationState = FALL;
+	}
 }
 
 void Character::Update(bool buttons[6], int Z, int LEFT, int RIGHT)
@@ -744,7 +880,7 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT)
 		}
 	}
 
-	else if (frame > animationLengths[animationState])
+	else if (frame >= animationLengths[animationState])
 	{
 		switch (animationState)
 		{

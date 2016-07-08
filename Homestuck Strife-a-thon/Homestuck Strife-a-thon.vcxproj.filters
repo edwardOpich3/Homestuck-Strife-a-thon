@@ -203,6 +203,48 @@
     <Image Include="Graphics\Levels\0 - LOWAS\tiles\7.png">
       <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
     </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\8.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\9.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\10.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\11.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\12.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\13.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\14.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_8.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_9.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_10.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_11.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_12.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_13.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_14.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Levels\tiles32\tiles32_0.tile">
@@ -326,6 +368,9 @@
       <Filter>Resource Files\Levels</Filter>
     </None>
     <None Include="Levels\bumpTest.lvl">
+      <Filter>Resource Files\Levels</Filter>
+    </None>
+    <None Include="Levels\Battlefield.lvl">
       <Filter>Resource Files\Levels</Filter>
     </None>
   </ItemGroup>

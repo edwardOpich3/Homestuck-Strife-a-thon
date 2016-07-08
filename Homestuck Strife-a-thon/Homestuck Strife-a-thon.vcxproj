@@ -50,6 +50,21 @@
     <Image Include="Graphics\Levels\0 - LOWAS\tiles\1.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\10.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\11.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\12.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\13.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\14.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="Graphics\Levels\0 - LOWAS\tiles\2.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
@@ -66,6 +81,12 @@
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Graphics\Levels\0 - LOWAS\tiles\7.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\8.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\9.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Graphics\Menu\cursor.png">
@@ -92,6 +113,21 @@
     <Image Include="Levels\tiles16\tiles16_1.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Levels\tiles16\tiles16_10.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_11.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_12.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_13.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_14.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="Levels\tiles16\tiles16_2.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
@@ -108,6 +144,12 @@
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Levels\tiles16\tiles16_7.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_8.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_9.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
   </ItemGroup>
@@ -128,6 +170,9 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Audio\Music\title.ogg">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\Battlefield.lvl">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Levels\bumpTest.lvl">

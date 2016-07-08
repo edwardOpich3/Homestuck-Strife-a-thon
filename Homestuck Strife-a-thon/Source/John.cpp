@@ -2,11 +2,11 @@
 
 
 
-John::John(ALLEGRO_BITMAP *sprite) : Character(sprite)
+John::John(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY) : Character(sprite, spawnX, spawnY)
 {
 	collisionBox = BoundingBox(66, 73, 87, 115);
 	walkSpeed = 3;
-	runSpeed = 6;
+	runSpeed = 7;
 	jumpSquat = 6;
 	grndAcc = 1.0;
 	runAcc = 1.5;
@@ -18,7 +18,7 @@ John::John(ALLEGRO_BITMAP *sprite) : Character(sprite)
 	airDrag = 0.05;
 	airAcc = 0.5;
 	mass = 20;
-	airSpeed = 4;
+	airSpeed = 5;
 	fallSpeed = 12;
 	fastfallSpeed = 14;
 
@@ -26,9 +26,9 @@ John::John(ALLEGRO_BITMAP *sprite) : Character(sprite)
 
 	// Set the frame data
 	animationLengths[IDLE] = 60;
-	animationLengths[WALK_TURN] = 5;
+	animationLengths[WALK_TURN] = 6;
 	animationLengths[WALK] = 60;
-	animationLengths[CROUCH] = 5;
+	animationLengths[CROUCH] = 6;
 	animationLengths[RUN] = 60;
 	animationLengths[RUN_TURN] = 15;
 	animationLengths[SLIDE] = 30;
@@ -40,8 +40,8 @@ John::John(ALLEGRO_BITMAP *sprite) : Character(sprite)
 	animationLengths[FALL] = 60;
 	animationLengths[FORWARD_FALL] = 60;
 	animationLengths[BACK_FALL] = 60;
-	animationLengths[SOFT_LAND] = 5;
-	animationLengths[HARD_LAND] = 5;
+	animationLengths[SOFT_LAND] = 6;
+	animationLengths[HARD_LAND] = 6;
 }
 
 John::John()

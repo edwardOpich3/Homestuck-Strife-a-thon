@@ -2,7 +2,7 @@
 
 
 
-Rose::Rose(ALLEGRO_BITMAP *sprite) : Character(sprite)
+Rose::Rose(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY) : Character(sprite, spawnX, spawnY)
 {
 	collisionBox = BoundingBox(74, 7, 48, 116);
 	walkSpeed = 4;

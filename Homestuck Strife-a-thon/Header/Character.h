@@ -41,6 +41,7 @@ public:
 	// Flags
 	bool isGrounded;
 	bool isAerial;
+	bool isHanging;
 	bool canDoubleJump;
 	bool isFastFalling;
 	bool isCrouching;
@@ -55,7 +56,11 @@ public:
 	int animationLengths[17];
 	int frame;
 
-	Character(ALLEGRO_BITMAP *sprite);
+	// Stage related
+	int spawnX;
+	int spawnY;
+
+	Character(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY);
 	Character();
 	virtual ~Character();
 
