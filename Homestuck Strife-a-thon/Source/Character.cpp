@@ -17,6 +17,7 @@ Character::Character(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY)
 	ySpeed = 0;
 	jumpSquatTimer = 0;
 	runTimer = 0;
+	crouchTimer = 0;
 	isGrounded = false;
 	isAerial = true;
 	isHanging = false;
@@ -150,16 +151,16 @@ void Character::Jump(bool buttons[6], int Z, int LEFT, int RIGHT)
 }
 
 // The player has hit the down button, for now this will be exclusively for fastfalling but later this should be appended for ducking as well
-void Character::FastFall()
+void Character::FastFall(bool current, bool previous)
 {
 	// If the player is falling and isn't already holding the down button
-	if (ySpeed > 0 && !isCrouching && isAerial)
+	if (ySpeed > 0 && (current && !previous) && isAerial)
 	{
 		// They are now fastfalling; adjust their yspeed accordingly
 		isFastFalling = true;
 		ySpeed = fastfallSpeed;
 	}
-	else if (isHanging)
+	else if (isHanging && current)
 	{
 		isFastFalling = true;
 		ySpeed = fastfallSpeed;
@@ -168,7 +169,18 @@ void Character::FastFall()
 		x += 4 * -direction;
 	}
 	// They are now considered to be holding the down button
-	isCrouching = true;
+	if (current)
+	{
+		if (!previous && crouchTimer > 0)
+		{
+			isCrouching = true;
+		}
+		crouchTimer = 10;
+	}
+	else if (previous)
+	{
+		crouchTimer = 10;
+	}
 }
 
 void Character::Run(bool current, bool previous)
@@ -190,7 +202,7 @@ void Character::Run(bool current, bool previous)
 	}
 }
 
-void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int levelHeight)
+void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int levelHeight, bool DOWN)
 {
 	al_lock_bitmap(*collisionBitmap, al_get_bitmap_format(*collisionBitmap), ALLEGRO_LOCK_READONLY);
 	ALLEGRO_COLOR levelPixel;
@@ -258,37 +270,31 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		a = 0;
 		for (leftGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < y + collisionBox.y + collisionBox.height + 16; leftGround++)
 		{
-			if (leftGround <= y + collisionBox.y + collisionBox.height)
+			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				for (int i = collisionBox.width / 2; i >= 0; i--)
+				if (leftGround > 0 && leftGround < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
 				{
-					if (leftGround > 0 && leftGround < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
-					{
-						levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, leftGround);
-						al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, leftGround);
+					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
-						if (a > 0)
+					if (a > 0)
+					{
+						if (g == 0 || g == 1)
+						{
+							collision = true;
+							break;
+						}
+						else if (g == 2 && !isCrouching)
 						{
 							collision = true;
 							break;
 						}
 					}
 				}
-				if (collision)
-				{
-					break;
-				}
 			}
-			else if (leftGround > 0 && leftGround < levelHeight && x + collisionBox.x > 0 && x + collisionBox.x < levelWidth)
+			if (collision)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x, leftGround);
-				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-				if (a > 0)
-				{
-					collision = true;
-					break;
-				}
+				break;
 			}
 		}
 
@@ -299,46 +305,40 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		a = 0;
 		for (rightGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < y + collisionBox.y + collisionBox.height + 16; rightGround++)
 		{
-			if (rightGround <= y + collisionBox.y + collisionBox.height)
+			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				for (int i = collisionBox.width / 2; i >= 0; i--)
+				if (rightGround > 0 && rightGround < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
 				{
-					if (rightGround > 0 && rightGround < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
-					{
-						levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, rightGround);
-						al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, rightGround);
+					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
-						if (a > 0)
+					if (a > 0)
+					{
+						if (g == 0 || g == 1)
+						{
+							collision = true;
+							break;
+						}
+						else if (g == 2 && !isCrouching)
 						{
 							collision = true;
 							break;
 						}
 					}
 				}
-				if (a > 0)
-				{
-					break;
-				}
 			}
-			else if (rightGround > 0 && rightGround < levelHeight && x + collisionBox.x + collisionBox.width > 0 && x + collisionBox.x + collisionBox.width < levelWidth)
+			if (a > 0)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width, rightGround);
-				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-
-				if (a > 0)
-				{
-					collision = true;
-					break;
-				}
+				break;
 			}
 		}
-
-		if (!collision)
+		
+		if(!collision)
 		{
 			isGrounded = false;
 			isAerial = true;
-		}
-		else if(collision)
+		}	
+		else if (collision)
 		{
 			if (leftGround <= rightGround)
 			{
@@ -553,8 +553,16 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 
 					if (a > 0 && ySpeed > 0)
 					{
-						collision = true;
-						break;
+						if (g == 0 || g == 1)
+						{
+							collision = true;
+							break;
+						}
+						else if (g == 2 && !DOWN)
+						{
+							collision = true;
+							break;
+						}
 					}
 				}
 			}
@@ -580,8 +588,16 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 
 					if (a > 0 && ySpeed > 0)
 					{
-						collision = true;
-						break;
+						if (g == 0 || g == 1)
+						{
+							collision = true;
+							break;
+						}
+						else if (g == 2 && !DOWN)
+						{
+							collision = true;
+							break;
+						}
 					}
 				}
 			}
@@ -675,6 +691,11 @@ void Character::Update(bool buttons[6], int Z, int LEFT, int RIGHT)
 	if (runTimer > 0)
 	{
 		runTimer--;
+	}
+
+	if (crouchTimer > 0)
+	{
+		crouchTimer--;
 	}
 
 	if (isGrounded)
@@ -772,7 +793,7 @@ void Character::Update(bool buttons[6], int Z, int LEFT, int RIGHT)
 	y += ySpeed;
 }
 
-void Character::Animate(bool buttons[6], int LEFT, int RIGHT)
+void Character::Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN)
 {
 	frame++;
 
@@ -815,7 +836,7 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT)
 					}
 					animationState = SLIDE;
 				}
-				else if (isCrouching)
+				else if (buttons[DOWN])
 				{
 					if (animationState != CROUCH)
 					{

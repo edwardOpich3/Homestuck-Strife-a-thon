@@ -37,6 +37,7 @@ public:
 	// Timers
 	int jumpSquatTimer;
 	int runTimer;
+	int crouchTimer;
 
 	// Flags
 	bool isGrounded;
@@ -66,10 +67,10 @@ public:
 
 	virtual void Move(int vector);
 	virtual void Jump(bool buttons[6], int Z, int LEFT, int RIGHT);
-	virtual void FastFall();
+	virtual void FastFall(bool current, bool previous);
 	virtual void Run(bool current, bool previous);
-	virtual void Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int levelHeight);
+	virtual void Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int levelHeight, bool DOWN);
 	virtual void Update(bool buttons[6], int Z, int LEFT, int RIGHT);
-	virtual void Animate(bool buttons[6], int LEFT, int RIGHT);
+	virtual void Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN);
 };
 

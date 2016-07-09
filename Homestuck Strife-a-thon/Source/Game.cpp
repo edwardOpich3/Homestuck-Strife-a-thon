@@ -275,7 +275,7 @@ void Game::Update()
 				BGM = al_create_sample_instance(soundtrack);
 				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
-				al_play_sample_instance(BGM);
+				//al_play_sample_instance(BGM);
 			}
 			if (buttons[ENTER])
 			{
@@ -293,7 +293,7 @@ void Game::Update()
 				BGM = al_create_sample_instance(soundtrack);
 				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
-				al_play_sample_instance(BGM);
+				//al_play_sample_instance(BGM);
 
 				currentState = MENU;
 			}
@@ -338,7 +338,7 @@ void Game::Update()
 				player2->direction = -1;
 				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
-				al_play_sample_instance(BGM);
+				//al_play_sample_instance(BGM);
 				currentState = GAME;
 			}
 			if (buttons[UP])
@@ -381,7 +381,7 @@ void Game::Update()
 			}
 			if (buttons[DOWN])
 			{
-				player1->FastFall();
+				player1->FastFall(buttons[DOWN], buttonsPrev[DOWN]);
 			}
 			if (buttons[Z])
 			{
@@ -404,24 +404,26 @@ void Game::Update()
 				{
 					player1->isCrouching = false;
 				}
+				player1->FastFall(buttons[DOWN], buttonsPrev[DOWN]);
 			}
 
 			// Insert interaction calculations here->
 
 			// Insert position updates here->
 			player1->Update(buttons, Z, LEFT, RIGHT);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
-			player1->Animate(buttons, LEFT, RIGHT);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player1->Animate(buttons, LEFT, RIGHT, DOWN);
 			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
-			/*player1->Collision(&collisionBitmap, levelWidth, levelHeight);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight);*/
+			/*player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);*/
 
 			player2->Update(buttons, Z, LEFT, RIGHT);
-			player2->Collision(&collisionBitmap, levelWidth, levelHeight);
+			player2->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player2->Animate(buttons, LEFT, RIGHT, DOWN);
 
 			break;
 		}
