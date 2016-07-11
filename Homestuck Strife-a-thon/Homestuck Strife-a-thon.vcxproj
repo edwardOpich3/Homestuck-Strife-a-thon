@@ -65,7 +65,28 @@
     <Image Include="Graphics\Levels\0 - LOWAS\tiles\14.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\15.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\16.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\17.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\18.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\19.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="Graphics\Levels\0 - LOWAS\tiles\2.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\20.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\21.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Graphics\Levels\0 - LOWAS\tiles\3.png">
@@ -128,7 +149,28 @@
     <Image Include="Levels\tiles16\tiles16_14.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Levels\tiles16\tiles16_15.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_16.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_17.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_18.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_19.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="Levels\tiles16\tiles16_2.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_20.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_21.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Levels\tiles16\tiles16_3.png">
@@ -181,6 +223,12 @@
     <None Include="Levels\ceilingTest.lvl">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Levels\ceilingTest2.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\ceilingTest3.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Levels\flatTest.lvl">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -200,6 +248,42 @@
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Levels\tiles128\tiles128_1.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_10.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_11.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_12.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_13.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_2.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_3.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_4.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_5.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_6.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_7.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_8.tile">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\tiles128\tiles128_9.tile">
       <DeploymentContent>true</DeploymentContent>
     </None>
     <None Include="Levels\tiles32\tiles32_0.tile">

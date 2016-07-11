@@ -245,6 +245,48 @@
     <Image Include="Levels\tiles16\tiles16_14.png">
       <Filter>Resource Files\Levels\tiles16</Filter>
     </Image>
+    <Image Include="Levels\tiles16\tiles16_15.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_16.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_17.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_18.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_19.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_20.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Levels\tiles16\tiles16_21.png">
+      <Filter>Resource Files\Levels\tiles16</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\15.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\16.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\17.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\18.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\19.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\20.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
+    <Image Include="Graphics\Levels\0 - LOWAS\tiles\21.png">
+      <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Levels\tiles32\tiles32_0.tile">
@@ -371,6 +413,48 @@
       <Filter>Resource Files\Levels</Filter>
     </None>
     <None Include="Levels\Battlefield.lvl">
+      <Filter>Resource Files\Levels</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_2.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_3.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_4.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_5.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_6.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_7.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_8.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_9.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_10.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_11.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_12.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\tiles128\tiles128_13.tile">
+      <Filter>Resource Files\Levels\tiles128</Filter>
+    </None>
+    <None Include="Levels\ceilingTest2.lvl">
+      <Filter>Resource Files\Levels</Filter>
+    </None>
+    <None Include="Levels\ceilingTest3.lvl">
       <Filter>Resource Files\Levels</Filter>
     </None>
   </ItemGroup>
