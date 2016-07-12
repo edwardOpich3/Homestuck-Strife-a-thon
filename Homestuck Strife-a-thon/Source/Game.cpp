@@ -506,7 +506,7 @@ void Game::Draw()
 
 			// DEBUG!
 			//al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%i %i %i", player1->runTimer, buttonsPrev[RIGHT], player1->isRunning);
-			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f", player1->ySpeed);
+			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f, %0.1f", player1->xSpeed, player1->ySpeed);
 
 			al_flip_display();
 			break;

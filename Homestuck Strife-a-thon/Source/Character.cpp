@@ -432,6 +432,77 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 			}
 		}
 
+		// Sloped ceiling detection goes here
+		// Left
+		collision = false;
+		r = 0;
+		g = 0;
+		b = 0;
+		a = 0;
+		for (int i = collisionBox.width / 2; i >= 0; i--)
+		{
+			if (y + collisionBox.y > 0 && y + collisionBox.y < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
+			{
+				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, y + collisionBox.y);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+				if (a > 0)
+				{
+					if (r < 182 || r > 202)
+					{
+						x = x + i;
+						if (ySpeed < 0)
+						{
+							if (xSpeed < 0)
+							{
+								xSpeed = cos((ALLEGRO_PI * float(r)) / 128) * -ySpeed;
+							}
+							else
+							{
+								xSpeed += cos((ALLEGRO_PI * float(r)) / 128) * -ySpeed;
+							}
+						}
+						collision = true;
+						break;
+					}
+				}
+			}
+		}
+
+		// Right
+		collision = false;
+		r = 0;
+		g = 0;
+		b = 0;
+		a = 0;
+		for (int i = collisionBox.width / 2; i >= 0; i--)
+		{
+			if (y + collisionBox.y > 0 && y + collisionBox.y < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
+			{
+				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, y + collisionBox.y);
+				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
+				if (a > 0)
+				{
+					if (r < 182 || r > 202)
+					{
+						x = x - i;
+						if (ySpeed < 0)
+						{
+							if (xSpeed > 0)
+							{
+								xSpeed = cos((ALLEGRO_PI * float(r)) / 128) * -ySpeed;
+							}
+							else
+							{
+								xSpeed += cos((ALLEGRO_PI * float(r)) / 128) * -ySpeed;
+							}
+						}
+						collision = true;
+						break;
+					}
+				}
+			}
+		}
+
 		// Then we check the air above us
 		// Left Sensor
 		int leftAir, rightAir;
@@ -451,7 +522,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 
 					if (a > 0 && leftAir > y + collisionBox.y)
 					{
-						if (g == 0)
+						if (g == 0 && !(r < 182 || r > 202))
 						{
 							y = leftAir - collisionBox.y;
 							if (ySpeed < 0)
@@ -501,7 +572,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 
 					if (a > 0 && rightAir > y + collisionBox.y && rightAir > leftAir)
 					{
-						if (g == 0)
+						if (g == 0 && !(r < 182 || r > 202))
 						{
 							y = rightAir - collisionBox.y;
 							if (ySpeed < 0)
