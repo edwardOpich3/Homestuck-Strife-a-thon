@@ -9,7 +9,8 @@ class Character
 public:
 	BoundingBox collisionBox;
 	ALLEGRO_BITMAP *sprite;
-	enum ANIMATION_STATES { IDLE, WALK_TURN, WALK, CROUCH, RUN, RUN_TURN, SLIDE, JUMPSQUAT, JUMP, BACK_JUMP, DOUBLE_JUMP, BACK_DOUBLE_JUMP, FALL, FORWARD_FALL, BACK_FALL, SOFT_LAND, HARD_LAND };
+	enum ANIMATION_STATES { IDLE, WALK_TURN, WALK, CROUCH, RUN, RUN_TURN, SLIDE, JUMPSQUAT, JUMP, BACK_JUMP, DOUBLE_JUMP, BACK_DOUBLE_JUMP, FALL, FORWARD_FALL, BACK_FALL, SOFT_LAND, HARD_LAND,
+								LEDGE_GRAB, LEDGE_HOLD };
 
 	// Grounded Attributes
 	int walkSpeed;
@@ -54,7 +55,7 @@ public:
 	// Animation Variables
 	int mirrorOffset;
 	int animationState;
-	int animationLengths[17];
+	int animationLengths[19];
 	int frame;
 
 	// Stage related

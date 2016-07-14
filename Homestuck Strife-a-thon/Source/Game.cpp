@@ -494,11 +494,13 @@ void Game::Draw()
 			{
 				case 1:
 				{
+					//al_draw_bitmap_region(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, player2->x, player2->y, NULL);
 					al_draw_bitmap_region(player2->sprite, 0, 0, player2->width, player2->height, player2->x, player2->y, NULL);
 					break;
 				}
 				case -1:
 				{
+					//al_draw_bitmap_region(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, player2->x - player2->mirrorOffset, player2->y, ALLEGRO_FLIP_HORIZONTAL);
 					al_draw_bitmap_region(player2->sprite, 0, 0, player2->width, player2->height, player2->x - player2->mirrorOffset, player2->y, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}

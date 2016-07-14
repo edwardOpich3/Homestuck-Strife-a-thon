@@ -91,12 +91,14 @@ void Character::Move(int vector)
 			y -= collisionBox.height;
 			isGrounded = true;
 			isHanging = false;
+			animationState = IDLE;
 			frame = 0;
 		}
 		else
 		{
 			isAerial = true;
 			isHanging = false;
+			animationState = BACK_FALL;
 			frame = 0;
 		}
 	}
@@ -146,6 +148,7 @@ void Character::Jump(bool buttons[6], int Z, int LEFT, int RIGHT)
 		isAerial = true;
 		isHanging = false;
 		buttons[Z] = false;
+		animationState = JUMP;
 		frame = 0;
 	}
 }
@@ -167,6 +170,8 @@ void Character::FastFall(bool current, bool previous)
 		isHanging = false;
 		isAerial = true;
 		x += 4 * -direction;
+		animationState = FALL;
+		frame = 0;
 	}
 	// They are now considered to be holding the down button
 	if (current)
@@ -386,6 +391,8 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 						isAerial = false;
 						isFastFalling = false;
 						isHanging = true;
+						animationState = LEDGE_GRAB;
+						frame = 0;
 					}
 				}
 			}
@@ -427,6 +434,8 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 						isAerial = false;
 						isFastFalling = false;
 						isHanging = true;
+						animationState = LEDGE_GRAB;
+						frame = 0;
 					}
 				}
 			}
@@ -445,7 +454,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 			{
 				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, y + collisionBox.y);
 				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-				if (a > 0)
+				if (a > 0 && g != 2)
 				{
 					if (r < 182 || r > 202)
 					{
@@ -480,7 +489,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 			{
 				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, y + collisionBox.y);
 				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
-				if (a > 0)
+				if (a > 0 && g != 2)
 				{
 					if (r < 182 || r > 202)
 					{
@@ -506,6 +515,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		// Then we check the air above us
 		// Left Sensor
 		int leftAir, rightAir;
+		int finalAir = y;
 		collision = false;
 		r = 0;
 		g = 0;
@@ -522,15 +532,14 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 
 					if (a > 0 && leftAir > y + collisionBox.y)
 					{
-						if (g == 0 && !(r < 182 || r > 202))
+						if (g == 0 && !(r < 182 || r > 202) && !collision)
 						{
-							y = leftAir - collisionBox.y;
+							finalAir = leftAir - collisionBox.y;
 							if (ySpeed < 0)
 							{
 								ySpeed = 0;
 							}
 							collision = true;
-							break;
 						}
 						else if (g == 1 && !isHanging)
 						{
@@ -544,15 +553,21 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 							isAerial = false;
 							isFastFalling = false;
 							isHanging = true;
+							animationState = LEDGE_GRAB;
+							frame = 0;
 							break;
 						}
 					}
 				}
 			}
-			if (collision)
+			if (g == 1)
 			{
 				break;
 			}
+		}
+		if (finalAir != y && g == 0)
+		{
+			leftAir = finalAir;
 		}
 
 		// Right Sensor
@@ -572,15 +587,14 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 
 					if (a > 0 && rightAir > y + collisionBox.y && rightAir > leftAir)
 					{
-						if (g == 0 && !(r < 182 || r > 202))
+						if (g == 0 && !(r < 182 || r > 202) && !collision)
 						{
-							y = rightAir - collisionBox.y;
+							finalAir = rightAir - collisionBox.y;
 							if (ySpeed < 0)
 							{
 								ySpeed = 0;
 							}
 							collision = true;
-							break;
 						}
 						else if (g == 1 && !isHanging)
 						{
@@ -594,14 +608,27 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 							isAerial = false;
 							isFastFalling = false;
 							isHanging = true;
+							animationState = LEDGE_GRAB;
+							frame = 0;
 							break;
 						}
 					}
 				}
 			}
-			if (collision)
+			if (g == 1)
 			{
 				break;
+			}
+		}
+		if (finalAir != y && g == 0 && !isHanging)
+		{
+			if (finalAir > leftAir)
+			{
+				y = finalAir;
+			}
+			else
+			{
+				y = leftAir;
 			}
 		}
 
@@ -929,7 +956,7 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN)
 			}
 		}
 	}
-	else
+	else if(isAerial)
 	{
 		if (ySpeed >= 0)
 		{
@@ -1038,6 +1065,12 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN)
 			{
 				frame = 0;
 				animationState = IDLE;
+				break;
+			}
+			case LEDGE_GRAB:
+			{
+				frame = 0;
+				animationState = LEDGE_HOLD;
 				break;
 			}
 			default:
