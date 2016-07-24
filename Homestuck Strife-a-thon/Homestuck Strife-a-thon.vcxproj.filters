@@ -463,5 +463,11 @@
     <None Include="Levels\ceilingTest3.lvl">
       <Filter>Resource Files\Levels</Filter>
     </None>
+    <None Include="Levels\distanceTest.lvl">
+      <Filter>Resource Files\Levels</Filter>
+    </None>
+    <None Include="Levels\distanceTest2.lvl">
+      <Filter>Resource Files\Levels</Filter>
+    </None>
   </ItemGroup>
 </Project>

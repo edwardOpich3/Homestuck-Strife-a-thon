@@ -414,9 +414,17 @@ void Game::Update()
 			camera->CalculateDistance(player1->x + (player1->width / 2), player1->y + (player1->height / 2), player2->x + (player2->width / 2), player2->y + (player2->height / 2));
 			camera->Update(levelWidth, levelHeight);
 
+			// Collision time, boyo! That means that we need to draw a region of the collision bitmap to a new bitmap so we don't expend a shit-ton of time
+			// Implement the following when you feel like going through hell in refactoring your collision code
+			ALLEGRO_BITMAP* tempBitmap = al_create_bitmap(256, 256);
+			al_set_target_bitmap(tempBitmap);
+
+			al_draw_bitmap_region(collisionBitmap, player1->x, player1->y, 256, 256, 0, 0, NULL);
 			player1->Update(buttons, Z, LEFT, RIGHT);
+			// player1->Collision(&tempBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player1->Animate(buttons, LEFT, RIGHT, DOWN);
+
 			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
 			/*player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
@@ -425,10 +433,15 @@ void Game::Update()
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);*/
 
+			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
+
+			al_draw_bitmap_region(collisionBitmap, player2->x, player2->y, 256, 256, 0, 0, NULL);
 			player2->Update(buttons, Z, LEFT, RIGHT);
+			// player2->Collision(&tempBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player2->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player2->Animate(buttons, LEFT, RIGHT, DOWN);
 
+			al_destroy_bitmap(tempBitmap);
 			break;
 		}
 	}
@@ -479,7 +492,7 @@ void Game::Draw()
 		{
 			al_clear_to_color(al_map_rgb(128, 128, 128));
 
-			al_draw_scaled_bitmap(levelBitmap, 0, 0, levelWidth, levelHeight, -camera->x * width / camera->width, -camera->y * height / camera->height, levelWidth * width / camera->width, levelHeight * height / camera->height, NULL);
+			al_draw_scaled_bitmap(levelBitmap, camera->x, camera->y, camera->width, camera->height, 0, 0, width, height, NULL);
 
 			switch (player1->direction)
 			{

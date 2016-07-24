@@ -231,6 +231,12 @@
     <None Include="Levels\ceilingTest3.lvl">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Levels\distanceTest.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Levels\distanceTest2.lvl">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Levels\flatTest.lvl">
       <DeploymentContent>true</DeploymentContent>
     </None>

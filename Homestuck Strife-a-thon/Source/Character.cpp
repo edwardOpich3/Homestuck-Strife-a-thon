@@ -680,6 +680,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		// Finally, we check the ground below us
 		// Left Sensor
 		int leftGround, rightGround;
+		int angleBoost = 0;
 		collision = false;
 		r = 0;
 		g = 0;
@@ -699,11 +700,19 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 						if (g == 0 || g == 1)
 						{
 							collision = true;
+							if (r <= 128)
+							{
+								angleBoost = cos((ALLEGRO_PI * float(r)) / 128) * ySpeed;
+							}
 							break;
 						}
 						else if (g == 2 && !DOWN)
 						{
 							collision = true;
+							if (r <= 128)
+							{
+								angleBoost = cos((ALLEGRO_PI * float(r)) / 128) * ySpeed;
+							}
 							break;
 						}
 					}
@@ -765,15 +774,21 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 				animationState = SOFT_LAND;
 			}
 			frame = 0;
-			ySpeed = 0;
 			if (leftGround <= rightGround)
 			{
 				y = leftGround - (collisionBox.height + collisionBox.y);
+				xSpeed += angleBoost;
 			}
 			else if(rightGround < leftGround)
 			{
 				y = rightGround - (collisionBox.height + collisionBox.y);
+				if (r <= 128)
+				{
+					angleBoost = cos((ALLEGRO_PI * float(r)) / 128) * ySpeed;
+				}
+				xSpeed += angleBoost;
 			}
+			ySpeed = 0;
 		}
 		
 	}

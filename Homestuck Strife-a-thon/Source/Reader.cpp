@@ -117,7 +117,7 @@ void Reader::LoadLevel(std::vector<Tile> *level, std::vector<ALLEGRO_BITMAP*> *l
 
 	std::ifstream myStream;
 	unsigned char temp[4];
-	myStream.open("Levels/slopeTest3.lvl", myStream.binary | myStream.in);
+	myStream.open("Levels/Battlefield.lvl", myStream.binary | myStream.in);
 
 	myStream.read((char*)temp, 4);
 	*width = ReadInt(temp);

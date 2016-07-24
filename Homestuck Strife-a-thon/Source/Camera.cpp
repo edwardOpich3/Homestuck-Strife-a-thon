@@ -26,6 +26,8 @@ Camera::Camera(int x, int y, int width, int height)
 	yAcc = 0.5;
 	zxAcc = 0.5;
 	zyAcc = 0.375;
+
+	// NOTE: These must be in the ratio of 4:3 unless you want the game to look like shit!
 	minDistX = 128;
 	minDistY = 96;
 }
@@ -122,6 +124,9 @@ void Camera::Update(int levelWidth, int levelHeight)
 	width -= zxSpeed;
 	height -= zySpeed;*/
 
+	// Special note: As a rule of thumb, anything that is multiplied by width must be 3, and anything multiplied by height must be 4.
+	// The inverse goes for divisors; width must be 4, height must be 3.
+	// Otherwise the camera acts up.
 	if (abs(distanceX) > abs(distanceY))
 	{
 		width = abs(distanceX) * 4;
