@@ -42,7 +42,7 @@ Character::~Character()
 void Character::Move(int vector)
 {
 	// If the player is on the ground and isn't about to jump
-	if (isGrounded && jumpSquatTimer == 0 && animationState != HARD_LAND)
+	if (isGrounded && jumpSquatTimer == 0 && animationState != HARD_LAND && animationState != WALL_BONK)
 	{
 		// If they are running
 		if (isRunning)
@@ -83,18 +83,15 @@ void Character::Move(int vector)
 		xSpeed += vector * airAcc;
 	}
 
-	else if (isHanging)
+	else if (isHanging && animationState == LEDGE_HOLD)
 	{
-		if (vector == direction)
+		if (vector == direction && animationState != NORMAL_CLIMB)
 		{
-			x += direction * collisionBox.width;
-			y -= collisionBox.height;
-			isGrounded = true;
-			isHanging = false;
-			animationState = IDLE;
+			y -= collisionBox.height / 2;
+			animationState = NORMAL_CLIMB;
 			frame = 0;
 		}
-		else
+		else if(animationState != NORMAL_CLIMB)
 		{
 			isAerial = true;
 			isHanging = false;
@@ -141,14 +138,11 @@ void Character::Jump(bool buttons[6], int Z, int LEFT, int RIGHT)
 	}
 
 	// Otherwise if they're hanging from a ledge
-	else if (isHanging)
+	else if (isHanging && animationState == LEDGE_HOLD)
 	{
-		ySpeed = jump;
-		x += 4 * -direction;
-		isAerial = true;
-		isHanging = false;
+		y -= collisionBox.height / 2;
 		buttons[Z] = false;
-		animationState = JUMP;
+		animationState = JUMP_CLIMB;
 		frame = 0;
 	}
 }
@@ -163,7 +157,7 @@ void Character::FastFall(bool current, bool previous)
 		isFastFalling = true;
 		ySpeed = fastfallSpeed;
 	}
-	else if (isHanging && current)
+	else if (isHanging && current && animationState != LEDGE_GRAB)
 	{
 		isFastFalling = true;
 		ySpeed = fastfallSpeed;
@@ -234,6 +228,12 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 					if (xSpeed < 0)
 					{
 						xSpeed = 0;
+						if (isRunning && animationState != WALL_BONK)
+						{
+							isRunning = false;
+							animationState = WALL_BONK;
+							frame = 0;
+						}
 					}
 					collision = true;
 				}
@@ -259,6 +259,12 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 					if (xSpeed > 0)
 					{
 						xSpeed = 0;
+						if (isRunning && animationState != WALL_BONK)
+						{
+							isRunning = false;
+							animationState = WALL_BONK;
+							frame = 0;
+						}
 					}
 					collision = true;
 				}
@@ -289,11 +295,28 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 							collision = true;
 							break;
 						}
-						else if (g == 2 && !isCrouching)
+						else if (g == 2)
 						{
-							collision = true;
-							break;
+							if (!isCrouching)
+							{
+								collision = true;
+								break;
+							}
+							else if(animationState != THROUGH_PLATFORM)
+							{
+								animationState = THROUGH_PLATFORM;
+								frame = 0;
+								break;
+							}
 						}
+					}
+					else if (leftGround >= y + collisionBox.y + collisionBox.height + 15 && xSpeed == 0 && direction < 0 && animationState != CROUCH)
+					{
+						if (animationState != BALANCING)
+						{
+							frame = 0;
+						}
+						animationState = BALANCING;
 					}
 				}
 			}
@@ -324,11 +347,28 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 							collision = true;
 							break;
 						}
-						else if (g == 2 && !isCrouching)
+						else if (g == 2)
 						{
-							collision = true;
-							break;
+							if (!isCrouching)
+							{
+								collision = true;
+								break;
+							}
+							else if (animationState != THROUGH_PLATFORM)
+							{
+								animationState = THROUGH_PLATFORM;
+								frame = 0;
+								break;
+							}
 						}
+					}
+					else if (rightGround >= y + collisionBox.y + collisionBox.height + 15 && xSpeed == 0 && direction > 0 && animationState != CROUCH)
+					{
+						if (animationState != BALANCING)
+						{
+							frame = 0;
+						}
+						animationState = BALANCING;
 					}
 				}
 			}
@@ -342,6 +382,11 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		{
 			isGrounded = false;
 			isAerial = true;
+			if (isRunning && animationState != RUN_OFF)
+			{
+				animationState = RUN_OFF;
+				frame = 0;
+			}
 		}	
 		else if (collision)
 		{
@@ -372,7 +417,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 				{
 					if (g == 0)
 					{
-						x = leftWall - collisionBox.x + 1;
+						x = leftWall - collisionBox.x + 2;
 						if (xSpeed < 0)
 						{
 							xSpeed = 0;
@@ -545,7 +590,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 						{
 							y = leftAir - collisionBox.y;
 							ySpeed = 0;
-							x = x + i + 1;
+							x = x + i + 2;
 							xSpeed = 0;
 							collision = true;
 							direction = -1;
@@ -903,7 +948,7 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN)
 			{
 				if (isRunning)
 				{
-					if (animationState != RUN_TURN && animationState != HARD_LAND)
+					if (animationState != RUN_TURN && animationState != HARD_LAND && animationState != WALL_BONK)
 					{
 						if (animationState != RUN)
 						{
@@ -912,7 +957,7 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN)
 						animationState = RUN;
 					}
 				}
-				else if (animationState != WALK_TURN && animationState != HARD_LAND)
+				else if (animationState != WALK_TURN && animationState != HARD_LAND && animationState != WALL_BONK)
 				{
 					if (animationState != WALK)
 					{
@@ -944,7 +989,7 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN)
 				}
 				else
 				{
-					if (animationState != SOFT_LAND && animationState != HARD_LAND)
+					if (animationState != SOFT_LAND && animationState != HARD_LAND && animationState != BALANCING)
 					{
 						if (animationState != IDLE)
 						{
@@ -960,29 +1005,32 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN)
 	{
 		if (ySpeed >= 0)
 		{
-			if ((buttons[RIGHT] && direction > 0) || (buttons[LEFT] && direction < 0))
+			if (animationState != THROUGH_PLATFORM && animationState != RUN_OFF)
 			{
-				if (animationState != FORWARD_FALL)
+				if ((buttons[RIGHT] && direction > 0) || (buttons[LEFT] && direction < 0))
 				{
-					frame = 0;
+					if (animationState != FORWARD_FALL)
+					{
+						frame = 0;
+					}
+					animationState = FORWARD_FALL;
 				}
-				animationState = FORWARD_FALL;
-			}
-			else if ((buttons[RIGHT] && direction < 0) || (buttons[LEFT] && direction > 0))
-			{
-				if (animationState != BACK_FALL)
+				else if ((buttons[RIGHT] && direction < 0) || (buttons[LEFT] && direction > 0))
 				{
-					frame = 0;
+					if (animationState != BACK_FALL)
+					{
+						frame = 0;
+					}
+					animationState = BACK_FALL;
 				}
-				animationState = BACK_FALL;
-			}
-			else if (!buttons[RIGHT] && !buttons[LEFT])
-			{
-				if (animationState != FALL)
+				else if (!buttons[RIGHT] && !buttons[LEFT])
 				{
-					frame = 0;
+					if (animationState != FALL)
+					{
+						frame = 0;
+					}
+					animationState = FALL;
 				}
-				animationState = FALL;
 			}
 		}
 	}
@@ -994,6 +1042,21 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN)
 			case WALK_TURN:
 			{
 				direction = -direction;
+				break;
+			}
+			case NORMAL_CLIMB:
+			{
+				y -= (collisionBox.height / 2) + 1;
+				x += direction * collisionBox.width;
+				break;
+			}
+			case JUMP_CLIMB:
+			{
+				y -= (collisionBox.height / 2) + 1;
+				x += direction * collisionBox.width;
+				ySpeed = jump;
+				isAerial = true;
+				isHanging = false;
 				break;
 			}
 		}
@@ -1071,6 +1134,32 @@ void Character::Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN)
 			{
 				frame = 0;
 				animationState = LEDGE_HOLD;
+				break;
+			}
+			case NORMAL_CLIMB:
+			{
+				isGrounded = true;
+				isHanging = false;
+				frame = 0;
+				animationState = IDLE;
+				break;
+			}
+			case THROUGH_PLATFORM:
+			{
+				animationState = FALL;
+				frame = 0;
+				break;
+			}
+			case WALL_BONK:
+			{
+				animationState = IDLE;
+				frame = 0;
+				break;
+			}
+			case RUN_OFF:
+			{
+				animationState = FALL;
+				frame = 0;
 				break;
 			}
 			default:

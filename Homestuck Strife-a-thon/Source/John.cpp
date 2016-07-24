@@ -42,8 +42,14 @@ John::John(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY) : Character(sprite, s
 	animationLengths[BACK_FALL] = 60;
 	animationLengths[SOFT_LAND] = 6;
 	animationLengths[HARD_LAND] = 6;
-	animationLengths[LEDGE_GRAB] = 6;
+	animationLengths[LEDGE_GRAB] = 12;
 	animationLengths[LEDGE_HOLD] = 60;
+	animationLengths[NORMAL_CLIMB] = 60;
+	animationLengths[JUMP_CLIMB] = 60;
+	animationLengths[THROUGH_PLATFORM] = 15;
+	animationLengths[WALL_BONK] = 6;
+	animationLengths[RUN_OFF] = 60;
+	animationLengths[BALANCING] = 60;
 }
 
 John::John()

@@ -318,7 +318,7 @@ void Game::Update()
 						johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
 						roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
 						player1 = new John(johnSpr, 128, 128);
-						player2 = new John(johnSpr, 896 - 256, 128);
+						player2 = new John(johnSpr, 896 - 512, 128);
 						soundtrack = al_load_sample("Audio/Music/john.ogg");
 						BGM = al_create_sample_instance(soundtrack);
 						break;
@@ -334,7 +334,6 @@ void Game::Update()
 						break;
 					}
 				}
-				player2->x = 896 - player2->width;
 				player2->direction = -1;
 				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
