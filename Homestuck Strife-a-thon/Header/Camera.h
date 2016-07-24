@@ -7,11 +7,12 @@ public:
 
 	int x, y;
 	int width, height;
-	float xSpeed, ySpeed, zSpeed;
-	float maxXSpeed, maxYSpeed, maxZSpeed;
-	float xAcc, yAcc, zAcc;
-	int center;
-	int distance;
+	float xSpeed, ySpeed, zxSpeed, zySpeed;
+	float maxXSpeed, maxYSpeed, maxZXSpeed, maxZYSpeed;
+	float xAcc, yAcc, zxAcc, zyAcc;
+	int centerX, centerY;
+	int distanceX, distanceY;
+	int minDistX, minDistY;
 
 	// Constructor & Destructor
 	Camera(int x, int y, int width, int height);
@@ -19,8 +20,8 @@ public:
 	~Camera();
 
 	// Functions
-	void CalculateCenter();
-	void CalculateDistance();
-	void Update();
+	void CalculateCenter(int p1CenterX, int p1CenterY, int p2CenterX, int p2CenterY);
+	void CalculateDistance(int p1CenterX, int p1CenterY, int p2CenterX, int p2CenterY);
+	void Update(int levelWidth, int levelHeight);
 };
 

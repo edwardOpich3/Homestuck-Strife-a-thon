@@ -410,6 +410,10 @@ void Game::Update()
 			// Insert interaction calculations here->
 
 			// Insert position updates here->
+			camera->CalculateCenter(player1->x + (player1->width / 2), player1->y + (player1->height / 2), player2->x + (player2->width / 2), player2->y + (player2->height / 2));
+			camera->CalculateDistance(player1->x + (player1->width / 2), player1->y + (player1->height / 2), player2->x + (player2->width / 2), player2->y + (player2->height / 2));
+			camera->Update(levelWidth, levelHeight);
+
 			player1->Update(buttons, Z, LEFT, RIGHT);
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player1->Animate(buttons, LEFT, RIGHT, DOWN);
@@ -475,7 +479,7 @@ void Game::Draw()
 		{
 			al_clear_to_color(al_map_rgb(128, 128, 128));
 
-			al_draw_scaled_bitmap(levelBitmap, 0, 0, levelWidth, levelHeight, -camera->x, -camera->y, levelWidth * width / camera->width, levelHeight * height / camera->height, NULL);
+			al_draw_scaled_bitmap(levelBitmap, 0, 0, levelWidth, levelHeight, -camera->x * width / camera->width, -camera->y * height / camera->height, levelWidth * width / camera->width, levelHeight * height / camera->height, NULL);
 
 			switch (player1->direction)
 			{
@@ -508,7 +512,7 @@ void Game::Draw()
 
 			// DEBUG!
 			//al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%i %i %i", player1->runTimer, buttonsPrev[RIGHT], player1->isRunning);
-			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f, %0.1f", player1->xSpeed, player1->ySpeed);
+			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f, %0.1f", camera->zxSpeed, camera->zySpeed);
 
 			al_flip_display();
 			break;
