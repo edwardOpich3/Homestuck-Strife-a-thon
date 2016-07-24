@@ -12,6 +12,7 @@
 #include "Header\Cursor.h"
 #include "Header\Tile.h"
 #include "Header\Reader.h"
+#include "Header\Camera.h"
 class Game
 {
 public:
@@ -64,6 +65,9 @@ public:
 
 	// Reader
 	Reader *reader;
+
+	// Camera
+	Camera *camera;
 
 	// Technical Variables
 	enum BUTTONS { RIGHT, UP, LEFT, DOWN, ENTER, Z };

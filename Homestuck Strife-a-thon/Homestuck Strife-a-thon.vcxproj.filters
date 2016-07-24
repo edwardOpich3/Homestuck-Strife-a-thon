@@ -97,6 +97,9 @@
     <ClCompile Include="Source\Reader.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
+    <ClCompile Include="Source\Camera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\Game.h">
@@ -121,6 +124,9 @@
       <Filter>Header Files</Filter>
     </ClInclude>
     <ClInclude Include="Header\Reader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Header\Camera.h">
       <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>

@@ -338,6 +338,7 @@ void Game::Update()
 				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 				//al_play_sample_instance(BGM);
+				camera = new Camera(0, 0, 1024, 768);
 				currentState = GAME;
 			}
 			if (buttons[UP])
@@ -474,18 +475,18 @@ void Game::Draw()
 		{
 			al_clear_to_color(al_map_rgb(128, 128, 128));
 
-			al_draw_bitmap(levelBitmap, 0, 0, NULL);
+			al_draw_scaled_bitmap(levelBitmap, 0, 0, levelWidth, levelHeight, -camera->x, -camera->y, levelWidth * width / camera->width, levelHeight * height / camera->height, NULL);
 
 			switch (player1->direction)
 			{
 				case 1:
 				{
-					al_draw_bitmap_region(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, player1->x, player1->y, NULL);
+					al_draw_scaled_bitmap(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, (player1->x - camera->x) * width / camera->width, (player1->y - camera->y) * height / camera->height, player1->width * width / camera->width, player1->height * height / camera->height, NULL);
 					break;
 				}
 				case -1:
 				{
-					al_draw_bitmap_region(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, player1->x - player1->mirrorOffset, player1->y, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_scaled_bitmap(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, (player1->x - player1->mirrorOffset - camera->x) * width / camera->width, (player1->y - camera->y) * height / camera->height, player1->width * width / camera->width, player1->height * height / camera->height, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}
@@ -494,13 +495,13 @@ void Game::Draw()
 				case 1:
 				{
 					//al_draw_bitmap_region(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, player2->x, player2->y, NULL);
-					al_draw_bitmap_region(player2->sprite, 0, 0, player2->width, player2->height, player2->x, player2->y, NULL);
+					al_draw_scaled_bitmap(player2->sprite, 0, 0, player2->width, player2->height, (player2->x - camera->x) * width / camera->width, (player2->y - camera->y) * height / camera->height, player2->width * width / camera->width, player2->height * height / camera->height, NULL);
 					break;
 				}
 				case -1:
 				{
 					//al_draw_bitmap_region(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, player2->x - player2->mirrorOffset, player2->y, ALLEGRO_FLIP_HORIZONTAL);
-					al_draw_bitmap_region(player2->sprite, 0, 0, player2->width, player2->height, player2->x - player2->mirrorOffset, player2->y, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_scaled_bitmap(player2->sprite, 0, 0, player2->width, player2->height, (player2->x - player2->mirrorOffset - camera->x) * width / camera->width, (player2->y - camera->y) * height / camera->height, player2->width * width / camera->width, player2->height * height / camera->height, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}

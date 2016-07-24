@@ -12,6 +12,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Source\BoundingBox.cpp" />
+    <ClCompile Include="Source\Camera.cpp" />
     <ClCompile Include="Source\Character.cpp" />
     <ClCompile Include="Source\Cursor.cpp" />
     <ClCompile Include="Source\Game.cpp" />
@@ -23,6 +24,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Header\BoundingBox.h" />
+    <ClInclude Include="Header\Camera.h" />
     <ClInclude Include="Header\Character.h" />
     <ClInclude Include="Header\Cursor.h" />
     <ClInclude Include="Header\Game.h" />
