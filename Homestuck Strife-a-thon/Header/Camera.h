@@ -1,21 +1,22 @@
 #pragma once
 #include "allegro5\allegro.h"
+#include <cmath>
 
 class Camera
 {
 public:
 
 	int x, y;
-	int width, height;
-	float xSpeed, ySpeed, zxSpeed, zySpeed;
-	float maxXSpeed, maxYSpeed, maxZXSpeed, maxZYSpeed;
-	float xAcc, yAcc, zxAcc, zyAcc;
+	float scale;
+	float xSpeed, ySpeed, zSpeed;
+	float maxXSpeed, maxYSpeed, maxZSpeed;
+	float xAcc, yAcc, zAcc;
 	int centerX, centerY;
-	int distanceX, distanceY;
-	int minDistX, minDistY;
+	float distance;
+	float minDist;
 
 	// Constructor & Destructor
-	Camera(int x, int y, int width, int height);
+	Camera(int x, int y);
 	Camera();
 	~Camera();
 

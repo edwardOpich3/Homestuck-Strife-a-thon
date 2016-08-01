@@ -215,16 +215,16 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		// First we check for walls
 		// Left
 		bool collision = false;
-		for (int leftWall = x + collisionBox.x + (collisionBox.width / 2); leftWall > x + collisionBox.x - 1 && !collision; leftWall--)
+		for (int leftWall = collisionBox.x + (collisionBox.width / 2); leftWall > collisionBox.x - 1 && !collision; leftWall--)
 		{
-			if (leftWall > 0 && leftWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
+			if (x + leftWall > 0 && x + leftWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, leftWall, y + collisionBox.y + collisionBox.height - 20);
+				levelPixel = al_get_pixel(*collisionBitmap, leftWall, collisionBox.y + collisionBox.height - 20);
 				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
 				if (a > 0)
 				{
-					x = leftWall - collisionBox.x + 1;
+					x = x + leftWall - collisionBox.x + 1;
 					if (xSpeed < 0)
 					{
 						xSpeed = 0;
@@ -246,16 +246,16 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (int rightWall = x + collisionBox.x + (collisionBox.width / 2); rightWall < x + collisionBox.x + collisionBox.width + 1 && !collision; rightWall++)
+		for (int rightWall = collisionBox.x + (collisionBox.width / 2); rightWall < collisionBox.x + collisionBox.width + 1 && !collision; rightWall++)
 		{
-			if (rightWall > 0 && rightWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
+			if (x + rightWall > 0 && x + rightWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, rightWall, y + collisionBox.y + collisionBox.height - 20);
+				levelPixel = al_get_pixel(*collisionBitmap, rightWall, collisionBox.y + collisionBox.height - 20);
 				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
 				if (a > 0)
 				{
-					x = rightWall - collisionBox.x - collisionBox.width - 1;
+					x = x + rightWall - collisionBox.x - collisionBox.width - 1;
 					if (xSpeed > 0)
 					{
 						xSpeed = 0;
@@ -279,13 +279,13 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (leftGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < y + collisionBox.y + collisionBox.height + 16; leftGround++)
+		for (leftGround = collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < collisionBox.y + collisionBox.height + 16; leftGround++)
 		{
 			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				if (leftGround > 0 && leftGround < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
+				if (y + leftGround > 0 && y + leftGround < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
 				{
-					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, leftGround);
+					levelPixel = al_get_pixel(*collisionBitmap, collisionBox.x + i, leftGround);
 					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
 					if (a > 0)
@@ -310,7 +310,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 							}
 						}
 					}
-					else if (leftGround >= y + collisionBox.y + collisionBox.height + 15 && xSpeed == 0 && direction < 0 && animationState != CROUCH)
+					else if (leftGround >= collisionBox.y + collisionBox.height + 15 && xSpeed == 0 && direction < 0 && animationState != CROUCH)
 					{
 						if (animationState != BALANCING)
 						{
@@ -331,13 +331,13 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (rightGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < y + collisionBox.y + collisionBox.height + 16; rightGround++)
+		for (rightGround = collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < collisionBox.y + collisionBox.height + 16; rightGround++)
 		{
 			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				if (rightGround > 0 && rightGround < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
+				if (y + rightGround > 0 && y + rightGround < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
 				{
-					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, rightGround);
+					levelPixel = al_get_pixel(*collisionBitmap, collisionBox.x + collisionBox.width - i, rightGround);
 					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
 					if (a > 0)
@@ -362,7 +362,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 							}
 						}
 					}
-					else if (rightGround >= y + collisionBox.y + collisionBox.height + 15 && xSpeed == 0 && direction > 0 && animationState != CROUCH)
+					else if (rightGround >= collisionBox.y + collisionBox.height + 15 && xSpeed == 0 && direction > 0 && animationState != CROUCH)
 					{
 						if (animationState != BALANCING)
 						{
@@ -392,11 +392,11 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		{
 			if (leftGround <= rightGround)
 			{
-				y = leftGround - (collisionBox.height + collisionBox.y);
+				y = y + leftGround - (collisionBox.height + collisionBox.y);
 			}
 			else if(rightGround < leftGround)
 			{
-				y = rightGround - (collisionBox.height + collisionBox.y);
+				y = y + rightGround - (collisionBox.height + collisionBox.y);
 			}
 		}
 	}
@@ -406,18 +406,18 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		// First we check the walls
 		// Left
 		bool collision = false;
-		for (int leftWall = x + collisionBox.x + (collisionBox.width / 4); leftWall > x + collisionBox.x - 1 && !collision; leftWall--)
+		for (int leftWall = collisionBox.x + (collisionBox.width / 4); leftWall > collisionBox.x - 1 && !collision; leftWall--)
 		{
-			if (leftWall > 0 && leftWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
+			if (x + leftWall > 0 && x + leftWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, leftWall, y + collisionBox.y + collisionBox.height - 20);
+				levelPixel = al_get_pixel(*collisionBitmap, leftWall, collisionBox.y + collisionBox.height - 20);
 				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
 				if (a > 0)
 				{
 					if (g == 0)
 					{
-						x = leftWall - collisionBox.x + 2;
+						x = x + leftWall - collisionBox.x + 2;
 						if (xSpeed < 0)
 						{
 							xSpeed = 0;
@@ -426,7 +426,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 					}
 					else if (g == 1 && !isHanging)
 					{
-						x = leftWall - collisionBox.x + 1;
+						x = x + leftWall - collisionBox.x + 1;
 						xSpeed = 0;
 						y = y + collisionBox.height - 20;
 						ySpeed = 0;
@@ -449,18 +449,18 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (int rightWall = x + collisionBox.x + ((3 * collisionBox.width) / 4); rightWall < x + collisionBox.x + collisionBox.width + 1 && !collision; rightWall++)
+		for (int rightWall = collisionBox.x + ((3 * collisionBox.width) / 4); rightWall < collisionBox.x + collisionBox.width + 1 && !collision; rightWall++)
 		{
-			if (rightWall > 0 && rightWall < levelWidth &&  y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
+			if (x + rightWall > 0 && x + rightWall < levelWidth && y + collisionBox.y + collisionBox.height - 20 > 0 && y + collisionBox.y + collisionBox.height - 20 < levelHeight)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, rightWall, y + collisionBox.y + collisionBox.height - 20);
+				levelPixel = al_get_pixel(*collisionBitmap, rightWall, collisionBox.y + collisionBox.height - 20);
 				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
 				if (a > 0)
 				{
 					if (g == 0)
 					{
-						x = rightWall - collisionBox.x - collisionBox.width - 1;
+						x = x + rightWall - collisionBox.x - collisionBox.width - 1;
 						if (xSpeed > 0)
 						{
 							xSpeed = 0;
@@ -469,7 +469,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 					}
 					else if (g == 1 && !isHanging)
 					{
-						x = rightWall - collisionBox.x - collisionBox.width - 1;
+						x = x + rightWall - collisionBox.x - collisionBox.width - 1;
 						xSpeed = 0;
 						y = y + collisionBox.height - 20;
 						ySpeed = 0;
@@ -497,7 +497,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		{
 			if (y + collisionBox.y > 0 && y + collisionBox.y < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, y + collisionBox.y);
+				levelPixel = al_get_pixel(*collisionBitmap, collisionBox.x + i, collisionBox.y);
 				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 				if (a > 0 && g != 2)
 				{
@@ -532,7 +532,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		{
 			if (y + collisionBox.y > 0 && y + collisionBox.y < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
 			{
-				levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, y + collisionBox.y);
+				levelPixel = al_get_pixel(*collisionBitmap, collisionBox.x + collisionBox.width - i, collisionBox.y);
 				al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 				if (a > 0 && g != 2)
 				{
@@ -566,20 +566,20 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (leftAir = y + collisionBox.y + (collisionBox.height / 4); leftAir > y + collisionBox.y - 16; leftAir--)
+		for (leftAir = collisionBox.y + (collisionBox.height / 4); leftAir > collisionBox.y - 16; leftAir--)
 		{
 			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				if (leftAir > 0 && leftAir < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
+				if (y + leftAir > 0 && y + leftAir < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
 				{
-					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, leftAir);
+					levelPixel = al_get_pixel(*collisionBitmap, collisionBox.x + i, leftAir);
 					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
-					if (a > 0 && leftAir > y + collisionBox.y)
+					if (a > 0 && y + leftAir > y + collisionBox.y)
 					{
 						if (g == 0 && !(r < 182 || r > 202) && !collision)
 						{
-							finalAir = leftAir - collisionBox.y;
+							finalAir = y + leftAir - collisionBox.y;
 							if (ySpeed < 0)
 							{
 								ySpeed = 0;
@@ -588,7 +588,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 						}
 						else if (g == 1 && !isHanging)
 						{
-							y = leftAir - collisionBox.y;
+							y = y + leftAir - collisionBox.y;
 							ySpeed = 0;
 							x = x + i + 2;
 							xSpeed = 0;
@@ -621,20 +621,20 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (rightAir = y + collisionBox.y + (collisionBox.height / 4); rightAir > y + collisionBox.y - 16; rightAir--)
+		for (rightAir = collisionBox.y + (collisionBox.height / 4); rightAir > collisionBox.y - 16; rightAir--)
 		{
 			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				if (rightAir > 0 && rightAir < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
+				if (y + rightAir > 0 && y + rightAir < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
 				{
-					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, rightAir);
+					levelPixel = al_get_pixel(*collisionBitmap, collisionBox.x + collisionBox.width - i, rightAir);
 					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
-					if (a > 0 && rightAir > y + collisionBox.y && rightAir > leftAir)
+					if (a > 0 && y + rightAir > y + collisionBox.y && rightAir > leftAir)
 					{
 						if (g == 0 && !(r < 182 || r > 202) && !collision)
 						{
-							finalAir = rightAir - collisionBox.y;
+							finalAir = y + rightAir - collisionBox.y;
 							if (ySpeed < 0)
 							{
 								ySpeed = 0;
@@ -643,7 +643,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 						}
 						else if (g == 1 && !isHanging)
 						{
-							y = rightAir - collisionBox.y;
+							y = y + rightAir - collisionBox.y;
 							ySpeed = 0;
 							x = x - i - 1;
 							xSpeed = 0;
@@ -686,13 +686,13 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (leftGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < y + collisionBox.y + collisionBox.height; leftGround++)
+		for (leftGround = collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < collisionBox.y + collisionBox.height; leftGround++)
 		{
 			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				if (leftGround > 0 && leftGround < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
+				if (y + leftGround > 0 && y + leftGround < levelHeight && x + collisionBox.x + i > 0 && x + collisionBox.x + i < levelWidth)
 				{
-					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + i, leftGround);
+					levelPixel = al_get_pixel(*collisionBitmap, collisionBox.x + i, leftGround);
 					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
 					if (a > 0 && ySpeed > 0)
@@ -729,13 +729,13 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (rightGround = y + collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < y + collisionBox.y + collisionBox.height; rightGround++)
+		for (rightGround = collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < collisionBox.y + collisionBox.height; rightGround++)
 		{
 			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
-				if (rightGround > 0 && rightGround < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
+				if (y + rightGround > 0 && y + rightGround < levelHeight && x + collisionBox.x + collisionBox.width - i > 0 && x + collisionBox.x + collisionBox.width - i < levelWidth)
 				{
-					levelPixel = al_get_pixel(*collisionBitmap, x + collisionBox.x + collisionBox.width - i, rightGround);
+					levelPixel = al_get_pixel(*collisionBitmap, collisionBox.x + collisionBox.width - i, rightGround);
 					al_unmap_rgba(levelPixel, &r, &g, &b, &a);
 
 					if (a > 0 && ySpeed > 0)
@@ -776,12 +776,12 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 			frame = 0;
 			if (leftGround <= rightGround)
 			{
-				y = leftGround - (collisionBox.height + collisionBox.y);
+				y = y + leftGround - (collisionBox.height + collisionBox.y);
 				xSpeed += angleBoost;
 			}
 			else if(rightGround < leftGround)
 			{
-				y = rightGround - (collisionBox.height + collisionBox.y);
+				y = y + rightGround - (collisionBox.height + collisionBox.y);
 				if (r <= 128)
 				{
 					angleBoost = cos((ALLEGRO_PI * float(r)) / 128) * ySpeed;

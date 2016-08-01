@@ -338,7 +338,7 @@ void Game::Update()
 				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 				//al_play_sample_instance(BGM);
-				camera = new Camera(0, 0, 1024, 768);
+				camera = new Camera(0, 0);
 				currentState = GAME;
 			}
 			if (buttons[UP])
@@ -421,8 +421,8 @@ void Game::Update()
 
 			al_draw_bitmap_region(collisionBitmap, player1->x, player1->y, 256, 256, 0, 0, NULL);
 			player1->Update(buttons, Z, LEFT, RIGHT);
-			// player1->Collision(&tempBitmap, levelWidth, levelHeight, buttons[DOWN]);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player1->Collision(&tempBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			// player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player1->Animate(buttons, LEFT, RIGHT, DOWN);
 
 			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
@@ -437,8 +437,8 @@ void Game::Update()
 
 			al_draw_bitmap_region(collisionBitmap, player2->x, player2->y, 256, 256, 0, 0, NULL);
 			player2->Update(buttons, Z, LEFT, RIGHT);
-			// player2->Collision(&tempBitmap, levelWidth, levelHeight, buttons[DOWN]);
-			player2->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player2->Collision(&tempBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			// player2->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player2->Animate(buttons, LEFT, RIGHT, DOWN);
 
 			al_destroy_bitmap(tempBitmap);
@@ -492,18 +492,18 @@ void Game::Draw()
 		{
 			al_clear_to_color(al_map_rgb(128, 128, 128));
 
-			al_draw_scaled_bitmap(levelBitmap, camera->x, camera->y, camera->width, camera->height, 0, 0, width, height, NULL);
+			al_draw_scaled_bitmap(levelBitmap, camera->x, camera->y, width * camera->scale, height * camera->scale, 0, 0, width, height, NULL);
 
 			switch (player1->direction)
 			{
 				case 1:
 				{
-					al_draw_scaled_bitmap(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, (player1->x - camera->x) * width / camera->width, (player1->y - camera->y) * height / camera->height, player1->width * width / camera->width, player1->height * height / camera->height, NULL);
+					al_draw_scaled_bitmap(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, (player1->x - camera->x) / camera->scale, (player1->y - camera->y) / camera->scale, player1->width / camera->scale, player1->height / camera->scale, NULL);
 					break;
 				}
 				case -1:
 				{
-					al_draw_scaled_bitmap(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, (player1->x - player1->mirrorOffset - camera->x) * width / camera->width, (player1->y - camera->y) * height / camera->height, player1->width * width / camera->width, player1->height * height / camera->height, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_scaled_bitmap(player1->sprite, 256 * (player1->frame / 30), 256 * player1->animationState, player1->width, player1->height, (player1->x - player1->mirrorOffset - camera->x) / camera->scale, (player1->y - camera->y) / camera->scale, player1->width / camera->scale, player1->height / camera->scale, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}
@@ -512,20 +512,20 @@ void Game::Draw()
 				case 1:
 				{
 					//al_draw_bitmap_region(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, player2->x, player2->y, NULL);
-					al_draw_scaled_bitmap(player2->sprite, 0, 0, player2->width, player2->height, (player2->x - camera->x) * width / camera->width, (player2->y - camera->y) * height / camera->height, player2->width * width / camera->width, player2->height * height / camera->height, NULL);
+					al_draw_scaled_bitmap(player2->sprite, 0, 0, player2->width, player2->height, (player2->x - camera->x) / camera->scale, (player2->y - camera->y) / camera->scale, player2->width / camera->scale, player2->height / camera->scale, NULL);
 					break;
 				}
 				case -1:
 				{
 					//al_draw_bitmap_region(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, player2->x - player2->mirrorOffset, player2->y, ALLEGRO_FLIP_HORIZONTAL);
-					al_draw_scaled_bitmap(player2->sprite, 0, 0, player2->width, player2->height, (player2->x - player2->mirrorOffset - camera->x) * width / camera->width, (player2->y - camera->y) * height / camera->height, player2->width * width / camera->width, player2->height * height / camera->height, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_scaled_bitmap(player2->sprite, 0, 0, player2->width, player2->height, (player2->x - player2->mirrorOffset - camera->x) / camera->scale, (player2->y - camera->y) / camera->scale, player2->width / camera->scale, player2->height / camera->scale, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}
 
 			// DEBUG!
 			//al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%i %i %i", player1->runTimer, buttonsPrev[RIGHT], player1->isRunning);
-			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f, %0.1f", camera->zxSpeed, camera->zySpeed);
+			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f", camera->zSpeed);
 
 			al_flip_display();
 			break;
