@@ -69,6 +69,10 @@ public:
 	// Camera
 	Camera *camera;
 
+	// DEBUG
+	ALLEGRO_BITMAP* tempBitmap1;
+	ALLEGRO_BITMAP* tempBitmap2;
+
 	// Technical Variables
 	enum BUTTONS { RIGHT, UP, LEFT, DOWN, ENTER, Z };
 	enum GAME_STATES { SPLASH, TITLE, MENU, GAME };

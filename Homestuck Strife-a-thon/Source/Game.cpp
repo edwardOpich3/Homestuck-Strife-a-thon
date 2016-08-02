@@ -22,6 +22,10 @@ Game::Game()
 
 	soundtrack = NULL;
 
+	// DEBUG
+	tempBitmap1 = NULL;
+	tempBitmap2 = NULL;
+
 	currentState = TITLE;
 	currentMenu = MAIN;
 	width = 1024;
@@ -142,6 +146,10 @@ bool Game::Initialize()
 	al_register_event_source(event, al_get_keyboard_event_source());
 	al_register_event_source(event, al_get_display_event_source(display));
 	al_register_event_source(event, al_get_timer_event_source(timer));
+
+	// DEBUG
+	tempBitmap1 = al_create_bitmap(256, 256);
+	tempBitmap2 = al_create_bitmap(256, 256);
 
 	return true;
 }
@@ -414,14 +422,16 @@ void Game::Update()
 			camera->CalculateDistance(player1->x + (player1->width / 2), player1->y + (player1->height / 2), player2->x + (player2->width / 2), player2->y + (player2->height / 2));
 			camera->Update(levelWidth, levelHeight);
 
+			player1->Update(buttons, Z, LEFT, RIGHT);
 			// Collision time, boyo! That means that we need to draw a region of the collision bitmap to a new bitmap so we don't expend a shit-ton of time
 			// Implement the following when you feel like going through hell in refactoring your collision code
-			ALLEGRO_BITMAP* tempBitmap = al_create_bitmap(256, 256);
-			al_set_target_bitmap(tempBitmap);
+			// ALLEGRO_BITMAP* tempBitmap = al_create_bitmap(256, 256);
+			// tempBitmap = al_create_bitmap(256, 256);
+			al_set_target_bitmap(tempBitmap1);
+			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
 			al_draw_bitmap_region(collisionBitmap, player1->x, player1->y, 256, 256, 0, 0, NULL);
-			player1->Update(buttons, Z, LEFT, RIGHT);
-			player1->Collision(&tempBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player1->Collision(&tempBitmap1, levelWidth, levelHeight, buttons[DOWN]);
 			// player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player1->Animate(buttons, LEFT, RIGHT, DOWN);
 
@@ -433,15 +443,16 @@ void Game::Update()
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);*/
 
+			al_set_target_bitmap(tempBitmap2);
 			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
 			al_draw_bitmap_region(collisionBitmap, player2->x, player2->y, 256, 256, 0, 0, NULL);
 			player2->Update(buttons, Z, LEFT, RIGHT);
-			player2->Collision(&tempBitmap, levelWidth, levelHeight, buttons[DOWN]);
+			player2->Collision(&tempBitmap2, levelWidth, levelHeight, buttons[DOWN]);
 			// player2->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player2->Animate(buttons, LEFT, RIGHT, DOWN);
 
-			al_destroy_bitmap(tempBitmap);
+			//al_destroy_bitmap(tempBitmap);
 			break;
 		}
 	}
@@ -507,6 +518,7 @@ void Game::Draw()
 					break;
 				}
 			}
+			al_draw_scaled_bitmap(tempBitmap1, 0, 0, 256, 256, (player1->x - camera->x) / camera->scale, (player1->y - camera->y) / camera->scale, player1->width / camera->scale, player1->height / camera->scale, NULL);
 			switch (player2->direction)
 			{
 				case 1:

@@ -180,7 +180,7 @@ void Camera::Update(int levelWidth, int levelHeight)
 		}
 	}*/
 
-	scale = 2 * distance / 768;
+	scale = 8 * distance / 768;
 	if (scale * 1024 > levelWidth)
 	{
 		scale = levelWidth / 1024;
