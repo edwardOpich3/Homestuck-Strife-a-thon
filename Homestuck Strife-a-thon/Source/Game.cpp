@@ -432,16 +432,9 @@ void Game::Update()
 
 			al_draw_bitmap_region(collisionBitmap, player1->x, player1->y, 256, 256, 0, 0, NULL);
 			player1->Collision(&tempBitmap1, levelWidth, levelHeight, buttons[DOWN]);
-			// player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player1->Animate(buttons, LEFT, RIGHT, DOWN);
 
 			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
-			/*player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
-			player1->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);*/
 
 			al_set_target_bitmap(tempBitmap2);
 			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
@@ -563,6 +556,10 @@ void Game::End()
 
 	al_destroy_bitmap(johnSpr);
 	al_destroy_bitmap(roseSpr);
+
+	// DEBUG
+	al_destroy_bitmap(tempBitmap1);
+	al_destroy_bitmap(tempBitmap2);
 
 	for (unsigned int i = 0; i < tile16List.size(); i++)
 	{
