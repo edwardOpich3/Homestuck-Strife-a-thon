@@ -23,6 +23,6 @@ public:
 	// Functions
 	void CalculateCenter(int p1CenterX, int p1CenterY, int p2CenterX, int p2CenterY);
 	void CalculateDistance(int p1CenterX, int p1CenterY, int p2CenterX, int p2CenterY);
-	void Update(int levelWidth, int levelHeight);
+	void Update(int levelWidth, int levelHeight, int width, int height);
 };
 

@@ -68,71 +68,71 @@ void Camera::CalculateDistance(int p1CenterX, int p1CenterY, int p2CenterX, int 
 	}
 }
 
-void Camera::Update(int levelWidth, int levelHeight)
+void Camera::Update(int levelWidth, int levelHeight, int width, int height)
 {
-	scale = 2 * (abs(distance) + 128) / 1024;
+	scale = 2 * (abs(distance) + 128) / width;
 
-	if (scale * 1024 > levelWidth)
+	if (scale * width > levelWidth)
 	{
-		scale = levelWidth / 1024;
+		scale = levelWidth / width;
 	}
-	if (scale * 768 > levelHeight)
+	if (scale * height > levelHeight)
 	{
-		scale = levelHeight / 768;
+		scale = levelHeight / height;
 	}
 
-	x = centerX - ((scale * 1024) / 2);
-	y = centerY - ((scale * 768) / 2);
+	x = centerX - ((scale * width) / 2);
+	y = centerY - ((scale * height) / 2);
 
 	if (x < 0)
 	{
 		x = 0;
 	}
-	else if (x + (scale * 1024) > levelWidth)
+	else if (x + (scale * width) > levelWidth)
 	{
-		x = levelWidth - (scale * 1024);
+		x = levelWidth - (scale * width);
 	}
 	if (y < 0)
 	{
 		y = 0;
 	}
-	else if (y + (scale * 768) > levelHeight)
+	else if (y + (scale * height) > levelHeight)
 	{
-		y = levelHeight - (scale * 768);
+		y = levelHeight - (scale * height);
 	}
 
-	if (x + (scale * 1024 / 2) != centerX || y + (scale * 768 / 2) != centerY)
+	if (x + (scale * width / 2) != centerX || y + (scale * height / 2) != centerY)
 	{
-		distance -= sqrtf((abs(x + (scale * 1024 / 2) - centerX) * abs(x + (scale * 1024 / 2) - centerX)) + (abs(y + (scale * 768 / 2) - centerY) * abs(y + (scale * 768 / 2) - centerY))) / 2;
-		scale = 2 * (abs(distance) + 128) / 1024;
+		distance -= sqrtf((abs(x + (scale * width / 2) - centerX) * abs(x + (scale * width / 2) - centerX)) + (abs(y + (scale * height / 2) - centerY) * abs(y + (scale * height / 2) - centerY))) / 2;
+		scale = 2 * (abs(distance) + 128) / width;
 
-		if (scale * 1024 > levelWidth)
+		if (scale * width > levelWidth)
 		{
-			scale = levelWidth / 1024;
+			scale = levelWidth / width;
 		}
-		if (scale * 768 > levelHeight)
+		if (scale * height > levelHeight)
 		{
-			scale = levelHeight / 768;
+			scale = levelHeight / height;
 		}
 
-		x = centerX - ((scale * 1024) / 2);
-		y = centerY - ((scale * 768) / 2);
+		x = centerX - ((scale * width) / 2);
+		y = centerY - ((scale * height) / 2);
 
 		if (x < 0)
 		{
 			x = 0;
 		}
-		else if (x + (scale * 1024) > levelWidth)
+		else if (x + (scale * width) > levelWidth)
 		{
-			x = levelWidth - (scale * 1024);
+			x = levelWidth - (scale * width);
 		}
 		if (y < 0)
 		{
 			y = 0;
 		}
-		else if (y + (scale * 768) > levelHeight)
+		else if (y + (scale * height) > levelHeight)
 		{
-			y = levelHeight - (scale * 768);
+			y = levelHeight - (scale * height);
 		}
 	}
 }

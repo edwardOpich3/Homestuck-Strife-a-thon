@@ -607,7 +607,7 @@ void Game::Update()
 								al_destroy_bitmap(cursorSpr);
 
 								display = al_create_display(width, height);
-								buffer = al_create_bitmap(1024, 768);
+								buffer = al_create_bitmap(width, height);
 
 								mainFnt = al_load_bitmap_font("Graphics/Fonts/mainFnt.png");
 								mainFnt2X = al_load_bitmap_font("Graphics/Fonts/mainFnt_2X.png");
@@ -782,7 +782,7 @@ void Game::Update()
 						}
 						display = al_create_display(width, height);
 
-						buffer = al_create_bitmap(1024, 768);
+						buffer = al_create_bitmap(width, height);
 
 						mainFnt = al_load_bitmap_font("Graphics/Fonts/mainFnt.png");
 						mainFnt2X = al_load_bitmap_font("Graphics/Fonts/mainFnt_2X.png");
@@ -894,7 +894,7 @@ void Game::Update()
 			// Insert position updates here->
 			camera->CalculateCenter(player1->x + (player1->width / 2), player1->y + (player1->height / 2), player2->x + (player2->width / 2), player2->y + (player2->height / 2));
 			camera->CalculateDistance(player1->x + (player1->width / 2), player1->y + (player1->height / 2), player2->x + (player2->width / 2), player2->y + (player2->height / 2));
-			camera->Update(levelWidth, levelHeight);
+			camera->Update(levelWidth, levelHeight, width, height);
 
 			player1->Update(buttons, JUMP, LEFT, RIGHT);
 			// Collision time, boyo! That means that we need to draw a region of the collision bitmap to a new bitmap so we don't expend a shit-ton of time
@@ -943,11 +943,8 @@ void Game::Draw()
 			// Text Testing
 			// al_draw_bitmap(test, 0, 0, NULL);
 
-			al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-			al_draw_text(mainFnt, al_map_rgb(0, 0, 0), 1024 / 2, 240, ALLEGRO_ALIGN_CENTER, "Press Enter");
-			al_set_target_backbuffer(display);
-			al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
-			al_flip_display();
+			al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+			al_draw_text(mainFnt, al_map_rgb(0, 0, 0), width / 2, 240, ALLEGRO_ALIGN_CENTER, "Press Enter");
 			break;
 		}
 		case MENU:
@@ -957,41 +954,32 @@ void Game::Draw()
 				case MAIN:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "MAIN MENU");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "STRIFE!");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "OPTIONS");
-					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
-					al_set_target_backbuffer(display);
-					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
-					al_flip_display();
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "MAIN MENU");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "STRIFE!");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "OPTIONS");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					break;
 				}
 				case OPTIONS:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "OPTIONS");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "SOUND");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "VIDEO");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 384, ALLEGRO_ALIGN_CENTER, "CONTROLS");
-					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
-					al_set_target_backbuffer(display);
-					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
-					al_flip_display();
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "OPTIONS");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "SOUND");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "VIDEO");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384, ALLEGRO_ALIGN_CENTER, "CONTROLS");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					break;
 				}
 				case CHARACTER:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE YOUR CHARACTER");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "John Egbert");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "Rose Lalonde");
-					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
-					al_set_target_backbuffer(display);
-					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
-					al_flip_display();
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE YOUR CHARACTER");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "John Egbert");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "Rose Lalonde");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					break;
 				}
 				case STAGE:
@@ -1001,59 +989,47 @@ void Game::Draw()
 				case SOUND:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "SOUND");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "lol there's nothing here yet");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "GO BACK");
-					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, 352 - (cursor->height / 4), NULL);
-					al_set_target_backbuffer(display);
-					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
-					al_flip_display();
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "SOUND");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "lol there's nothing here yet");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "GO BACK");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, 352 - (cursor->height / 4), NULL);
 					break;
 				}
 				case VIDEO:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "VIDEO");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "RESOLUTION");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "FULLSCREEN");
-					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
-					al_set_target_backbuffer(display);
-					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
-					al_flip_display();
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "VIDEO");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "RESOLUTION");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "FULLSCREEN");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					break;
 				}
 				case CONTROLS:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "CONTROLS");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "lol there's nothing here yet");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "GO BACK");
-					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, 352 - (cursor->height / 4), NULL);
-					al_set_target_backbuffer(display);
-					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
-					al_flip_display();
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CONTROLS");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "lol there's nothing here yet");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "GO BACK");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, 352 - (cursor->height / 4), NULL);
 					break;
 				}
 				case RESOLUTION:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A RESOLUTION");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "320 X 240");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "640 X 480");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 384, ALLEGRO_ALIGN_CENTER, "800 X 600");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 416, ALLEGRO_ALIGN_CENTER, "1024 X 768");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 448, ALLEGRO_ALIGN_CENTER, "1152 X 864");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 480, ALLEGRO_ALIGN_CENTER, "1280 X 960");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 512, ALLEGRO_ALIGN_CENTER, "1400 X 1050");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 544, ALLEGRO_ALIGN_CENTER, "1600 X 1200");
-					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
-					al_set_target_backbuffer(display);
-					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
-					al_flip_display();
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A RESOLUTION");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "320 X 240");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "640 X 480");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384, ALLEGRO_ALIGN_CENTER, "800 X 600");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416, ALLEGRO_ALIGN_CENTER, "1024 X 768");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 448, ALLEGRO_ALIGN_CENTER, "1152 X 864");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 480, ALLEGRO_ALIGN_CENTER, "1280 X 960");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 512, ALLEGRO_ALIGN_CENTER, "1400 X 1050");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 544, ALLEGRO_ALIGN_CENTER, "1600 X 1200");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					break;
 				}
 			}
@@ -1063,7 +1039,7 @@ void Game::Draw()
 		{
 			al_clear_to_color(al_map_rgb(128, 128, 128));
 
-			al_draw_scaled_bitmap(levelBitmap, camera->x, camera->y, 1024 * camera->scale, 768 * camera->scale, 0, 0, 1024, 768, NULL);
+			al_draw_scaled_bitmap(levelBitmap, camera->x, camera->y, width * camera->scale, height * camera->scale, 0, 0, width, height, NULL);
 
 			switch (player1->direction)
 			{
@@ -1099,13 +1075,12 @@ void Game::Draw()
 			//al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%i %i %i", player1->runTimer, buttonsPrev[RIGHT], player1->isRunning);
 			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f", camera->zSpeed);
 
-			al_set_target_backbuffer(display);
-			al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
-
-			al_flip_display();
 			break;
 		}
 	}
+	al_set_target_backbuffer(display);
+	al_draw_scaled_bitmap(buffer, 0, 0, width, height, 0, 0, width, height, NULL);
+	al_flip_display();
 	return;
 }
 
