@@ -18,6 +18,7 @@ class Game
 public:
 	// Technical Stuff
 	ALLEGRO_DISPLAY *display;
+	ALLEGRO_BITMAP *buffer;
 	ALLEGRO_TIMER *timer;
 	ALLEGRO_EVENT_QUEUE *event;
 
@@ -74,11 +75,11 @@ public:
 	ALLEGRO_BITMAP* tempBitmap2;
 
 	// Technical Variables
-	enum BUTTONS { RIGHT, UP, LEFT, DOWN, ENTER, Z };
+	enum BUTTONS { RIGHT, UP, LEFT, DOWN, PAUSE, JUMP, ATTACK, SPECIAL, BLOCK, TAUNT };
 	enum GAME_STATES { SPLASH, TITLE, MENU, GAME };
-	enum MENUS { MAIN, OPTIONS, CHARACTER };
-	bool buttons[6] = { false, false, false, false, false, false };
-	bool buttonsPrev[6] = { false, false, false, false, false, false };
+	enum MENUS { MAIN, OPTIONS, CHARACTER, STAGE, SOUND, VIDEO, CONTROLS, RESOLUTION };
+	bool buttons[10] = { false, false, false, false, false, false, false, false, false, false };
+	bool buttonsPrev[10] = { false, false, false, false, false, false, false, false, false, false };
 	int currentState;
 	int currentMenu;
 	int width;

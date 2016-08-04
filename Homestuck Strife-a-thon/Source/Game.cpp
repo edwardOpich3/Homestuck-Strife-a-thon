@@ -5,6 +5,7 @@
 Game::Game()
 {
 	display = NULL;
+	buffer = NULL;
 	timer = NULL;
 	event = NULL;
 
@@ -91,6 +92,8 @@ bool Game::Initialize()
 
 	// Any file loading we have to do goes here!
 
+	buffer = al_create_bitmap(width, height);
+
 	mainFnt = al_load_bitmap_font("Graphics/Fonts/mainFnt.png");
 	mainFnt2X = al_load_bitmap_font("Graphics/Fonts/mainFnt_2X.png");
 	mainFnt3X = al_load_bitmap_font("Graphics/Fonts/mainFnt_3X.png");
@@ -163,41 +166,65 @@ void Game::GetInput(ALLEGRO_EVENT e)
 	{
 		switch (e.keyboard.keycode)
 		{
-		case ALLEGRO_KEY_RIGHT:
-		{
-			buttons[RIGHT] = true;
-			break;
-		}
+			case ALLEGRO_KEY_RIGHT:
+			{
+				buttons[RIGHT] = true;
+				break;
+			}
 
-		case ALLEGRO_KEY_UP:
-		{
-			buttons[UP] = true;
-			break;
-		}
+			case ALLEGRO_KEY_UP:
+			{
+				buttons[UP] = true;
+				break;
+			}
 
-		case ALLEGRO_KEY_LEFT:
-		{
-			buttons[LEFT] = true;
-			break;
-		}
+			case ALLEGRO_KEY_LEFT:
+			{
+				buttons[LEFT] = true;
+				break;
+			}
 
-		case ALLEGRO_KEY_DOWN:
-		{
-			buttons[DOWN] = true;
-			break;
-		}
+			case ALLEGRO_KEY_DOWN:
+			{
+				buttons[DOWN] = true;
+				break;
+			}
 
-		case ALLEGRO_KEY_ENTER:
-		{
-			buttons[ENTER] = true;
-			break;
-		}
+			case ALLEGRO_KEY_ENTER:
+			{
+				buttons[PAUSE] = true;
+				break;
+			}
 
-		case ALLEGRO_KEY_Z:
-		{
-			buttons[Z] = true;
-			break;
-		}
+			case ALLEGRO_KEY_Z:
+			{
+				buttons[JUMP] = true;
+				break;
+			}
+
+			case ALLEGRO_KEY_X:
+			{
+				buttons[ATTACK] = true;
+				break;
+			}
+
+			case ALLEGRO_KEY_C:
+			{
+				buttons[SPECIAL] = true;
+				break;
+			}
+
+			case ALLEGRO_KEY_A:
+			{
+				buttons[BLOCK] = true;
+				break;
+			}
+
+			case ALLEGRO_KEY_S:
+			{
+				buttons[TAUNT] = true;
+				break;
+			}
 		}
 	}
 
@@ -241,13 +268,37 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 		case ALLEGRO_KEY_ENTER:
 		{
-			buttons[ENTER] = false;
+			buttons[PAUSE] = false;
 			break;
 		}
 
 		case ALLEGRO_KEY_Z:
 		{
-			buttons[Z] = false;
+			buttons[JUMP] = false;
+			break;
+		}
+
+		case ALLEGRO_KEY_X:
+		{
+			buttons[ATTACK] = false;
+			break;
+		}
+
+		case ALLEGRO_KEY_C:
+		{
+			buttons[SPECIAL] = false;
+			break;
+		}
+
+		case ALLEGRO_KEY_A:
+		{
+			buttons[BLOCK] = false;
+			break;
+		}
+
+		case ALLEGRO_KEY_S:
+		{
+			buttons[TAUNT] = false;
 			break;
 		}
 
@@ -285,9 +336,9 @@ void Game::Update()
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 				//al_play_sample_instance(BGM);
 			}
-			if (buttons[ENTER])
+			if (buttons[PAUSE])
 			{
-				buttons[ENTER] = false;
+				buttons[PAUSE] = false;
 				al_stop_sample_instance(BGM);
 
 				// Unload all content being used for the title screen
@@ -309,62 +360,485 @@ void Game::Update()
 		}
 		case MENU:
 		{
-			if (buttons[ENTER])
+			switch (currentMenu)
 			{
-				buttons[ENTER] = false;
-				al_stop_sample_instance(BGM);
+				case MAIN:
+				{
+					if (buttons[PAUSE] || buttons[JUMP])
+					{
+						buttons[PAUSE] = false;
+						buttons[JUMP] = false;
 
-				// Unload all content being used for the menu
-				al_destroy_sample_instance(BGM);
-				al_destroy_sample(soundtrack);
-				al_destroy_bitmap(cursorSpr);
-				
-				switch (cursor->selection)
-				{
-					case 0:
-					{
-						johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
-						roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
-						player1 = new John(johnSpr, 128, 128);
-						player2 = new John(johnSpr, 896 - 512, 128);
-						soundtrack = al_load_sample("Audio/Music/john.ogg");
-						BGM = al_create_sample_instance(soundtrack);
-						break;
+						switch (cursor->selection)
+						{
+							case 0:
+							{
+								currentMenu = CHARACTER;
+								cursor->selection = 0;
+								break;
+							}
+							case 1:
+							{
+								currentMenu = OPTIONS;
+								cursor->selection = 0;
+								break;
+							}
+						}
 					}
-					case 1:
+					if (buttons[UP])
 					{
-						johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
-						roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
-						player1 = new Rose(roseSpr, 128, 128);
-						player2 = new John(johnSpr, 896 - 256, 128);
-						soundtrack = al_load_sample("Audio/Music/rose.ogg");
-						BGM = al_create_sample_instance(soundtrack);
-						break;
+						buttons[UP] = false;
+						cursor->selection--;
+						if (cursor->selection < 0)
+						{
+							cursor->selection = 1;
+						}
 					}
+					if (buttons[DOWN])
+					{
+						buttons[DOWN] = false;
+						cursor->selection++;
+						if (cursor->selection > 1)
+						{
+							cursor->selection = 0;
+						}
+					}
+					if (buttons[ATTACK])
+					{
+						buttons[ATTACK] = false;
+						currentState = TITLE;
+						cursor->selection = 0;
+					}
+					break;
 				}
-				player2->direction = -1;
-				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
-				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
-				//al_play_sample_instance(BGM);
-				camera = new Camera(0, 0);
-				currentState = GAME;
-			}
-			if (buttons[UP])
-			{
-				buttons[UP] = false;
-				cursor->selection--;
-				if (cursor->selection < 0)
+				case OPTIONS:
 				{
-					cursor->selection = 1;
+					if (buttons[PAUSE] || buttons[JUMP])
+					{
+						buttons[PAUSE] = false;
+						buttons[JUMP] = false;
+
+						switch (cursor->selection)
+						{
+							case 0:
+							{
+								currentMenu = SOUND;
+								cursor->selection = 0;
+								break;
+							}
+							case 1:
+							{
+								currentMenu = VIDEO;
+								cursor->selection = 0;
+								break;
+							}
+							case 2:
+							{
+								currentMenu = CONTROLS;
+								cursor->selection = 0;
+								break;
+							}
+						}
+					}
+					if (buttons[UP])
+					{
+						buttons[UP] = false;
+						cursor->selection--;
+						if (cursor->selection < 0)
+						{
+							cursor->selection = 2;
+						}
+					}
+					if (buttons[DOWN])
+					{
+						buttons[DOWN] = false;
+						cursor->selection++;
+						if (cursor->selection > 2)
+						{
+							cursor->selection = 0;
+						}
+					}
+					if (buttons[ATTACK])
+					{
+						buttons[ATTACK] = false;
+						currentMenu = MAIN;
+						cursor->selection = 0;
+					}
+					break;
 				}
-			}
-			if (buttons[DOWN])
-			{
-				buttons[DOWN] = false;
-				cursor->selection++;
-				if (cursor->selection > 1)
+				case CHARACTER:
 				{
-					cursor->selection = 0;
+					if (buttons[PAUSE] || buttons[JUMP])
+					{
+						buttons[PAUSE] = false;
+						buttons[JUMP] = false;
+						al_stop_sample_instance(BGM);
+
+						// Unload all content being used for the menu
+						al_destroy_sample_instance(BGM);
+						al_destroy_sample(soundtrack);
+						al_destroy_bitmap(cursorSpr);
+
+						switch (cursor->selection)
+						{
+							case 0:
+							{
+								johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
+								roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
+								player1 = new John(johnSpr, 128, 128);
+								player2 = new John(johnSpr, 896 - 512, 128);
+								soundtrack = al_load_sample("Audio/Music/john.ogg");
+								BGM = al_create_sample_instance(soundtrack);
+								break;
+							}
+							case 1:
+							{
+								johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
+								roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
+								player1 = new Rose(roseSpr, 128, 128);
+								player2 = new John(johnSpr, 896 - 256, 128);
+								soundtrack = al_load_sample("Audio/Music/rose.ogg");
+								BGM = al_create_sample_instance(soundtrack);
+								break;
+							}
+						}
+						player2->direction = -1;
+						al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
+						al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
+						//al_play_sample_instance(BGM);
+						camera = new Camera(0, 0);
+						currentState = GAME;
+					}
+					if (buttons[UP])
+					{
+						buttons[UP] = false;
+						cursor->selection--;
+						if (cursor->selection < 0)
+						{
+							cursor->selection = 1;
+						}
+					}
+					if (buttons[DOWN])
+					{
+						buttons[DOWN] = false;
+						cursor->selection++;
+						if (cursor->selection > 1)
+						{
+							cursor->selection = 0;
+						}
+					}
+					if (buttons[ATTACK])
+					{
+						buttons[ATTACK] = false;
+						currentMenu = MAIN;
+						cursor->selection = 0;
+					}
+					break;
+				}
+				case STAGE:
+				{
+					break;
+				}
+				case SOUND:
+				{
+					if (buttons[PAUSE] || buttons[JUMP])
+					{
+						buttons[PAUSE] = false;
+						buttons[JUMP] = false;
+						currentMenu = OPTIONS;
+						cursor->selection = 0;
+					}
+					if (buttons[ATTACK])
+					{
+						buttons[ATTACK] = false;
+						currentMenu = OPTIONS;
+						cursor->selection = 0;
+					}
+					break;
+				}
+				case VIDEO:
+				{
+					if (buttons[PAUSE] || buttons[JUMP])
+					{
+						buttons[PAUSE] = false;
+						buttons[JUMP] = false;
+
+						switch (cursor->selection)
+						{
+							case 0:
+							{
+								currentMenu = RESOLUTION;
+								cursor->selection = 0;
+								break;
+							}
+							case 1:
+							{
+								if (al_get_display_flags(display) & ALLEGRO_FULLSCREEN)
+								{
+									al_set_new_display_flags(ALLEGRO_WINDOWED);
+								}
+								else
+								{
+									al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+								}
+								al_destroy_display(display);
+								al_destroy_bitmap(buffer);
+
+								al_destroy_font(mainFnt);
+								al_destroy_font(mainFnt2X);
+								al_destroy_font(mainFnt3X);
+								al_destroy_font(mainFnt4X);
+
+								al_destroy_bitmap(titleSpr);
+
+								al_destroy_bitmap(tempBitmap1);
+								al_destroy_bitmap(tempBitmap2);
+
+								for (unsigned int i = 0; i < tile16List.size(); i++)
+								{
+									al_destroy_bitmap(tile16List[i]);
+								}
+
+								for (unsigned int i = 0; i < levelTileList.size(); i++)
+								{
+									al_destroy_bitmap(levelTileList[i]);
+								}
+
+								al_destroy_bitmap(cursorSpr);
+
+								display = al_create_display(width, height);
+								buffer = al_create_bitmap(1024, 768);
+
+								mainFnt = al_load_bitmap_font("Graphics/Fonts/mainFnt.png");
+								mainFnt2X = al_load_bitmap_font("Graphics/Fonts/mainFnt_2X.png");
+								mainFnt3X = al_load_bitmap_font("Graphics/Fonts/mainFnt_3X.png");
+								mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
+
+								titleSpr = al_load_bitmap("Graphics/Menu/title.png");
+
+								tile16List.clear();
+								tile32List.clear();
+								tile64List.clear();
+								tile128List.clear();
+								levelTiles.clear();
+								levelTileList.clear();
+								
+								al_destroy_bitmap(collisionBitmap);
+								al_destroy_bitmap(levelBitmap);
+
+								reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
+								reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight);
+								levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
+
+								reader->DrawLevel(levelTiles, &collisionBitmap, levelWidth, levelHeight, tile16List);
+								reader->DrawLevel(levelTiles, &levelBitmap, levelWidth, levelHeight, levelTileList);
+
+								tempBitmap1 = al_create_bitmap(256, 256);
+								tempBitmap2 = al_create_bitmap(256, 256);
+
+								cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
+								cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
+
+								break;
+							}
+						}
+					}
+					if (buttons[UP])
+					{
+						buttons[UP] = false;
+						cursor->selection--;
+						if (cursor->selection < 0)
+						{
+							cursor->selection = 1;
+						}
+					}
+					if (buttons[DOWN])
+					{
+						buttons[DOWN] = false;
+						cursor->selection++;
+						if (cursor->selection > 1)
+						{
+							cursor->selection = 0;
+						}
+					}
+					if (buttons[ATTACK])
+					{
+						buttons[ATTACK] = false;
+						currentMenu = OPTIONS;
+						cursor->selection = 0;
+					}
+					break;
+				}
+				case CONTROLS:
+				{
+					if (buttons[PAUSE] || buttons[JUMP])
+					{
+						buttons[PAUSE] = false;
+						buttons[JUMP] = false;
+						currentMenu = OPTIONS;
+						cursor->selection = 0;
+					}
+					if (buttons[ATTACK])
+					{
+						buttons[ATTACK] = false;
+						currentMenu = OPTIONS;
+						cursor->selection = 0;
+					}
+					break;
+				}
+				case RESOLUTION:
+				{
+					if (buttons[PAUSE] || buttons[JUMP])
+					{
+						buttons[PAUSE] = false;
+						buttons[JUMP] = false;
+
+						if (al_get_display_flags(display) & ALLEGRO_FULLSCREEN)
+						{
+							al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+						}
+						else
+						{
+							al_set_new_display_flags(ALLEGRO_WINDOWED);
+						}
+						al_destroy_display(display);
+						display = NULL;
+
+						al_destroy_bitmap(buffer);
+						buffer = NULL;
+
+						al_destroy_font(mainFnt);
+						al_destroy_font(mainFnt2X);
+						al_destroy_font(mainFnt3X);
+						al_destroy_font(mainFnt4X);
+
+						al_destroy_bitmap(titleSpr);
+
+						al_destroy_bitmap(tempBitmap1);
+						al_destroy_bitmap(tempBitmap2);
+
+						for (unsigned int i = 0; i < tile16List.size(); i++)
+						{
+							al_destroy_bitmap(tile16List[i]);
+						}
+
+						for (unsigned int i = 0; i < levelTileList.size(); i++)
+						{
+							al_destroy_bitmap(levelTileList[i]);
+						}
+
+						al_destroy_bitmap(cursorSpr);
+
+						switch (cursor->selection)
+						{
+							case 0:
+							{
+								width = 320;
+								height = 240;
+								break;
+							}
+							case 1:
+							{
+								width = 640;
+								height = 480;
+								break;
+							}
+							case 2:
+							{
+								width = 800;
+								height = 600;
+								break;
+							}
+							case 3:
+							{
+								width = 1024;
+								height = 768;
+								break;
+							}
+							case 4:
+							{
+								width = 1152;
+								height = 864;
+								break;
+							}
+							case 5:
+							{
+								width = 1280;
+								height = 960;
+								break;
+							}
+							case 6:
+							{
+								width = 1400;
+								height = 1050;
+								break;
+							}
+							case 7:
+							{
+								width = 1600;
+								height = 1200;
+								break;
+							}
+						}
+						display = al_create_display(width, height);
+
+						buffer = al_create_bitmap(1024, 768);
+
+						mainFnt = al_load_bitmap_font("Graphics/Fonts/mainFnt.png");
+						mainFnt2X = al_load_bitmap_font("Graphics/Fonts/mainFnt_2X.png");
+						mainFnt3X = al_load_bitmap_font("Graphics/Fonts/mainFnt_3X.png");
+						mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
+
+						titleSpr = al_load_bitmap("Graphics/Menu/title.png");
+
+						tile16List.clear();
+						tile32List.clear();
+						tile64List.clear();
+						tile128List.clear();
+						levelTiles.clear();
+						levelTileList.clear();
+
+						al_destroy_bitmap(collisionBitmap);
+						al_destroy_bitmap(levelBitmap);
+
+						reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
+						reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight);
+						levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
+
+						reader->DrawLevel(levelTiles, &collisionBitmap, levelWidth, levelHeight, tile16List);
+						reader->DrawLevel(levelTiles, &levelBitmap, levelWidth, levelHeight, levelTileList);
+
+						tempBitmap1 = al_create_bitmap(256, 256);
+						tempBitmap2 = al_create_bitmap(256, 256);
+
+						cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
+						cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
+					}
+					if (buttons[UP])
+					{
+						buttons[UP] = false;
+						cursor->selection--;
+						if (cursor->selection < 0)
+						{
+							cursor->selection = 7;
+						}
+					}
+					if (buttons[DOWN])
+					{
+						buttons[DOWN] = false;
+						cursor->selection++;
+						if (cursor->selection > 7)
+						{
+							cursor->selection = 0;
+						}
+					}
+					if (buttons[ATTACK])
+					{
+						buttons[ATTACK] = false;
+						currentMenu = VIDEO;
+						cursor->selection = 0;
+					}
+					break;
 				}
 			}
 			break;
@@ -373,9 +847,9 @@ void Game::Update()
 		{
 			// Insert input here.
 
-			if (buttons[ENTER])
+			if (buttons[PAUSE])
 			{
-				buttons[ENTER] = false;
+				buttons[PAUSE] = false;
 			}
 			if (buttons[LEFT])
 			{
@@ -391,9 +865,9 @@ void Game::Update()
 			{
 				player1->FastFall(buttons[DOWN], buttonsPrev[DOWN]);
 			}
-			if (buttons[Z])
+			if (buttons[JUMP])
 			{
-				player1->Jump(buttons, Z, LEFT, RIGHT);
+				player1->Jump(buttons, JUMP, LEFT, RIGHT);
 			}
 
 			// Here goes checking if any buttons are UP->
@@ -422,7 +896,7 @@ void Game::Update()
 			camera->CalculateDistance(player1->x + (player1->width / 2), player1->y + (player1->height / 2), player2->x + (player2->width / 2), player2->y + (player2->height / 2));
 			camera->Update(levelWidth, levelHeight);
 
-			player1->Update(buttons, Z, LEFT, RIGHT);
+			player1->Update(buttons, JUMP, LEFT, RIGHT);
 			// Collision time, boyo! That means that we need to draw a region of the collision bitmap to a new bitmap so we don't expend a shit-ton of time
 			// Implement the following when you feel like going through hell in refactoring your collision code
 			// ALLEGRO_BITMAP* tempBitmap = al_create_bitmap(256, 256);
@@ -440,7 +914,7 @@ void Game::Update()
 			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
 			al_draw_bitmap_region(collisionBitmap, player2->x, player2->y, 256, 256, 0, 0, NULL);
-			player2->Update(buttons, Z, LEFT, RIGHT);
+			player2->Update(buttons, JUMP, LEFT, RIGHT);
 			player2->Collision(&tempBitmap2, levelWidth, levelHeight, buttons[DOWN]);
 			// player2->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
 			player2->Animate(buttons, LEFT, RIGHT, DOWN);
@@ -459,7 +933,7 @@ void Game::Update()
 
 void Game::Draw()
 {
-	al_set_target_backbuffer(display);
+	al_set_target_bitmap(buffer);
 	switch (currentState)
 	{
 		case TITLE:
@@ -469,8 +943,10 @@ void Game::Draw()
 			// Text Testing
 			// al_draw_bitmap(test, 0, 0, NULL);
 
-			al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-			al_draw_text(mainFnt, al_map_rgb(0, 0, 0), width / 2, 240, ALLEGRO_ALIGN_CENTER, "Press Enter");
+			al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+			al_draw_text(mainFnt, al_map_rgb(0, 0, 0), 1024 / 2, 240, ALLEGRO_ALIGN_CENTER, "Press Enter");
+			al_set_target_backbuffer(display);
+			al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
 			al_flip_display();
 			break;
 		}
@@ -481,11 +957,102 @@ void Game::Draw()
 				case MAIN:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE YOUR CHARACTER");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "John Egbert");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "Rose Lalonde");
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "MAIN MENU");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "STRIFE!");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "OPTIONS");
+					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_set_target_backbuffer(display);
+					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
+					al_flip_display();
+					break;
+				}
+				case OPTIONS:
+				{
+					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "OPTIONS");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "SOUND");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "VIDEO");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 384, ALLEGRO_ALIGN_CENTER, "CONTROLS");
+					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_set_target_backbuffer(display);
+					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
+					al_flip_display();
+					break;
+				}
+				case CHARACTER:
+				{
+					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE YOUR CHARACTER");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "John Egbert");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "Rose Lalonde");
+					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_set_target_backbuffer(display);
+					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
+					al_flip_display();
+					break;
+				}
+				case STAGE:
+				{
+					break;
+				}
+				case SOUND:
+				{
+					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "SOUND");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "lol there's nothing here yet");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "GO BACK");
+					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, 352 - (cursor->height / 4), NULL);
+					al_set_target_backbuffer(display);
+					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
+					al_flip_display();
+					break;
+				}
+				case VIDEO:
+				{
+					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "VIDEO");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "RESOLUTION");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "FULLSCREEN");
+					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_set_target_backbuffer(display);
+					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
+					al_flip_display();
+					break;
+				}
+				case CONTROLS:
+				{
+					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "CONTROLS");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "lol there's nothing here yet");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "GO BACK");
+					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, 352 - (cursor->height / 4), NULL);
+					al_set_target_backbuffer(display);
+					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
+					al_flip_display();
+					break;
+				}
+				case RESOLUTION:
+				{
+					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_bitmap(titleSpr, (1024 / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (1024 / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A RESOLUTION");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 320, ALLEGRO_ALIGN_CENTER, "320 X 240");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 352, ALLEGRO_ALIGN_CENTER, "640 X 480");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 384, ALLEGRO_ALIGN_CENTER, "800 X 600");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 416, ALLEGRO_ALIGN_CENTER, "1024 X 768");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 448, ALLEGRO_ALIGN_CENTER, "1152 X 864");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 480, ALLEGRO_ALIGN_CENTER, "1280 X 960");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 512, ALLEGRO_ALIGN_CENTER, "1400 X 1050");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (1024 / 2), 544, ALLEGRO_ALIGN_CENTER, "1600 X 1200");
+					al_draw_bitmap(cursor->sprite, (cursor->x * (1024 / (float)width)) - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_set_target_backbuffer(display);
+					al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
 					al_flip_display();
 					break;
 				}
@@ -496,7 +1063,7 @@ void Game::Draw()
 		{
 			al_clear_to_color(al_map_rgb(128, 128, 128));
 
-			al_draw_scaled_bitmap(levelBitmap, camera->x, camera->y, width * camera->scale, height * camera->scale, 0, 0, width, height, NULL);
+			al_draw_scaled_bitmap(levelBitmap, camera->x, camera->y, 1024 * camera->scale, 768 * camera->scale, 0, 0, 1024, 768, NULL);
 
 			switch (player1->direction)
 			{
@@ -532,6 +1099,9 @@ void Game::Draw()
 			//al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%i %i %i", player1->runTimer, buttonsPrev[RIGHT], player1->isRunning);
 			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f", camera->zSpeed);
 
+			al_set_target_backbuffer(display);
+			al_draw_scaled_bitmap(buffer, 0, 0, 1024, 768, 0, 0, width, height, NULL);
+
 			al_flip_display();
 			break;
 		}
@@ -544,6 +1114,7 @@ void Game::End()
 	// The user has quit; time to clean up and end the program->
 
 	al_destroy_display(display);
+	al_destroy_bitmap(buffer);
 	al_destroy_timer(timer);
 	al_destroy_event_queue(event);
 
