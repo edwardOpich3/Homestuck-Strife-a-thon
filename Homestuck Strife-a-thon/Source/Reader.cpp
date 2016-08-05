@@ -117,7 +117,8 @@ void Reader::LoadLevel(std::vector<Tile> *level, std::vector<ALLEGRO_BITMAP*> *l
 
 	std::ifstream myStream;
 	unsigned char temp[4];
-	myStream.open(levelName, myStream.binary | myStream.in);
+	path = "Levels/"; path += levelName; path += ".lvl";
+	myStream.open(path, myStream.binary | myStream.in);
 
 	myStream.read((char*)temp, 4);
 	*width = ReadInt(temp);
@@ -154,7 +155,11 @@ void Reader::LoadLevelNames(std::vector<std::string> *levelNames)
 	{
 		if (al_get_fs_entry_mode(file) & ALLEGRO_FILEMODE_ISFILE)
 		{
-			levelNames->push_back(al_get_fs_entry_name(file));
+			std::string currentName = al_get_fs_entry_name(file);
+			std::string path = al_get_fs_entry_name(directory);
+			currentName = currentName.substr(path.size() + 1, currentName.npos);
+			currentName = currentName.substr(0, currentName.size() - 4);
+			levelNames->push_back(currentName);
 			al_destroy_fs_entry(file);
 		}
 	}

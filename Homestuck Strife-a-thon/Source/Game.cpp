@@ -565,7 +565,7 @@ void Game::Update()
 					{
 						buttons[UP] = false;
 						cursor->selection--;
-						if (cursor->selection > levelNames.size() - 1)
+						if (cursor->selection < 0)
 						{
 							cursor->selection = levelNames.size() - 1;
 						}
@@ -574,7 +574,7 @@ void Game::Update()
 					{
 						buttons[DOWN] = false;
 						cursor->selection++;
-						if (cursor->selection > levelNames.size() - 1)
+						if ((unsigned int)cursor->selection > levelNames.size() - 1)
 						{
 							cursor->selection = 0;
 						}
@@ -584,6 +584,8 @@ void Game::Update()
 						buttons[ATTACK] = false;
 						currentMenu = CHARACTER;
 						cursor->selection = 0;
+						al_destroy_bitmap(player1->sprite);
+						player1->sprite = NULL;
 					}
 					break;
 				}
