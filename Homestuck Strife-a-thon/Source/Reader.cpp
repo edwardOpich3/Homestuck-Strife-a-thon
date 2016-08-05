@@ -105,7 +105,7 @@ void Reader::LoadTiles(std::vector<ALLEGRO_BITMAP*> *tile16List, std::vector<std
 	}
 }
 
-void Reader::LoadLevel(std::vector<Tile> *level, std::vector<ALLEGRO_BITMAP*> *levelTileList, int *width, int *height)
+void Reader::LoadLevel(std::vector<Tile> *level, std::vector<ALLEGRO_BITMAP*> *levelTileList, int *width, int *height, const char* levelName)
 {
 	// Load in the size 16 tiles
 	std::string path = "Graphics/Levels/0 - LOWAS/tiles/0.png";
@@ -117,7 +117,7 @@ void Reader::LoadLevel(std::vector<Tile> *level, std::vector<ALLEGRO_BITMAP*> *l
 
 	std::ifstream myStream;
 	unsigned char temp[4];
-	myStream.open("Levels/Battlefield.lvl", myStream.binary | myStream.in);
+	myStream.open(levelName, myStream.binary | myStream.in);
 
 	myStream.read((char*)temp, 4);
 	*width = ReadInt(temp);
@@ -142,6 +142,23 @@ void Reader::LoadLevel(std::vector<Tile> *level, std::vector<ALLEGRO_BITMAP*> *l
 		level->push_back(Tile(type, x, y, size));
 	}
 	myStream.close();
+}
+
+void Reader::LoadLevelNames(std::vector<std::string> *levelNames)
+{
+	ALLEGRO_FS_ENTRY* directory = al_create_fs_entry("Levels");
+	al_open_directory(directory);
+
+	ALLEGRO_FS_ENTRY* file;
+	while (file = al_read_directory(directory))
+	{
+		if (al_get_fs_entry_mode(file) & ALLEGRO_FILEMODE_ISFILE)
+		{
+			levelNames->push_back(al_get_fs_entry_name(file));
+			al_destroy_fs_entry(file);
+		}
+	}
+	al_destroy_fs_entry(directory);
 }
 
 int Reader::ReadInt(unsigned char temp[4])

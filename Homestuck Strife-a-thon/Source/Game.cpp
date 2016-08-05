@@ -119,7 +119,9 @@ bool Game::Initialize()
 
 	// NOTE: Later on, move these so that they only happen upon loading any/a level for the first time, respectively
 	//	Also, LoadLevels needs to be changed to load only a single level, based on a number passed in.
-	reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
+	reader->LoadLevelNames(&levelNames);
+
+	/*reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
 	reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight);
 	levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
 
@@ -131,7 +133,7 @@ bool Game::Initialize()
 	{
 		al_destroy_bitmap(levelTileList[i]);
 	}
-	levelTileList.clear();
+	levelTileList.clear();*/
 
 	// Set up your window!
 
@@ -477,7 +479,6 @@ void Game::Update()
 						// Unload all content being used for the menu
 						al_destroy_sample_instance(BGM);
 						al_destroy_sample(soundtrack);
-						al_destroy_bitmap(cursorSpr);
 
 						switch (cursor->selection)
 						{
@@ -503,11 +504,12 @@ void Game::Update()
 							}
 						}
 						player2->direction = -1;
-						al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
+						/*al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
 						al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 						//al_play_sample_instance(BGM);
-						camera = new Camera(0, 0);
-						currentState = GAME;
+						camera = new Camera(0, 0);*/
+						cursor->selection = 0;
+						currentMenu = STAGE;
 					}
 					if (buttons[UP])
 					{
@@ -537,6 +539,52 @@ void Game::Update()
 				}
 				case STAGE:
 				{
+					if (buttons[PAUSE] || buttons[JUMP])
+					{
+						buttons[PAUSE] = false;
+						buttons[JUMP] = false;
+
+						reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
+						reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight, levelNames[cursor->selection].c_str());
+						levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
+
+						reader->DrawLevel(levelTiles, &collisionBitmap, levelWidth, levelHeight, tile16List);
+						reader->DrawLevel(levelTiles, &levelBitmap, levelWidth, levelHeight, levelTileList);
+						for (unsigned int i = 0; i < levelTileList.size(); i++)
+						{
+							al_destroy_bitmap(levelTileList[i]);
+						}
+
+						al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
+						al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
+						//al_play_sample_instance(BGM);
+						camera = new Camera(0, 0);
+						currentState = GAME;
+					}
+					if (buttons[UP])
+					{
+						buttons[UP] = false;
+						cursor->selection--;
+						if (cursor->selection > levelNames.size() - 1)
+						{
+							cursor->selection = levelNames.size() - 1;
+						}
+					}
+					if (buttons[DOWN])
+					{
+						buttons[DOWN] = false;
+						cursor->selection++;
+						if (cursor->selection > levelNames.size() - 1)
+						{
+							cursor->selection = 0;
+						}
+					}
+					if (buttons[ATTACK])
+					{
+						buttons[ATTACK] = false;
+						currentMenu = CHARACTER;
+						cursor->selection = 0;
+					}
 					break;
 				}
 				case SOUND:
@@ -615,23 +663,6 @@ void Game::Update()
 								mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
 
 								titleSpr = al_load_bitmap("Graphics/Menu/title.png");
-
-								tile16List.clear();
-								tile32List.clear();
-								tile64List.clear();
-								tile128List.clear();
-								levelTiles.clear();
-								levelTileList.clear();
-								
-								al_destroy_bitmap(collisionBitmap);
-								al_destroy_bitmap(levelBitmap);
-
-								reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
-								reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight);
-								levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
-
-								reader->DrawLevel(levelTiles, &collisionBitmap, levelWidth, levelHeight, tile16List);
-								reader->DrawLevel(levelTiles, &levelBitmap, levelWidth, levelHeight, levelTileList);
 
 								tempBitmap1 = al_create_bitmap(256, 256);
 								tempBitmap2 = al_create_bitmap(256, 256);
@@ -717,16 +748,6 @@ void Game::Update()
 						al_destroy_bitmap(tempBitmap1);
 						al_destroy_bitmap(tempBitmap2);
 
-						for (unsigned int i = 0; i < tile16List.size(); i++)
-						{
-							al_destroy_bitmap(tile16List[i]);
-						}
-
-						for (unsigned int i = 0; i < levelTileList.size(); i++)
-						{
-							al_destroy_bitmap(levelTileList[i]);
-						}
-
 						al_destroy_bitmap(cursorSpr);
 
 						switch (cursor->selection)
@@ -790,23 +811,6 @@ void Game::Update()
 						mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
 
 						titleSpr = al_load_bitmap("Graphics/Menu/title.png");
-
-						tile16List.clear();
-						tile32List.clear();
-						tile64List.clear();
-						tile128List.clear();
-						levelTiles.clear();
-						levelTileList.clear();
-
-						al_destroy_bitmap(collisionBitmap);
-						al_destroy_bitmap(levelBitmap);
-
-						reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
-						reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight);
-						levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
-
-						reader->DrawLevel(levelTiles, &collisionBitmap, levelWidth, levelHeight, tile16List);
-						reader->DrawLevel(levelTiles, &levelBitmap, levelWidth, levelHeight, levelTileList);
 
 						tempBitmap1 = al_create_bitmap(256, 256);
 						tempBitmap2 = al_create_bitmap(256, 256);
@@ -984,6 +988,14 @@ void Game::Draw()
 				}
 				case STAGE:
 				{
+					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A STAGE");
+					for (unsigned int i = 0; i < levelNames.size(); i++)
+					{
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 + (i * 32), ALLEGRO_ALIGN_CENTER, levelNames[i].c_str());
+					}
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					break;
 				}
 				case SOUND:

@@ -5,7 +5,7 @@ class Cursor
 {
 public:
 	ALLEGRO_BITMAP *sprite;
-	int selection;
+	unsigned int selection;
 
 	int x, y, width, height;
 

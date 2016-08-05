@@ -60,6 +60,7 @@ public:
 	ALLEGRO_BITMAP *levelBitmap;
 	ALLEGRO_BITMAP *collisionBitmap;
 	int levelWidth, levelHeight;
+	std::vector<std::string> levelNames;
 
 	// Cursor
 	Cursor *cursor;
