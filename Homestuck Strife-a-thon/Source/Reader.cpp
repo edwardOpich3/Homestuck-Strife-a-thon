@@ -251,3 +251,30 @@ void Reader::DrawLevel(std::vector<Tile> level, ALLEGRO_BITMAP **levelBitmap, in
 		al_draw_bitmap(tile16List[level[i].type], level[i].x, level[i].y, NULL);
 	}
 }
+
+void Reader::LoadControls(Control **control)
+{
+	if (!al_filename_exists("Config/controls.dat"))
+	{
+		control[0]->port = -1;
+		control[0]->buttonHandles.clear();
+		control[0]->buttons.clear();
+		control[0]->buttonsPrev.clear();
+		for (int i = 0; i < 10; i++)
+		{
+			control[0]->buttons.push_back(false);
+			control[0]->buttonsPrev.push_back(false);
+		}
+
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_RIGHT);
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_UP);
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_LEFT);
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_DOWN);
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_ENTER);
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_Z);
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_X);
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_C);
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_A);
+		control[0]->buttonHandles.push_back(ALLEGRO_KEY_S);
+	}
+}

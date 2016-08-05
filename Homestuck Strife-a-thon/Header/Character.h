@@ -3,6 +3,7 @@
 #include "allegro5\allegro.h"
 #include <vector>
 #include "Header\Tile.h"
+#include "Header\Control.h"
 
 class Character
 {
@@ -62,16 +63,21 @@ public:
 	int spawnX;
 	int spawnY;
 
-	Character(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY);
+	// Controls
+	Control **control;
+
+	Character(int spawnX, int spawnY, Control **control);
 	Character();
 	virtual ~Character();
 
+	virtual void GetInput();
+
 	virtual void Move(int vector);
-	virtual void Jump(bool buttons[6], int Z, int LEFT, int RIGHT);
+	virtual void Jump(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT);
 	virtual void FastFall(bool current, bool previous);
 	virtual void Run(bool current, bool previous);
 	virtual void Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int levelHeight, bool DOWN);
-	virtual void Update(bool buttons[6], int Z, int LEFT, int RIGHT);
-	virtual void Animate(bool buttons[6], int LEFT, int RIGHT, int DOWN);
+	virtual void Update(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT);
+	virtual void Animate(std::vector<bool> *buttons, int LEFT, int RIGHT, int DOWN);
 };
 

@@ -3,7 +3,7 @@
 class Rose : public Character
 {
 public:
-	Rose(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY);
+	Rose(int spawnX, int spawnY, Control** control);
 	Rose();
 	~Rose();
 };

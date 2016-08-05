@@ -3,7 +3,7 @@
 class John : public Character
 {
 public:
-	John(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY);
+	John(int spawnX, int spawnY, Control **control);
 	John();
 	~John();
 };

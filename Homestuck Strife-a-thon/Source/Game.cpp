@@ -18,10 +18,10 @@ Game::Game()
 
 	cursorSpr = NULL;
 
-	johnSpr = NULL;
-	roseSpr = NULL;
-
 	soundtrack = NULL;
+
+	controllers.push_back(new Control());
+	isCustomizing = false;
 
 	// DEBUG
 	tempBitmap1 = NULL;
@@ -85,6 +85,7 @@ bool Game::Initialize()
 	al_install_audio();
 
 	al_init_image_addon();
+	al_init_primitives_addon();
 	al_init_font_addon();
 	al_init_ttf_addon();
 	al_init_acodec_addon();
@@ -146,6 +147,8 @@ bool Game::Initialize()
 	al_install_keyboard();
 	al_install_joystick();
 
+	reader->LoadControls(&controllers[0]);
+
 	// Register your event sources!
 
 	al_register_event_source(event, al_get_keyboard_event_source());
@@ -166,67 +169,66 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 	if (e.type == ALLEGRO_EVENT_KEY_DOWN)
 	{
-		switch (e.keyboard.keycode)
+		if (e.keyboard.keycode == controllers[0]->buttonHandles[RIGHT])
 		{
-			case ALLEGRO_KEY_RIGHT:
+			controllers[0]->buttons[RIGHT] = true;
+		}
+
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[UP])
+		{
+			controllers[0]->buttons[UP] = true;
+		}
+
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[LEFT])
+		{
+			controllers[0]->buttons[LEFT] = true;
+		}
+
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[DOWN])
+		{
+			controllers[0]->buttons[DOWN] = true;
+		}
+
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[PAUSE])
+		{
+			controllers[0]->buttons[PAUSE] = true;
+		}
+
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[JUMP])
+		{
+			controllers[0]->buttons[JUMP] = true;
+		}
+
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[ATTACK])
+		{
+			controllers[0]->buttons[ATTACK] = true;
+		}
+
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[SPECIAL])
+		{
+			controllers[0]->buttons[SPECIAL] = true;
+		}
+
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[BLOCK])
+		{
+			controllers[0]->buttons[BLOCK] = true;
+		}
+
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[TAUNT])
+		{
+			controllers[0]->buttons[TAUNT] = true;
+		}
+
+		if (isCustomizing)
+		{
+			controllers[0]->buttonHandles[cursor->selection] = e.keyboard.keycode;
+
+			for (unsigned int i = 0; i < controllers[0]->buttons.size(); i++)
 			{
-				buttons[RIGHT] = true;
-				break;
+				controllers[0]->buttons[i] = false;
 			}
 
-			case ALLEGRO_KEY_UP:
-			{
-				buttons[UP] = true;
-				break;
-			}
-
-			case ALLEGRO_KEY_LEFT:
-			{
-				buttons[LEFT] = true;
-				break;
-			}
-
-			case ALLEGRO_KEY_DOWN:
-			{
-				buttons[DOWN] = true;
-				break;
-			}
-
-			case ALLEGRO_KEY_ENTER:
-			{
-				buttons[PAUSE] = true;
-				break;
-			}
-
-			case ALLEGRO_KEY_Z:
-			{
-				buttons[JUMP] = true;
-				break;
-			}
-
-			case ALLEGRO_KEY_X:
-			{
-				buttons[ATTACK] = true;
-				break;
-			}
-
-			case ALLEGRO_KEY_C:
-			{
-				buttons[SPECIAL] = true;
-				break;
-			}
-
-			case ALLEGRO_KEY_A:
-			{
-				buttons[BLOCK] = true;
-				break;
-			}
-
-			case ALLEGRO_KEY_S:
-			{
-				buttons[TAUNT] = true;
-				break;
-			}
+			isCustomizing = false;
 		}
 	}
 
@@ -236,77 +238,62 @@ void Game::GetInput(ALLEGRO_EVENT e)
 	{
 		// When escape is released, ask if user wants to quit!
 
-		switch (e.keyboard.keycode)
-		{
-		case ALLEGRO_KEY_ESCAPE:
+		if(e.keyboard.keycode == ALLEGRO_KEY_ESCAPE)
 		{
 			quit = true;
-			break;
 		}
 
-		case ALLEGRO_KEY_RIGHT:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[RIGHT])
 		{
-			buttons[RIGHT] = false;
-			break;
+			controllers[0]->buttons[RIGHT] = false;
 		}
 
-		case ALLEGRO_KEY_UP:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[UP])
 		{
-			buttons[UP] = false;
-			break;
+			controllers[0]->buttons[UP] = false;
 		}
 
-		case ALLEGRO_KEY_LEFT:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[LEFT])
 		{
-			buttons[LEFT] = false;
-			break;
+			controllers[0]->buttons[LEFT] = false;
 		}
 
-		case ALLEGRO_KEY_DOWN:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[DOWN])
 		{
-			buttons[DOWN] = false;
-			break;
+			controllers[0]->buttons[DOWN] = false;
 		}
 
-		case ALLEGRO_KEY_ENTER:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[PAUSE])
 		{
-			buttons[PAUSE] = false;
-			break;
+			controllers[0]->buttons[PAUSE] = false;
 		}
 
-		case ALLEGRO_KEY_Z:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[JUMP])
 		{
-			buttons[JUMP] = false;
-			break;
+			controllers[0]->buttons[JUMP] = false;
 		}
 
-		case ALLEGRO_KEY_X:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[ATTACK])
 		{
-			buttons[ATTACK] = false;
-			break;
+			controllers[0]->buttons[ATTACK] = false;
 		}
 
-		case ALLEGRO_KEY_C:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[SPECIAL])
 		{
-			buttons[SPECIAL] = false;
-			break;
+			controllers[0]->buttons[SPECIAL] = false;
 		}
 
-		case ALLEGRO_KEY_A:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[BLOCK])
 		{
-			buttons[BLOCK] = false;
-			break;
+			controllers[0]->buttons[BLOCK] = false;
 		}
 
-		case ALLEGRO_KEY_S:
+		else if (e.keyboard.keycode == controllers[0]->buttonHandles[TAUNT])
 		{
-			buttons[TAUNT] = false;
-			break;
+			controllers[0]->buttons[TAUNT] = false;
 		}
 
 		// Insert other released keys here.
-
-		}
 	}
 
 	// If the 'X' button on the window is pressed...
@@ -338,9 +325,9 @@ void Game::Update()
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 				//al_play_sample_instance(BGM);
 			}
-			if (buttons[PAUSE])
+			if (controllers[0]->buttons[PAUSE])
 			{
-				buttons[PAUSE] = false;
+				controllers[0]->buttons[PAUSE] = false;
 				al_stop_sample_instance(BGM);
 
 				// Unload all content being used for the title screen
@@ -366,10 +353,10 @@ void Game::Update()
 			{
 				case MAIN:
 				{
-					if (buttons[PAUSE] || buttons[JUMP])
+					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
 					{
-						buttons[PAUSE] = false;
-						buttons[JUMP] = false;
+						controllers[0]->buttons[PAUSE] = false;
+						controllers[0]->buttons[JUMP] = false;
 
 						switch (cursor->selection)
 						{
@@ -387,27 +374,27 @@ void Game::Update()
 							}
 						}
 					}
-					if (buttons[UP])
+					if (controllers[0]->buttons[UP])
 					{
-						buttons[UP] = false;
+						controllers[0]->buttons[UP] = false;
 						cursor->selection--;
 						if (cursor->selection < 0)
 						{
 							cursor->selection = 1;
 						}
 					}
-					if (buttons[DOWN])
+					if (controllers[0]->buttons[DOWN])
 					{
-						buttons[DOWN] = false;
+						controllers[0]->buttons[DOWN] = false;
 						cursor->selection++;
 						if (cursor->selection > 1)
 						{
 							cursor->selection = 0;
 						}
 					}
-					if (buttons[ATTACK])
+					if (controllers[0]->buttons[ATTACK])
 					{
-						buttons[ATTACK] = false;
+						controllers[0]->buttons[ATTACK] = false;
 						currentState = TITLE;
 						cursor->selection = 0;
 					}
@@ -415,10 +402,10 @@ void Game::Update()
 				}
 				case OPTIONS:
 				{
-					if (buttons[PAUSE] || buttons[JUMP])
+					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
 					{
-						buttons[PAUSE] = false;
-						buttons[JUMP] = false;
+						controllers[0]->buttons[PAUSE] = false;
+						controllers[0]->buttons[JUMP] = false;
 
 						switch (cursor->selection)
 						{
@@ -442,27 +429,27 @@ void Game::Update()
 							}
 						}
 					}
-					if (buttons[UP])
+					if (controllers[0]->buttons[UP])
 					{
-						buttons[UP] = false;
+						controllers[0]->buttons[UP] = false;
 						cursor->selection--;
 						if (cursor->selection < 0)
 						{
 							cursor->selection = 2;
 						}
 					}
-					if (buttons[DOWN])
+					if (controllers[0]->buttons[DOWN])
 					{
-						buttons[DOWN] = false;
+						controllers[0]->buttons[DOWN] = false;
 						cursor->selection++;
 						if (cursor->selection > 2)
 						{
 							cursor->selection = 0;
 						}
 					}
-					if (buttons[ATTACK])
+					if (controllers[0]->buttons[ATTACK])
 					{
-						buttons[ATTACK] = false;
+						controllers[0]->buttons[ATTACK] = false;
 						currentMenu = MAIN;
 						cursor->selection = 0;
 					}
@@ -470,10 +457,10 @@ void Game::Update()
 				}
 				case CHARACTER:
 				{
-					if (buttons[PAUSE] || buttons[JUMP])
+					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
 					{
-						buttons[PAUSE] = false;
-						buttons[JUMP] = false;
+						controllers[0]->buttons[PAUSE] = false;
+						controllers[0]->buttons[JUMP] = false;
 						al_stop_sample_instance(BGM);
 
 						// Unload all content being used for the menu
@@ -484,20 +471,21 @@ void Game::Update()
 						{
 							case 0:
 							{
-								johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
-								roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
-								player1 = new John(johnSpr, 128, 128);
-								player2 = new John(johnSpr, 896 - 512, 128);
+								player1 = new John(128, 128, &controllers[0]);
+								player1->sprite = al_load_bitmap("Graphics/Sprites/john.png");
+
+								player2 = new John(896 - 512, 128, &controllers[0]);
+								player2->sprite = al_load_bitmap("Graphics/Sprites/john.png");
 								soundtrack = al_load_sample("Audio/Music/john.ogg");
 								BGM = al_create_sample_instance(soundtrack);
 								break;
 							}
 							case 1:
 							{
-								johnSpr = al_load_bitmap("Graphics/Sprites/john.png");
-								roseSpr = al_load_bitmap("Graphics/Sprites/rose.png");
-								player1 = new Rose(roseSpr, 128, 128);
-								player2 = new John(johnSpr, 896 - 256, 128);
+								player1 = new Rose(128, 128, &controllers[0]);
+								player2 = new John(896 - 256, 128, &controllers[0]);
+								player1->sprite = al_load_bitmap("Graphics/Sprites/john.png");
+								player2->sprite = al_load_bitmap("Graphics/Sprites/john.png");
 								soundtrack = al_load_sample("Audio/Music/rose.ogg");
 								BGM = al_create_sample_instance(soundtrack);
 								break;
@@ -511,27 +499,27 @@ void Game::Update()
 						cursor->selection = 0;
 						currentMenu = STAGE;
 					}
-					if (buttons[UP])
+					if (controllers[0]->buttons[UP])
 					{
-						buttons[UP] = false;
+						controllers[0]->buttons[UP] = false;
 						cursor->selection--;
 						if (cursor->selection < 0)
 						{
 							cursor->selection = 1;
 						}
 					}
-					if (buttons[DOWN])
+					if (controllers[0]->buttons[DOWN])
 					{
-						buttons[DOWN] = false;
+						controllers[0]->buttons[DOWN] = false;
 						cursor->selection++;
 						if (cursor->selection > 1)
 						{
 							cursor->selection = 0;
 						}
 					}
-					if (buttons[ATTACK])
+					if (controllers[0]->buttons[ATTACK])
 					{
-						buttons[ATTACK] = false;
+						controllers[0]->buttons[ATTACK] = false;
 						currentMenu = MAIN;
 						cursor->selection = 0;
 					}
@@ -539,10 +527,10 @@ void Game::Update()
 				}
 				case STAGE:
 				{
-					if (buttons[PAUSE] || buttons[JUMP])
+					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
 					{
-						buttons[PAUSE] = false;
-						buttons[JUMP] = false;
+						controllers[0]->buttons[PAUSE] = false;
+						controllers[0]->buttons[JUMP] = false;
 
 						reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
 						reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight, levelNames[cursor->selection].c_str());
@@ -561,27 +549,27 @@ void Game::Update()
 						camera = new Camera(0, 0);
 						currentState = GAME;
 					}
-					if (buttons[UP])
+					if (controllers[0]->buttons[UP])
 					{
-						buttons[UP] = false;
+						controllers[0]->buttons[UP] = false;
 						cursor->selection--;
 						if (cursor->selection < 0)
 						{
 							cursor->selection = levelNames.size() - 1;
 						}
 					}
-					if (buttons[DOWN])
+					if (controllers[0]->buttons[DOWN])
 					{
-						buttons[DOWN] = false;
+						controllers[0]->buttons[DOWN] = false;
 						cursor->selection++;
 						if ((unsigned int)cursor->selection > levelNames.size() - 1)
 						{
 							cursor->selection = 0;
 						}
 					}
-					if (buttons[ATTACK])
+					if (controllers[0]->buttons[ATTACK])
 					{
-						buttons[ATTACK] = false;
+						controllers[0]->buttons[ATTACK] = false;
 						currentMenu = CHARACTER;
 						cursor->selection = 0;
 						al_destroy_bitmap(player1->sprite);
@@ -591,16 +579,16 @@ void Game::Update()
 				}
 				case SOUND:
 				{
-					if (buttons[PAUSE] || buttons[JUMP])
+					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
 					{
-						buttons[PAUSE] = false;
-						buttons[JUMP] = false;
+						controllers[0]->buttons[PAUSE] = false;
+						controllers[0]->buttons[JUMP] = false;
 						currentMenu = OPTIONS;
 						cursor->selection = 0;
 					}
-					if (buttons[ATTACK])
+					if (controllers[0]->buttons[ATTACK])
 					{
-						buttons[ATTACK] = false;
+						controllers[0]->buttons[ATTACK] = false;
 						currentMenu = OPTIONS;
 						cursor->selection = 0;
 					}
@@ -608,10 +596,10 @@ void Game::Update()
 				}
 				case VIDEO:
 				{
-					if (buttons[PAUSE] || buttons[JUMP])
+					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
 					{
-						buttons[PAUSE] = false;
-						buttons[JUMP] = false;
+						controllers[0]->buttons[PAUSE] = false;
+						controllers[0]->buttons[JUMP] = false;
 
 						switch (cursor->selection)
 						{
@@ -676,27 +664,27 @@ void Game::Update()
 							}
 						}
 					}
-					if (buttons[UP])
+					if (controllers[0]->buttons[UP])
 					{
-						buttons[UP] = false;
+						controllers[0]->buttons[UP] = false;
 						cursor->selection--;
 						if (cursor->selection < 0)
 						{
 							cursor->selection = 1;
 						}
 					}
-					if (buttons[DOWN])
+					if (controllers[0]->buttons[DOWN])
 					{
-						buttons[DOWN] = false;
+						controllers[0]->buttons[DOWN] = false;
 						cursor->selection++;
 						if (cursor->selection > 1)
 						{
 							cursor->selection = 0;
 						}
 					}
-					if (buttons[ATTACK])
+					if (controllers[0]->buttons[ATTACK])
 					{
-						buttons[ATTACK] = false;
+						controllers[0]->buttons[ATTACK] = false;
 						currentMenu = OPTIONS;
 						cursor->selection = 0;
 					}
@@ -704,27 +692,49 @@ void Game::Update()
 				}
 				case CONTROLS:
 				{
-					if (buttons[PAUSE] || buttons[JUMP])
+					if (!isCustomizing)
 					{
-						buttons[PAUSE] = false;
-						buttons[JUMP] = false;
-						currentMenu = OPTIONS;
-						cursor->selection = 0;
-					}
-					if (buttons[ATTACK])
-					{
-						buttons[ATTACK] = false;
-						currentMenu = OPTIONS;
-						cursor->selection = 0;
+						if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+						{
+							for (unsigned int i = 0; i < controllers[0]->buttons.size(); i++)
+							{
+								controllers[0]->buttons[i] = false;
+							}
+							isCustomizing = true;
+						}
+						if (controllers[0]->buttons[UP])
+						{
+							controllers[0]->buttons[UP] = false;
+							cursor->selection--;
+							if (cursor->selection < 0)
+							{
+								cursor->selection = 9;
+							}
+						}
+						if (controllers[0]->buttons[DOWN])
+						{
+							controllers[0]->buttons[DOWN] = false;
+							cursor->selection++;
+							if (cursor->selection > 9)
+							{
+								cursor->selection = 0;
+							}
+						}
+						if (controllers[0]->buttons[ATTACK])
+						{
+							controllers[0]->buttons[ATTACK] = false;
+							currentMenu = OPTIONS;
+							cursor->selection = 0;
+						}
 					}
 					break;
 				}
 				case RESOLUTION:
 				{
-					if (buttons[PAUSE] || buttons[JUMP])
+					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
 					{
-						buttons[PAUSE] = false;
-						buttons[JUMP] = false;
+						controllers[0]->buttons[PAUSE] = false;
+						controllers[0]->buttons[JUMP] = false;
 
 						if (al_get_display_flags(display) & ALLEGRO_FULLSCREEN)
 						{
@@ -820,27 +830,27 @@ void Game::Update()
 						cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
 						cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
 					}
-					if (buttons[UP])
+					if (controllers[0]->buttons[UP])
 					{
-						buttons[UP] = false;
+						controllers[0]->buttons[UP] = false;
 						cursor->selection--;
 						if (cursor->selection < 0)
 						{
 							cursor->selection = 7;
 						}
 					}
-					if (buttons[DOWN])
+					if (controllers[0]->buttons[DOWN])
 					{
-						buttons[DOWN] = false;
+						controllers[0]->buttons[DOWN] = false;
 						cursor->selection++;
 						if (cursor->selection > 7)
 						{
 							cursor->selection = 0;
 						}
 					}
-					if (buttons[ATTACK])
+					if (controllers[0]->buttons[ATTACK])
 					{
-						buttons[ATTACK] = false;
+						controllers[0]->buttons[ATTACK] = false;
 						currentMenu = VIDEO;
 						cursor->selection = 0;
 					}
@@ -853,46 +863,46 @@ void Game::Update()
 		{
 			// Insert input here.
 
-			if (buttons[PAUSE])
+			if (controllers[0]->buttons[PAUSE])
 			{
-				buttons[PAUSE] = false;
+				controllers[0]->buttons[PAUSE] = false;
 			}
-			if (buttons[LEFT])
+			if (controllers[0]->buttons[LEFT])
 			{
-				player1->Run(buttons[LEFT], buttonsPrev[LEFT]);
+				player1->Run(controllers[0]->buttons[LEFT], controllers[0]->buttonsPrev[LEFT]);
 				player1->Move(-1);
 			}
-			if (buttons[RIGHT])
+			if (controllers[0]->buttons[RIGHT])
 			{
-				player1->Run(buttons[RIGHT], buttonsPrev[RIGHT]);
+				player1->Run(controllers[0]->buttons[RIGHT], controllers[0]->buttonsPrev[RIGHT]);
 				player1->Move(1);
 			}
-			if (buttons[DOWN])
+			if (controllers[0]->buttons[DOWN])
 			{
-				player1->FastFall(buttons[DOWN], buttonsPrev[DOWN]);
+				player1->FastFall(controllers[0]->buttons[DOWN], controllers[0]->buttonsPrev[DOWN]);
 			}
-			if (buttons[JUMP])
+			if (controllers[0]->buttons[JUMP])
 			{
-				player1->Jump(buttons, JUMP, LEFT, RIGHT);
+				player1->Jump(&controllers[0]->buttons, JUMP, LEFT, RIGHT);
 			}
 
 			// Here goes checking if any buttons are UP->
 
-			if (!buttons[LEFT])
+			if (!controllers[0]->buttons[LEFT])
 			{
-				player1->Run(buttons[LEFT], buttonsPrev[LEFT]);
+				player1->Run(controllers[0]->buttons[LEFT], controllers[0]->buttonsPrev[LEFT]);
 			}
-			if (!buttons[RIGHT])
+			if (!controllers[0]->buttons[RIGHT])
 			{
-				player1->Run(buttons[RIGHT], buttonsPrev[RIGHT]);
+				player1->Run(controllers[0]->buttons[RIGHT], controllers[0]->buttonsPrev[RIGHT]);
 			}
-			if (!buttons[DOWN])
+			if (!controllers[0]->buttons[DOWN])
 			{
 				if (player1->isCrouching)
 				{
 					player1->isCrouching = false;
 				}
-				player1->FastFall(buttons[DOWN], buttonsPrev[DOWN]);
+				player1->FastFall(controllers[0]->buttons[DOWN], controllers[0]->buttonsPrev[DOWN]);
 			}
 
 			// Insert interaction calculations here->
@@ -902,7 +912,7 @@ void Game::Update()
 			camera->CalculateDistance(player1->x + (player1->width / 2), player1->y + (player1->height / 2), player2->x + (player2->width / 2), player2->y + (player2->height / 2));
 			camera->Update(levelWidth, levelHeight, width, height);
 
-			player1->Update(buttons, JUMP, LEFT, RIGHT);
+			player1->Update(&controllers[0]->buttons, JUMP, LEFT, RIGHT);
 			// Collision time, boyo! That means that we need to draw a region of the collision bitmap to a new bitmap so we don't expend a shit-ton of time
 			// Implement the following when you feel like going through hell in refactoring your collision code
 			// ALLEGRO_BITMAP* tempBitmap = al_create_bitmap(256, 256);
@@ -911,8 +921,8 @@ void Game::Update()
 			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
 			al_draw_bitmap_region(collisionBitmap, player1->x, player1->y, 256, 256, 0, 0, NULL);
-			player1->Collision(&tempBitmap1, levelWidth, levelHeight, buttons[DOWN]);
-			player1->Animate(buttons, LEFT, RIGHT, DOWN);
+			player1->Collision(&tempBitmap1, levelWidth, levelHeight, controllers[0]->buttons[DOWN]);
+			player1->Animate(&controllers[0]->buttons, LEFT, RIGHT, DOWN);
 
 			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
 
@@ -920,10 +930,10 @@ void Game::Update()
 			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
 			al_draw_bitmap_region(collisionBitmap, player2->x, player2->y, 256, 256, 0, 0, NULL);
-			player2->Update(buttons, JUMP, LEFT, RIGHT);
-			player2->Collision(&tempBitmap2, levelWidth, levelHeight, buttons[DOWN]);
-			// player2->Collision(&collisionBitmap, levelWidth, levelHeight, buttons[DOWN]);
-			player2->Animate(buttons, LEFT, RIGHT, DOWN);
+			player2->Update(&controllers[0]->buttons, JUMP, LEFT, RIGHT);
+			player2->Collision(&tempBitmap2, levelWidth, levelHeight, controllers[0]->buttons[DOWN]);
+			// player2->Collision(&collisionBitmap, levelWidth, levelHeight, player1->buttons[DOWN]);
+			player2->Animate(&controllers[0]->buttons, LEFT, RIGHT, DOWN);
 
 			//al_destroy_bitmap(tempBitmap);
 			break;
@@ -932,7 +942,7 @@ void Game::Update()
 
 	for (int i = 0; i < 6; i++)
 	{
-		buttonsPrev[i] = buttons[i];
+		controllers[0]->buttonsPrev[i] = controllers[0]->buttons[i];
 	}
 	return;
 }
@@ -1022,12 +1032,39 @@ void Game::Draw()
 				}
 				case CONTROLS:
 				{
-					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CONTROLS");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "lol there's nothing here yet");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "GO BACK");
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, 352 - (cursor->height / 4), NULL);
+					if (!isCustomizing)
+					{
+						al_clear_to_color(al_map_rgb(255, 255, 255));
+						al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+						al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A COMMAND TO CUSTOMIZE");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "Right");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 320, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[RIGHT]));
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "Up");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 352, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[UP]));
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384, ALLEGRO_ALIGN_CENTER, "Left");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 384, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[LEFT]));
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416, ALLEGRO_ALIGN_CENTER, "Down");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 416, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[DOWN]));
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 448, ALLEGRO_ALIGN_CENTER, "Pause");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 448, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[PAUSE]));
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 480, ALLEGRO_ALIGN_CENTER, "Jump");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 480, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[JUMP]));
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 512, ALLEGRO_ALIGN_CENTER, "Attack");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 512, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[ATTACK]));
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 544, ALLEGRO_ALIGN_CENTER, "Special");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 544, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[SPECIAL]));
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 576, ALLEGRO_ALIGN_CENTER, "Block");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 576, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[BLOCK]));
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 608, ALLEGRO_ALIGN_CENTER, "Taunt");
+						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 608, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[TAUNT]));
+						al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					}
+					else
+					{
+						al_draw_filled_rectangle(width / 4, height / 4, 3 * width / 4, 3 * height / 4, al_map_rgb(255, 255, 255));
+						al_draw_rectangle(width / 4, height / 4, 3 * width / 4, 3 * height / 4, al_map_rgb(0, 0, 0), 2);
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), width / 2, height / 2, ALLEGRO_ALIGN_CENTER, "Please press desired key.");
+					}
 					break;
 				}
 				case RESOLUTION:
@@ -1114,8 +1151,8 @@ void Game::End()
 
 	al_destroy_bitmap(titleSpr);
 
-	al_destroy_bitmap(johnSpr);
-	al_destroy_bitmap(roseSpr);
+	//al_destroy_bitmap(player1->sprite);
+	//al_destroy_bitmap(player2->sprite);
 
 	// DEBUG
 	al_destroy_bitmap(tempBitmap1);

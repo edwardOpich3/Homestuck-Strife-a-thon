@@ -2,7 +2,7 @@
 
 
 
-John::John(ALLEGRO_BITMAP *sprite, int spawnX, int spawnY) : Character(sprite, spawnX, spawnY)
+John::John(int spawnX, int spawnY, Control **control) : Character(spawnX, spawnY, control)
 {
 	collisionBox = BoundingBox(66, 73, 87, 115);
 	walkSpeed = 3;

@@ -7,6 +7,7 @@
 #include <allegro5\allegro_ttf.h>
 #include <allegro5\allegro_audio.h>
 #include <allegro5\allegro_acodec.h>
+#include <allegro5\allegro_primitives.h>
 #include "Header\John.h"
 #include "Header\Rose.h"
 #include "Header\Cursor.h"
@@ -38,9 +39,9 @@ public:
 
 	ALLEGRO_SAMPLE_INSTANCE *BGM;
 
-	// Characters
-	ALLEGRO_BITMAP *johnSpr;
-	ALLEGRO_BITMAP *roseSpr;
+	// Controls
+	std::vector<Control*> controllers;
+	bool isCustomizing;
 
 	// Players
 	Character *player1;
@@ -79,8 +80,8 @@ public:
 	enum BUTTONS { RIGHT, UP, LEFT, DOWN, PAUSE, JUMP, ATTACK, SPECIAL, BLOCK, TAUNT };
 	enum GAME_STATES { SPLASH, TITLE, MENU, GAME };
 	enum MENUS { MAIN, OPTIONS, CHARACTER, STAGE, SOUND, VIDEO, CONTROLS, RESOLUTION };
-	bool buttons[10] = { false, false, false, false, false, false, false, false, false, false };
-	bool buttonsPrev[10] = { false, false, false, false, false, false, false, false, false, false };
+	//bool buttons[10] = { false, false, false, false, false, false, false, false, false, false };
+	//bool buttonsPrev[10] = { false, false, false, false, false, false, false, false, false, false };
 	int currentState;
 	int currentMenu;
 	int width;
