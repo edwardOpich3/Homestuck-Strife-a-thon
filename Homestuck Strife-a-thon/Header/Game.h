@@ -95,6 +95,7 @@ public:
 
 	// Game Functions
 	bool Initialize();
+	void SetupInput();
 	void GetInput(ALLEGRO_EVENT e);
 	void Update();
 	void Draw();

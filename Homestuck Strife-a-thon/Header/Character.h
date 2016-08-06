@@ -73,11 +73,11 @@ public:
 	virtual void GetInput();
 
 	virtual void Move(int vector);
-	virtual void Jump(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT);
+	virtual void Jump(int Z, int LEFT, int RIGHT);
 	virtual void FastFall(bool current, bool previous);
 	virtual void Run(bool current, bool previous);
 	virtual void Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int levelHeight, bool DOWN);
-	virtual void Update(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT);
-	virtual void Animate(std::vector<bool> *buttons, int LEFT, int RIGHT, int DOWN);
+	virtual void Update(int Z, int LEFT, int RIGHT);
+	virtual void Animate(int LEFT, int RIGHT, int DOWN);
 };
 

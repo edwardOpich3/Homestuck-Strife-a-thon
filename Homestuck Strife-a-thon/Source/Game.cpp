@@ -21,6 +21,7 @@ Game::Game()
 	soundtrack = NULL;
 
 	controllers.push_back(new Control());
+	controllers.push_back(new Control("keyboard"));
 	isCustomizing = false;
 
 	// DEBUG
@@ -147,19 +148,54 @@ bool Game::Initialize()
 	al_install_keyboard();
 	al_install_joystick();
 
-	reader->LoadControls(&controllers[0]);
-
 	// Register your event sources!
 
 	al_register_event_source(event, al_get_keyboard_event_source());
 	al_register_event_source(event, al_get_display_event_source(display));
 	al_register_event_source(event, al_get_timer_event_source(timer));
+	al_register_event_source(event, al_get_joystick_event_source());
 
 	// DEBUG
 	tempBitmap1 = al_create_bitmap(256, 256);
 	tempBitmap2 = al_create_bitmap(256, 256);
 
 	return true;
+}
+
+void Game::SetupInput()
+{
+	for (unsigned int i = 0; i < controllers.size(); i++)
+	{
+		if (controllers[i]->name == "keyboard")
+		{
+			for (int j = 0; j < ALLEGRO_KEY_MAX; j++)
+			{
+				controllers[i]->buttonHandles.push_back(-1);
+			}
+		}
+		else
+		{
+			controllers[i]->name = al_get_joystick_name(al_get_joystick(i));
+			for (int j = 0; j < al_get_joystick_num_buttons(al_get_joystick(i)); j++)
+			{
+				controllers[i]->buttonHandles.push_back(-1);
+			}
+			for (int j = 0; j < al_get_joystick_num_sticks(al_get_joystick(i)); j++)
+			{
+				controllers[i]->stickHandles.push_back(std::vector<std::vector<float>>(0));
+				for (int k = 0; k < al_get_joystick_num_axes(al_get_joystick(i), j); k++)
+				{
+					controllers[i]->stickHandles[j].push_back(std::vector<float>(4));
+					controllers[i]->stickHandles[j][k][0] = -1;
+					controllers[i]->stickHandles[j][k][1] = -1;
+					controllers[i]->stickHandles[j][k][2] = 0.0f;
+					controllers[i]->stickHandles[j][k][3] = 0.0f;
+				}
+			}
+		}
+
+		reader->LoadControls(&controllers[i]);
+	}
 }
 
 void Game::GetInput(ALLEGRO_EVENT e)
@@ -169,7 +205,17 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 	if (e.type == ALLEGRO_EVENT_KEY_DOWN)
 	{
-		if (e.keyboard.keycode == controllers[0]->buttonHandles[RIGHT])
+		for (unsigned int i = 0; i < controllers.size(); i++)
+		{
+			if (controllers[i]->name == "keyboard")
+			{
+				int temp = controllers[i]->buttonHandles[e.keyboard.keycode];
+				controllers[i]->buttons[temp] = true;
+				i = controllers.size();
+			}
+		}
+
+		/*if (e.keyboard.keycode == controllers[0]->buttonHandles[RIGHT])
 		{
 			controllers[0]->buttons[RIGHT] = true;
 		}
@@ -217,9 +263,9 @@ void Game::GetInput(ALLEGRO_EVENT e)
 		else if (e.keyboard.keycode == controllers[0]->buttonHandles[TAUNT])
 		{
 			controllers[0]->buttons[TAUNT] = true;
-		}
+		}*/
 
-		if (isCustomizing)
+		/*if (isCustomizing)
 		{
 			controllers[0]->buttonHandles[cursor->selection] = e.keyboard.keycode;
 
@@ -229,7 +275,7 @@ void Game::GetInput(ALLEGRO_EVENT e)
 			}
 
 			isCustomizing = false;
-		}
+		}*/
 	}
 
 	// If a key is released...
@@ -243,7 +289,17 @@ void Game::GetInput(ALLEGRO_EVENT e)
 			quit = true;
 		}
 
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[RIGHT])
+		for (unsigned int i = 0; i < controllers.size(); i++)
+		{
+			if (controllers[i]->name == "keyboard")
+			{
+				int temp = controllers[i]->buttonHandles[e.keyboard.keycode];
+				controllers[i]->buttons[temp] = false;
+				i = controllers.size();
+			}
+		}
+
+		/*else if (e.keyboard.keycode == controllers[0]->buttonHandles[RIGHT])
 		{
 			controllers[0]->buttons[RIGHT] = false;
 		}
@@ -291,9 +347,80 @@ void Game::GetInput(ALLEGRO_EVENT e)
 		else if (e.keyboard.keycode == controllers[0]->buttonHandles[TAUNT])
 		{
 			controllers[0]->buttons[TAUNT] = false;
-		}
+		}*/
 
 		// Insert other released keys here.
+	}
+
+	else if (e.type == ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN)
+	{
+		for (unsigned int i = 0; i < controllers.size(); i++)
+		{
+			if (controllers[i]->name == al_get_joystick_name(e.joystick.id))
+			{
+				int temp = controllers[i]->buttonHandles[e.joystick.button];
+				controllers[i]->buttons[temp] = true;
+				i = controllers.size();
+			}
+		}
+	}
+
+	else if (e.type == ALLEGRO_EVENT_JOYSTICK_BUTTON_UP)
+	{
+		for (unsigned int i = 0; i < controllers.size(); i++)
+		{
+			if (controllers[i]->name == al_get_joystick_name(e.joystick.id))
+			{
+				int temp = controllers[i]->buttonHandles[e.joystick.button];
+				controllers[i]->buttons[temp] = false;
+				i = controllers.size();
+			}
+		}
+	}
+
+	else if (e.type == ALLEGRO_EVENT_JOYSTICK_AXIS)
+	{
+		for (unsigned int i = 0; i < controllers.size(); i++)
+		{
+			if (controllers[i]->name == al_get_joystick_name(e.joystick.id))
+			{
+				for (int j = 0; j < al_get_joystick_num_sticks(al_get_joystick(i)); j++)
+				{
+					if (j == e.joystick.stick)
+					{
+						for (int k = 0; k < al_get_joystick_num_axes(al_get_joystick(i), j); k++)
+						{
+							if (k == e.joystick.axis)
+							{
+								int temp;
+								if (e.joystick.pos < -0.1)
+								{
+									temp = controllers[i]->stickHandles[j][k][0];
+									controllers[i]->buttons[temp] = true;
+								}
+								else if (e.joystick.pos > 0.1)
+								{
+									temp = controllers[i]->stickHandles[j][k][1];
+									controllers[i]->buttons[temp] = true;
+								}
+								else
+								{
+									temp = controllers[i]->stickHandles[j][k][0];
+									controllers[i]->buttons[temp] = false;
+									temp = controllers[i]->stickHandles[j][k][1];
+									controllers[i]->buttons[temp] = false;
+								}
+							}
+						}
+					}
+				}
+			}
+		}
+	}
+
+	else if (e.type == ALLEGRO_EVENT_JOYSTICK_CONFIGURATION)
+	{
+		al_reconfigure_joysticks();
 	}
 
 	// If the 'X' button on the window is pressed...
@@ -474,7 +601,7 @@ void Game::Update()
 								player1 = new John(128, 128, &controllers[0]);
 								player1->sprite = al_load_bitmap("Graphics/Sprites/john.png");
 
-								player2 = new John(896 - 512, 128, &controllers[0]);
+								player2 = new John(896 - 512, 128, &controllers[1]);
 								player2->sprite = al_load_bitmap("Graphics/Sprites/john.png");
 								soundtrack = al_load_sample("Audio/Music/john.ogg");
 								BGM = al_create_sample_instance(soundtrack);
@@ -483,7 +610,7 @@ void Game::Update()
 							case 1:
 							{
 								player1 = new Rose(128, 128, &controllers[0]);
-								player2 = new John(896 - 256, 128, &controllers[0]);
+								player2 = new John(896 - 256, 128, &controllers[1]);
 								player1->sprite = al_load_bitmap("Graphics/Sprites/john.png");
 								player2->sprite = al_load_bitmap("Graphics/Sprites/john.png");
 								soundtrack = al_load_sample("Audio/Music/rose.ogg");
@@ -696,7 +823,7 @@ void Game::Update()
 					{
 						if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
 						{
-							for (unsigned int i = 0; i < controllers[0]->buttons.size(); i++)
+							for (unsigned int i = 0; i < 10; i++)
 							{
 								controllers[0]->buttons[i] = false;
 							}
@@ -862,47 +989,88 @@ void Game::Update()
 		case GAME:
 		{
 			// Insert input here.
-
-			if (controllers[0]->buttons[PAUSE])
+			if (player1->control[0]->buttons[PAUSE])
 			{
-				controllers[0]->buttons[PAUSE] = false;
+				player1->control[0]->buttons[PAUSE] = false;
 			}
-			if (controllers[0]->buttons[LEFT])
+			if (player1->control[0]->buttons[LEFT])
 			{
 				player1->Run(controllers[0]->buttons[LEFT], controllers[0]->buttonsPrev[LEFT]);
 				player1->Move(-1);
 			}
-			if (controllers[0]->buttons[RIGHT])
+			if (player1->control[0]->buttons[RIGHT])
 			{
 				player1->Run(controllers[0]->buttons[RIGHT], controllers[0]->buttonsPrev[RIGHT]);
 				player1->Move(1);
 			}
-			if (controllers[0]->buttons[DOWN])
+			if (player1->control[0]->buttons[DOWN])
 			{
 				player1->FastFall(controllers[0]->buttons[DOWN], controllers[0]->buttonsPrev[DOWN]);
 			}
-			if (controllers[0]->buttons[JUMP])
+			if (player1->control[0]->buttons[JUMP])
 			{
-				player1->Jump(&controllers[0]->buttons, JUMP, LEFT, RIGHT);
+				player1->Jump(JUMP, LEFT, RIGHT);
 			}
 
 			// Here goes checking if any buttons are UP->
 
-			if (!controllers[0]->buttons[LEFT])
+			if (!player1->control[0]->buttons[LEFT])
 			{
 				player1->Run(controllers[0]->buttons[LEFT], controllers[0]->buttonsPrev[LEFT]);
 			}
-			if (!controllers[0]->buttons[RIGHT])
+			if (!player1->control[0]->buttons[RIGHT])
 			{
 				player1->Run(controllers[0]->buttons[RIGHT], controllers[0]->buttonsPrev[RIGHT]);
 			}
-			if (!controllers[0]->buttons[DOWN])
+			if (!player1->control[0]->buttons[DOWN])
 			{
 				if (player1->isCrouching)
 				{
 					player1->isCrouching = false;
 				}
 				player1->FastFall(controllers[0]->buttons[DOWN], controllers[0]->buttonsPrev[DOWN]);
+			}
+
+			if (player2->control[0]->buttons[PAUSE])
+			{
+				player2->control[0]->buttons[PAUSE] = false;
+			}
+			if (player2->control[0]->buttons[LEFT])
+			{
+				player2->Run(controllers[1]->buttons[LEFT], controllers[1]->buttonsPrev[LEFT]);
+				player2->Move(-1);
+			}
+			if (player2->control[0]->buttons[RIGHT])
+			{
+				player2->Run(controllers[1]->buttons[RIGHT], controllers[1]->buttonsPrev[RIGHT]);
+				player2->Move(1);
+			}
+			if (player2->control[0]->buttons[DOWN])
+			{
+				player2->FastFall(controllers[1]->buttons[DOWN], controllers[1]->buttonsPrev[DOWN]);
+			}
+			if (player2->control[0]->buttons[JUMP])
+			{
+				player2->Jump(JUMP, LEFT, RIGHT);
+			}
+
+			// Here goes checking if any buttons are UP->
+
+			if (!player2->control[0]->buttons[LEFT])
+			{
+				player2->Run(controllers[1]->buttons[LEFT], controllers[1]->buttonsPrev[LEFT]);
+			}
+			if (!player2->control[0]->buttons[RIGHT])
+			{
+				player2->Run(controllers[1]->buttons[RIGHT], controllers[1]->buttonsPrev[RIGHT]);
+			}
+			if (!player2->control[0]->buttons[DOWN])
+			{
+				if (player2->isCrouching)
+				{
+					player2->isCrouching = false;
+				}
+				player2->FastFall(controllers[1]->buttons[DOWN], controllers[1]->buttonsPrev[DOWN]);
 			}
 
 			// Insert interaction calculations here->
@@ -912,7 +1080,7 @@ void Game::Update()
 			camera->CalculateDistance(player1->x + (player1->width / 2), player1->y + (player1->height / 2), player2->x + (player2->width / 2), player2->y + (player2->height / 2));
 			camera->Update(levelWidth, levelHeight, width, height);
 
-			player1->Update(&controllers[0]->buttons, JUMP, LEFT, RIGHT);
+			player1->Update(JUMP, LEFT, RIGHT);
 			// Collision time, boyo! That means that we need to draw a region of the collision bitmap to a new bitmap so we don't expend a shit-ton of time
 			// Implement the following when you feel like going through hell in refactoring your collision code
 			// ALLEGRO_BITMAP* tempBitmap = al_create_bitmap(256, 256);
@@ -922,7 +1090,7 @@ void Game::Update()
 
 			al_draw_bitmap_region(collisionBitmap, player1->x, player1->y, 256, 256, 0, 0, NULL);
 			player1->Collision(&tempBitmap1, levelWidth, levelHeight, controllers[0]->buttons[DOWN]);
-			player1->Animate(&controllers[0]->buttons, LEFT, RIGHT, DOWN);
+			player1->Animate(LEFT, RIGHT, DOWN);
 
 			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
 
@@ -930,19 +1098,22 @@ void Game::Update()
 			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
 			al_draw_bitmap_region(collisionBitmap, player2->x, player2->y, 256, 256, 0, 0, NULL);
-			player2->Update(&controllers[0]->buttons, JUMP, LEFT, RIGHT);
+			player2->Update(JUMP, LEFT, RIGHT);
 			player2->Collision(&tempBitmap2, levelWidth, levelHeight, controllers[0]->buttons[DOWN]);
 			// player2->Collision(&collisionBitmap, levelWidth, levelHeight, player1->buttons[DOWN]);
-			player2->Animate(&controllers[0]->buttons, LEFT, RIGHT, DOWN);
+			player2->Animate(LEFT, RIGHT, DOWN);
 
 			//al_destroy_bitmap(tempBitmap);
 			break;
 		}
 	}
 
-	for (int i = 0; i < 6; i++)
+	for (unsigned int j = 0; j < controllers.size(); j++)
 	{
-		controllers[0]->buttonsPrev[i] = controllers[0]->buttons[i];
+		for (int i = 0; i < 10; i++)
+		{
+			controllers[j]->buttonsPrev[i] = controllers[j]->buttons[i];
+		}
 	}
 	return;
 }

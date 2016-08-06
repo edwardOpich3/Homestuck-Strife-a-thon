@@ -2,6 +2,12 @@
 
 
 
+Control::Control(std::string name)
+{
+	Control::name = name;
+}
+
+
 Control::Control()
 {
 }

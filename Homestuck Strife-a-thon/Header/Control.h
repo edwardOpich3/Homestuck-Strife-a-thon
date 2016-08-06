@@ -4,15 +4,16 @@
 class Control
 {
 public:
-	int port;
+	std::string name;
+
 	std::vector<int> buttonHandles;
-	std::vector<bool> buttons;
-	std::vector<bool> buttonsPrev;
+	std::vector<std::vector<std::vector<float>>> stickHandles;
+	bool buttons[10];
+	bool buttonsPrev[10];
 
-	std::vector<int> stickHandles;
-	std::vector<int> axisHandles;
-	std::vector<float> axisPos;
+	std::vector<char> configList[10];
 
+	Control(std::string name);
 	Control();
 	~Control();
 

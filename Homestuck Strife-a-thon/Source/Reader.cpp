@@ -254,27 +254,62 @@ void Reader::DrawLevel(std::vector<Tile> level, ALLEGRO_BITMAP **levelBitmap, in
 
 void Reader::LoadControls(Control **control)
 {
+	for (int i = 0; i < 10; i++)
+	{
+		control[0]->buttons[i] = false;
+		control[0]->buttonsPrev[i] = false;
+	}
+
 	if (!al_filename_exists("Config/controls.dat"))
 	{
-		control[0]->port = -1;
-		control[0]->buttonHandles.clear();
-		control[0]->buttons.clear();
-		control[0]->buttonsPrev.clear();
-		for (int i = 0; i < 10; i++)
+		if (control[0]->name == "keyboard")
 		{
-			control[0]->buttons.push_back(false);
-			control[0]->buttonsPrev.push_back(false);
+			control[0]->buttonHandles[ALLEGRO_KEY_RIGHT] = 0;
+			control[0]->buttonHandles[ALLEGRO_KEY_UP] = 1;
+			control[0]->buttonHandles[ALLEGRO_KEY_LEFT] = 2;
+			control[0]->buttonHandles[ALLEGRO_KEY_DOWN] = 3;
+			control[0]->buttonHandles[ALLEGRO_KEY_ENTER] = 4;
+			control[0]->buttonHandles[ALLEGRO_KEY_Z] = 5;
+			control[0]->buttonHandles[ALLEGRO_KEY_X] = 6;
+			control[0]->buttonHandles[ALLEGRO_KEY_C] = 7;
+			control[0]->buttonHandles[ALLEGRO_KEY_A] = 8;
+			control[0]->buttonHandles[ALLEGRO_KEY_S] = 9;
+		}
+		else
+		{
+			control[0]->stickHandles[0][0][0] = 2;
+			control[0]->stickHandles[0][0][1] = 0;
+			control[0]->stickHandles[0][1][0] = 1;
+			control[0]->stickHandles[0][1][1] = 3;
+			control[0]->buttonHandles[9] = 4;
+			control[0]->buttonHandles[3] = 5;
+			control[0]->buttonHandles[4] = 6;
+			control[0]->buttonHandles[1] = 7;
+			control[0]->buttonHandles[5] = 8;
+			control[0]->buttonHandles[8] = 9;
+		}
+	}
+	else
+	{
+		std::ifstream myStream;
+		unsigned char temp[4];
+		myStream.open("Config/controls.dat", myStream.binary | myStream.in);
+
+		while (myStream.peek() != -1)
+		{
+			myStream.read((char*)temp, 4);
+			int type = ReadInt(temp);
+
+			myStream.read((char*)temp, 4);
+			if (type == 0)	// Button
+			{
+				control[0]->buttonHandles.push_back(ReadInt(temp));
+			}
+			else if (type == 1)		// Axis
+			{
+				//control[0]->axisHandles.push_back(ReadInt(temp));
+			}
 		}
 
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_RIGHT);
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_UP);
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_LEFT);
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_DOWN);
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_ENTER);
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_Z);
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_X);
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_C);
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_A);
-		control[0]->buttonHandles.push_back(ALLEGRO_KEY_S);
 	}
 }

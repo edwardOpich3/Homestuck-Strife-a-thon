@@ -108,7 +108,7 @@ void Character::Move(int vector)
 }
 
 // The player has hit the jump button, either put them into jumpsquat, make them double jump, or do nothing depending on the circumstances
-void Character::Jump(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT)
+void Character::Jump(int Z, int LEFT, int RIGHT)
 {
 	// If they are on the ground
 	if (isGrounded && animationState != HARD_LAND)
@@ -131,9 +131,9 @@ void Character::Jump(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT)
 		// Set the double jump and fastfall flags to false, as they've used their double jump, and double jumping cancels out fastfalling
 		canDoubleJump = false;
 		isFastFalling = false;
-		buttons[0][Z] = false;
+		control[0]->buttons[Z] = false;
 		frame = 0;
-		if (!(buttons[0][LEFT] && direction > 0) && !(buttons[0][RIGHT] && direction < 0))
+		if (!(control[0]->buttons[LEFT] && direction > 0) && !(control[0]->buttons[RIGHT] && direction < 0))
 		{
 			animationState = DOUBLE_JUMP;
 		}
@@ -147,7 +147,7 @@ void Character::Jump(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT)
 	else if (isHanging && animationState == LEDGE_HOLD)
 	{
 		y -= collisionBox.height / 2;
-		buttons[0][Z] = false;
+		control[0]->buttons[Z] = false;
 		animationState = JUMP_CLIMB;
 		frame = 0;
 	}
@@ -890,14 +890,14 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 	al_destroy_bitmap(temp);
 }
 
-void Character::Update(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT)
+void Character::Update(int Z, int LEFT, int RIGHT)
 {
 	if (jumpSquatTimer > 0)
 	{
 		jumpSquatTimer--;
 		if (jumpSquatTimer == 0)
 		{
-			if (buttons[0][Z])
+			if (control[0]->buttons[Z])
 			{
 				ySpeed = jump;
 			}
@@ -908,9 +908,9 @@ void Character::Update(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT)
 			isGrounded = false;
 			isAerial = true;
 			isRunning = false;
-			buttons[0][Z] = false;
+			control[0]->buttons[Z] = false;
 			frame = 0;
-			if (!(buttons[0][LEFT] && direction > 0) && !(buttons[0][RIGHT] && direction < 0))
+			if (!(control[0]->buttons[LEFT] && direction > 0) && !(control[0]->buttons[RIGHT] && direction < 0))
 			{
 				animationState = JUMP;
 			}
@@ -1026,13 +1026,13 @@ void Character::Update(std::vector<bool> *buttons, int Z, int LEFT, int RIGHT)
 	y += ySpeed;
 }
 
-void Character::Animate(std::vector<bool> *buttons, int LEFT, int RIGHT, int DOWN)
+void Character::Animate(int LEFT, int RIGHT, int DOWN)
 {
 	frame++;
 
 	if (isGrounded)
 	{
-		if (buttons[0][RIGHT] || buttons[0][LEFT])
+		if (control[0]->buttons[RIGHT] || control[0]->buttons[LEFT])
 		{
 			if (jumpSquatTimer == 0)
 			{
@@ -1069,7 +1069,7 @@ void Character::Animate(std::vector<bool> *buttons, int LEFT, int RIGHT, int DOW
 					}
 					animationState = SLIDE;
 				}
-				else if (buttons[0][DOWN])
+				else if (control[0]->buttons[DOWN])
 				{
 					if (animationState != CROUCH)
 					{
@@ -1097,7 +1097,7 @@ void Character::Animate(std::vector<bool> *buttons, int LEFT, int RIGHT, int DOW
 		{
 			if (animationState != THROUGH_PLATFORM && animationState != RUN_OFF)
 			{
-				if ((buttons[0][RIGHT] && direction > 0) || (buttons[0][LEFT] && direction < 0))
+				if ((control[0]->buttons[RIGHT] && direction > 0) || (control[0]->buttons[LEFT] && direction < 0))
 				{
 					if (animationState != FORWARD_FALL)
 					{
@@ -1105,7 +1105,7 @@ void Character::Animate(std::vector<bool> *buttons, int LEFT, int RIGHT, int DOW
 					}
 					animationState = FORWARD_FALL;
 				}
-				else if ((buttons[0][RIGHT] && direction < 0) || (buttons[0][LEFT] && direction > 0))
+				else if ((control[0]->buttons[RIGHT] && direction < 0) || (control[0]->buttons[LEFT] && direction > 0))
 				{
 					if (animationState != BACK_FALL)
 					{
@@ -1113,7 +1113,7 @@ void Character::Animate(std::vector<bool> *buttons, int LEFT, int RIGHT, int DOW
 					}
 					animationState = BACK_FALL;
 				}
-				else if (!buttons[0][RIGHT] && !buttons[0][LEFT])
+				else if (!control[0]->buttons[RIGHT] && !control[0]->buttons[LEFT])
 				{
 					if (animationState != FALL)
 					{
@@ -1159,7 +1159,7 @@ void Character::Animate(std::vector<bool> *buttons, int LEFT, int RIGHT, int DOW
 			case WALK_TURN:
 			{
 				frame = 0;
-				if (buttons[0][LEFT] || buttons[0][RIGHT])
+				if (control[0]->buttons[LEFT] || control[0]->buttons[RIGHT])
 				{
 					animationState = WALK;
 				}
@@ -1177,7 +1177,7 @@ void Character::Animate(std::vector<bool> *buttons, int LEFT, int RIGHT, int DOW
 			case RUN_TURN:
 			{
 				frame = 0;
-				if (buttons[0][LEFT] || buttons[0][RIGHT])
+				if (control[0]->buttons[LEFT] || control[0]->buttons[RIGHT])
 				{
 					animationState = RUN;
 				}

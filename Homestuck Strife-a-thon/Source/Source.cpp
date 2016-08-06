@@ -16,6 +16,8 @@ int main(int argc, char *argv[])
 		return -1;
 	}
 
+	game.SetupInput();
+
 	al_start_timer(game.timer);
 
 	// And start the game loop!
