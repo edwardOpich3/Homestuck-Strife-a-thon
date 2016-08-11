@@ -1,5 +1,6 @@
 #pragma once
 #include <vector>
+#include <sstream>
 
 class Control
 {
@@ -11,12 +12,12 @@ public:
 	bool buttons[10];
 	bool buttonsPrev[10];
 
-	std::vector<char> configList[10];
+	std::vector<std::string> configList[10];
 
 	Control(std::string name);
 	Control();
 	~Control();
 
-	void LoadControls();
+	void PopulateConfigList();
 };
 

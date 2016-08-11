@@ -42,6 +42,9 @@ public:
 	// Controls
 	std::vector<Control*> controllers;
 	bool isCustomizing;
+	bool isCleared;
+	bool isOverlapping;
+	unsigned int customizedControl;
 
 	// Players
 	Character *player1;
@@ -79,7 +82,7 @@ public:
 	// Technical Variables
 	enum BUTTONS { RIGHT, UP, LEFT, DOWN, PAUSE, JUMP, ATTACK, SPECIAL, BLOCK, TAUNT };
 	enum GAME_STATES { SPLASH, TITLE, MENU, GAME };
-	enum MENUS { MAIN, OPTIONS, CHARACTER, STAGE, SOUND, VIDEO, CONTROLS, RESOLUTION };
+	enum MENUS { MAIN, OPTIONS, CHARACTER, STAGE, SOUND, VIDEO, CONTROLS, RESOLUTION, CONTROLLER_SELECT };
 	//bool buttons[10] = { false, false, false, false, false, false, false, false, false, false };
 	//bool buttonsPrev[10] = { false, false, false, false, false, false, false, false, false, false };
 	int currentState;

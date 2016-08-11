@@ -262,7 +262,7 @@ void Reader::LoadControls(Control **control)
 
 	if (!al_filename_exists("Config/controls.dat"))
 	{
-		if (control[0]->name == "keyboard")
+		if (control[0]->name == "Keyboard")
 		{
 			control[0]->buttonHandles[ALLEGRO_KEY_RIGHT] = 0;
 			control[0]->buttonHandles[ALLEGRO_KEY_UP] = 1;
@@ -283,7 +283,7 @@ void Reader::LoadControls(Control **control)
 			control[0]->stickHandles[0][1][1] = 3;
 			control[0]->buttonHandles[9] = 4;
 			control[0]->buttonHandles[3] = 5;
-			control[0]->buttonHandles[4] = 6;
+			control[0]->buttonHandles[2] = 6;
 			control[0]->buttonHandles[1] = 7;
 			control[0]->buttonHandles[5] = 8;
 			control[0]->buttonHandles[8] = 9;

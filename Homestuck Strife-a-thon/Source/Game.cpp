@@ -21,8 +21,10 @@ Game::Game()
 	soundtrack = NULL;
 
 	controllers.push_back(new Control());
-	controllers.push_back(new Control("keyboard"));
+	controllers.push_back(new Control("Keyboard"));
 	isCustomizing = false;
+	isCleared = false;
+	isOverlapping = false;
 
 	// DEBUG
 	tempBitmap1 = NULL;
@@ -166,7 +168,7 @@ void Game::SetupInput()
 {
 	for (unsigned int i = 0; i < controllers.size(); i++)
 	{
-		if (controllers[i]->name == "keyboard")
+		if (controllers[i]->name == "Keyboard")
 		{
 			for (int j = 0; j < ALLEGRO_KEY_MAX; j++)
 			{
@@ -195,6 +197,7 @@ void Game::SetupInput()
 		}
 
 		reader->LoadControls(&controllers[i]);
+		controllers[i]->PopulateConfigList();
 	}
 }
 
@@ -205,77 +208,91 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 	if (e.type == ALLEGRO_EVENT_KEY_DOWN)
 	{
-		for (unsigned int i = 0; i < controllers.size(); i++)
+		if (isCustomizing)
 		{
-			if (controllers[i]->name == "keyboard")
+			if (e.keyboard.keycode == ALLEGRO_KEY_BACKSPACE)
 			{
-				int temp = controllers[i]->buttonHandles[e.keyboard.keycode];
-				controllers[i]->buttons[temp] = true;
-				i = controllers.size();
+				for (unsigned int i = 0; i < controllers[customizedControl]->buttonHandles.size(); i++)
+				{
+					if (controllers[customizedControl]->buttonHandles[i] == cursor->selection)
+					{
+						controllers[customizedControl]->buttonHandles[i] = -1;
+					}
+				}
+				if (controllers[customizedControl]->name != "Keyboard")
+				{
+					for (unsigned int i = 0; i < controllers[customizedControl]->stickHandles.size(); i++)
+					{
+						for (unsigned int j = 0; j < controllers[customizedControl]->stickHandles[i].size(); j++)
+						{
+							if (controllers[customizedControl]->stickHandles[i][j][0] == cursor->selection)
+							{
+								controllers[customizedControl]->stickHandles[i][j][0] = -1;
+							}
+							if (controllers[customizedControl]->stickHandles[i][j][1] == cursor->selection)
+							{
+								controllers[customizedControl]->stickHandles[i][j][1] = -1;
+							}
+						}
+					}
+				}
+
+				for (int i = 0; i < 10; i++)
+				{
+					controllers[customizedControl]->configList[i].clear();
+				}
+				controllers[customizedControl]->PopulateConfigList();
+				isCleared = true;
+				isOverlapping = false;
+			}
+			else if (controllers[customizedControl]->name == "Keyboard")
+			{
+				if (controllers[customizedControl]->buttonHandles[e.keyboard.keycode] == cursor->selection)
+				{
+					isOverlapping = false;
+					isCleared = false;
+					isCustomizing = false;
+				}
+				else if (controllers[customizedControl]->buttonHandles[e.keyboard.keycode] >= 0)
+				{
+					isOverlapping = true;
+					isCleared = false;
+				}
+				else
+				{
+					controllers[customizedControl]->buttonHandles[e.keyboard.keycode] = cursor->selection;
+					for (int i = 0; i < 10; i++)
+					{
+						controllers[customizedControl]->configList[i].clear();
+					}
+					controllers[customizedControl]->PopulateConfigList();
+
+					for (int i = 0; i < 10; i++)
+					{
+						controllers[customizedControl]->buttons[i] = false;
+					}
+
+					isCustomizing = false;
+					isCleared = false;
+					isOverlapping = false;
+				}
 			}
 		}
-
-		/*if (e.keyboard.keycode == controllers[0]->buttonHandles[RIGHT])
+		else
 		{
-			controllers[0]->buttons[RIGHT] = true;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[UP])
-		{
-			controllers[0]->buttons[UP] = true;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[LEFT])
-		{
-			controllers[0]->buttons[LEFT] = true;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[DOWN])
-		{
-			controllers[0]->buttons[DOWN] = true;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[PAUSE])
-		{
-			controllers[0]->buttons[PAUSE] = true;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[JUMP])
-		{
-			controllers[0]->buttons[JUMP] = true;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[ATTACK])
-		{
-			controllers[0]->buttons[ATTACK] = true;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[SPECIAL])
-		{
-			controllers[0]->buttons[SPECIAL] = true;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[BLOCK])
-		{
-			controllers[0]->buttons[BLOCK] = true;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[TAUNT])
-		{
-			controllers[0]->buttons[TAUNT] = true;
-		}*/
-
-		/*if (isCustomizing)
-		{
-			controllers[0]->buttonHandles[cursor->selection] = e.keyboard.keycode;
-
-			for (unsigned int i = 0; i < controllers[0]->buttons.size(); i++)
+			for (unsigned int i = 0; i < controllers.size(); i++)
 			{
-				controllers[0]->buttons[i] = false;
+				if (controllers[i]->name == "Keyboard")
+				{
+					int temp = controllers[i]->buttonHandles[e.keyboard.keycode];
+					if (temp >= 0)
+					{
+						controllers[i]->buttons[temp] = true;
+					}
+					i = controllers.size();
+				}
 			}
-
-			isCustomizing = false;
-		}*/
+		}
 	}
 
 	// If a key is released...
@@ -291,76 +308,70 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 		for (unsigned int i = 0; i < controllers.size(); i++)
 		{
-			if (controllers[i]->name == "keyboard")
+			if (controllers[i]->name == "Keyboard")
 			{
 				int temp = controllers[i]->buttonHandles[e.keyboard.keycode];
-				controllers[i]->buttons[temp] = false;
+				if (temp >= 0)
+				{
+					controllers[i]->buttons[temp] = false;
+				}
 				i = controllers.size();
 			}
 		}
-
-		/*else if (e.keyboard.keycode == controllers[0]->buttonHandles[RIGHT])
-		{
-			controllers[0]->buttons[RIGHT] = false;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[UP])
-		{
-			controllers[0]->buttons[UP] = false;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[LEFT])
-		{
-			controllers[0]->buttons[LEFT] = false;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[DOWN])
-		{
-			controllers[0]->buttons[DOWN] = false;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[PAUSE])
-		{
-			controllers[0]->buttons[PAUSE] = false;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[JUMP])
-		{
-			controllers[0]->buttons[JUMP] = false;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[ATTACK])
-		{
-			controllers[0]->buttons[ATTACK] = false;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[SPECIAL])
-		{
-			controllers[0]->buttons[SPECIAL] = false;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[BLOCK])
-		{
-			controllers[0]->buttons[BLOCK] = false;
-		}
-
-		else if (e.keyboard.keycode == controllers[0]->buttonHandles[TAUNT])
-		{
-			controllers[0]->buttons[TAUNT] = false;
-		}*/
 
 		// Insert other released keys here.
 	}
 
 	else if (e.type == ALLEGRO_EVENT_JOYSTICK_BUTTON_DOWN)
 	{
-		for (unsigned int i = 0; i < controllers.size(); i++)
+		if (isCustomizing)
 		{
-			if (controllers[i]->name == al_get_joystick_name(e.joystick.id))
+			if (controllers[customizedControl]->name != "Keyboard")
 			{
-				int temp = controllers[i]->buttonHandles[e.joystick.button];
-				controllers[i]->buttons[temp] = true;
-				i = controllers.size();
+				if (controllers[customizedControl]->buttonHandles[e.joystick.button] == cursor->selection)
+				{
+					isOverlapping = false;
+					isCleared = false;
+					isCustomizing = false;
+				}
+				else if (controllers[customizedControl]->buttonHandles[e.joystick.button] >= 0)
+				{
+					isOverlapping = true;
+					isCleared = false;
+				}
+				else
+				{
+					controllers[customizedControl]->buttonHandles[e.joystick.button] = cursor->selection;
+					for (int i = 0; i < 10; i++)
+					{
+						controllers[customizedControl]->configList[i].clear();
+					}
+					controllers[customizedControl]->PopulateConfigList();
+
+					for (int i = 0; i < 10; i++)
+					{
+						controllers[customizedControl]->buttons[i] = false;
+					}
+
+					isCustomizing = false;
+					isCleared = false;
+					isOverlapping = false;
+				}
+			}
+		}
+		else
+		{
+			for (unsigned int i = 0; i < controllers.size(); i++)
+			{
+				if (controllers[i]->name == al_get_joystick_name(e.joystick.id))
+				{
+					int temp = controllers[i]->buttonHandles[e.joystick.button];
+					if (temp >= 0)
+					{
+						controllers[i]->buttons[temp] = true;
+					}
+					i = controllers.size();
+				}
 			}
 		}
 	}
@@ -372,7 +383,10 @@ void Game::GetInput(ALLEGRO_EVENT e)
 			if (controllers[i]->name == al_get_joystick_name(e.joystick.id))
 			{
 				int temp = controllers[i]->buttonHandles[e.joystick.button];
-				controllers[i]->buttons[temp] = false;
+				if (temp >= 0)
+				{
+					controllers[i]->buttons[temp] = false;
+				}
 				i = controllers.size();
 			}
 		}
@@ -380,35 +394,103 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 	else if (e.type == ALLEGRO_EVENT_JOYSTICK_AXIS)
 	{
-		for (unsigned int i = 0; i < controllers.size(); i++)
+		if (isCustomizing)
 		{
-			if (controllers[i]->name == al_get_joystick_name(e.joystick.id))
+			if (controllers[customizedControl]->name != "Keyboard")
 			{
-				for (int j = 0; j < al_get_joystick_num_sticks(al_get_joystick(i)); j++)
+				if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] == cursor->selection && e.joystick.pos <= 0) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] == cursor->selection && e.joystick.pos >= 0))
 				{
-					if (j == e.joystick.stick)
+					isOverlapping = false;
+					isCleared = false;
+					isCustomizing = false;
+				}
+				else if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] >= 0 && e.joystick.pos <= 0) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] >= 0 && e.joystick.pos >= 0))
+				{
+					isOverlapping = true;
+					isCleared = false;
+				}
+				else
+				{
+					if (e.joystick.pos < 0)
 					{
-						for (int k = 0; k < al_get_joystick_num_axes(al_get_joystick(i), j); k++)
+						controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] = cursor->selection;
+					}
+					else if (e.joystick.pos > 0)
+					{
+						controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] = cursor->selection;
+					}
+					for (int i = 0; i < 10; i++)
+					{
+						controllers[customizedControl]->configList[i].clear();
+					}
+					controllers[customizedControl]->PopulateConfigList();
+
+					for (int i = 0; i < 10; i++)
+					{
+						controllers[customizedControl]->buttons[i] = false;
+					}
+
+					isCustomizing = false;
+					isCleared = false;
+					isOverlapping = false;
+				}
+			}
+		}
+		else
+		{
+			for (unsigned int i = 0; i < controllers.size(); i++)
+			{
+				if (controllers[i]->name == al_get_joystick_name(e.joystick.id))
+				{
+					for (int j = 0; j < al_get_joystick_num_sticks(al_get_joystick(i)); j++)
+					{
+						if (j == e.joystick.stick)
 						{
-							if (k == e.joystick.axis)
+							for (int k = 0; k < al_get_joystick_num_axes(al_get_joystick(i), j); k++)
 							{
-								int temp;
-								if (e.joystick.pos < -0.1)
+								if (k == e.joystick.axis)
 								{
-									temp = controllers[i]->stickHandles[j][k][0];
-									controllers[i]->buttons[temp] = true;
-								}
-								else if (e.joystick.pos > 0.1)
-								{
-									temp = controllers[i]->stickHandles[j][k][1];
-									controllers[i]->buttons[temp] = true;
-								}
-								else
-								{
-									temp = controllers[i]->stickHandles[j][k][0];
-									controllers[i]->buttons[temp] = false;
-									temp = controllers[i]->stickHandles[j][k][1];
-									controllers[i]->buttons[temp] = false;
+									controllers[i]->stickHandles[j][k][2] = e.joystick.pos;
+									int temp;
+									if (e.joystick.pos < 0.0f && controllers[i]->stickHandles[j][k][3] >= 0.0f)
+									{
+										temp = controllers[i]->stickHandles[j][k][0];
+										if (temp >= 0)
+										{
+											controllers[i]->buttons[temp] = true;
+										}
+										temp = controllers[i]->stickHandles[j][k][1];
+										if (temp >= 0)
+										{
+											controllers[i]->buttons[temp] = false;
+										}
+									}
+									else if (e.joystick.pos > 0.0f && controllers[i]->stickHandles[j][k][3] <= 0.0f)
+									{
+										temp = controllers[i]->stickHandles[j][k][1];
+										if (temp >= 0)
+										{
+											controllers[i]->buttons[temp] = true;
+										}
+										temp = controllers[i]->stickHandles[j][k][0];
+										if (temp >= 0)
+										{
+											controllers[i]->buttons[temp] = false;
+										}
+									}
+									else if (e.joystick.pos == 0.0f)
+									{
+										temp = controllers[i]->stickHandles[j][k][0];
+										if (temp >= 0)
+										{
+											controllers[i]->buttons[temp] = false;
+										}
+										temp = controllers[i]->stickHandles[j][k][1];
+										if (temp >= 0)
+										{
+											controllers[i]->buttons[temp] = false;
+										}
+									}
 								}
 							}
 						}
@@ -550,7 +632,7 @@ void Game::Update()
 							}
 							case 2:
 							{
-								currentMenu = CONTROLS;
+								currentMenu = CONTROLLER_SELECT;
 								cursor->selection = 0;
 								break;
 							}
@@ -819,38 +901,43 @@ void Game::Update()
 				}
 				case CONTROLS:
 				{
-					if (!isCustomizing)
+					if (customizedControl > controllers.size())
 					{
-						if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+						currentMenu = OPTIONS;
+						cursor->selection = 0;
+					}
+					else if (!isCustomizing)
+					{
+						if (controllers[customizedControl]->buttons[PAUSE] || controllers[customizedControl]->buttons[JUMP])
 						{
 							for (unsigned int i = 0; i < 10; i++)
 							{
-								controllers[0]->buttons[i] = false;
+								controllers[customizedControl]->buttons[i] = false;
 							}
 							isCustomizing = true;
 						}
-						if (controllers[0]->buttons[UP])
+						if (controllers[customizedControl]->buttons[UP])
 						{
-							controllers[0]->buttons[UP] = false;
+							controllers[customizedControl]->buttons[UP] = false;
 							cursor->selection--;
 							if (cursor->selection < 0)
 							{
 								cursor->selection = 9;
 							}
 						}
-						if (controllers[0]->buttons[DOWN])
+						if (controllers[customizedControl]->buttons[DOWN])
 						{
-							controllers[0]->buttons[DOWN] = false;
+							controllers[customizedControl]->buttons[DOWN] = false;
 							cursor->selection++;
 							if (cursor->selection > 9)
 							{
 								cursor->selection = 0;
 							}
 						}
-						if (controllers[0]->buttons[ATTACK])
+						if (controllers[customizedControl]->buttons[ATTACK])
 						{
-							controllers[0]->buttons[ATTACK] = false;
-							currentMenu = OPTIONS;
+							controllers[customizedControl]->buttons[ATTACK] = false;
+							currentMenu = CONTROLLER_SELECT;
 							cursor->selection = 0;
 						}
 					}
@@ -983,6 +1070,43 @@ void Game::Update()
 					}
 					break;
 				}
+				case CONTROLLER_SELECT:
+				{
+					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+					{
+						controllers[0]->buttons[PAUSE] = false;
+						controllers[0]->buttons[JUMP] = false;
+
+						customizedControl = cursor->selection;
+						currentMenu = CONTROLS;
+						cursor->selection = 0;
+					}
+					if (controllers[0]->buttons[UP])
+					{
+						controllers[0]->buttons[UP] = false;
+						cursor->selection--;
+						if (cursor->selection < 0)
+						{
+							cursor->selection = controllers.size() - 1;
+						}
+					}
+					if (controllers[0]->buttons[DOWN])
+					{
+						controllers[0]->buttons[DOWN] = false;
+						cursor->selection++;
+						if (cursor->selection >= (signed int)controllers.size())
+						{
+							cursor->selection = 0;
+						}
+					}
+					if (controllers[0]->buttons[ATTACK])
+					{
+						controllers[0]->buttons[ATTACK] = false;
+						currentMenu = OPTIONS;
+						cursor->selection = 0;
+					}
+					break;
+				}
 			}
 			break;
 		}
@@ -1093,13 +1217,13 @@ void Game::Update()
 			player1->Animate(LEFT, RIGHT, DOWN);
 
 			// Efficiency testing; calling collision 8 times per frame is the ultimate stress test!
+			player2->Update(JUMP, LEFT, RIGHT);
 
 			al_set_target_bitmap(tempBitmap2);
 			al_clear_to_color(al_map_rgba(0, 0, 0, 0));
 
 			al_draw_bitmap_region(collisionBitmap, player2->x, player2->y, 256, 256, 0, 0, NULL);
-			player2->Update(JUMP, LEFT, RIGHT);
-			player2->Collision(&tempBitmap2, levelWidth, levelHeight, controllers[0]->buttons[DOWN]);
+			player2->Collision(&tempBitmap2, levelWidth, levelHeight, controllers[1]->buttons[DOWN]);
 			// player2->Collision(&collisionBitmap, levelWidth, levelHeight, player1->buttons[DOWN]);
 			player2->Animate(LEFT, RIGHT, DOWN);
 
@@ -1113,6 +1237,16 @@ void Game::Update()
 		for (int i = 0; i < 10; i++)
 		{
 			controllers[j]->buttonsPrev[i] = controllers[j]->buttons[i];
+		}
+		if (controllers[j]->name != "Keyboard")
+		{
+			for (unsigned int i = 0; i < controllers[j]->stickHandles.size(); i++)
+			{
+				for (unsigned int k = 0; k < controllers[j]->stickHandles[i].size(); k++)
+				{
+					controllers[j]->stickHandles[i][k][3] = controllers[j]->stickHandles[i][k][2];
+				}
+			}
 		}
 	}
 	return;
@@ -1209,32 +1343,93 @@ void Game::Draw()
 						al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
 						al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A COMMAND TO CUSTOMIZE");
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "Right");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 320, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[RIGHT]));
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "Up");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 352, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[UP]));
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384, ALLEGRO_ALIGN_CENTER, "Left");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 384, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[LEFT]));
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416, ALLEGRO_ALIGN_CENTER, "Down");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 416, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[DOWN]));
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 448, ALLEGRO_ALIGN_CENTER, "Pause");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 448, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[PAUSE]));
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 480, ALLEGRO_ALIGN_CENTER, "Jump");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 480, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[JUMP]));
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 512, ALLEGRO_ALIGN_CENTER, "Attack");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 512, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[ATTACK]));
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 544, ALLEGRO_ALIGN_CENTER, "Special");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 544, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[SPECIAL]));
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 576, ALLEGRO_ALIGN_CENTER, "Block");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 576, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[BLOCK]));
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 608, ALLEGRO_ALIGN_CENTER, "Taunt");
-						al_draw_textf(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 608, ALLEGRO_ALIGN_CENTER, al_keycode_to_name(controllers[0]->buttonHandles[TAUNT]));
+
+						std::string list;
+						for (int i = 0; i < 10; i++)
+						{
+							list = "";
+							for (unsigned int j = 0; j < controllers[customizedControl]->configList[i].size(); j++)
+							{
+								if (controllers[customizedControl]->name != "Keyboard")
+								{
+									list += controllers[customizedControl]->configList[i][j];
+								}
+								else
+								{
+									list += al_keycode_to_name(atoi(controllers[customizedControl]->configList[i][j].c_str()));
+								}
+								if (j + 1 < controllers[customizedControl]->configList[i].size())
+								{
+									list += ", ";
+								}
+							}
+							al_draw_text(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 320 + (32 * i), ALLEGRO_ALIGN_CENTER, list.c_str());
+						}
+
 						al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					}
 					else
 					{
 						al_draw_filled_rectangle(width / 4, height / 4, 3 * width / 4, 3 * height / 4, al_map_rgb(255, 255, 255));
 						al_draw_rectangle(width / 4, height / 4, 3 * width / 4, 3 * height / 4, al_map_rgb(0, 0, 0), 2);
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), width / 2, height / 2, ALLEGRO_ALIGN_CENTER, "Please press desired key.");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 32, ALLEGRO_ALIGN_CENTER, "Please press desired button/axis. Backspace to clear.");
+						if (isCleared)
+						{
+							al_draw_text(mainFnt, al_map_rgb(0, 0, 0), width / 2, (height / 2) + 32, ALLEGRO_ALIGN_CENTER, "Cleared.");
+						}
+						else if (isOverlapping)
+						{
+							al_draw_text(mainFnt, al_map_rgb(0, 0, 0), width / 2, (height / 2) + 32, ALLEGRO_ALIGN_CENTER, "That button/axis is being used for something else.");
+						}
+						if (cursor->selection == RIGHT)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Right");
+						}
+						else if (cursor->selection == UP)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Up");
+						}
+						else if (cursor->selection == LEFT)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Left");
+						}
+						else if (cursor->selection == DOWN)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Down");
+						}
+						else if (cursor->selection == PAUSE)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Pause");
+						}
+						else if (cursor->selection == JUMP)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Jump");
+						}
+						else if (cursor->selection == ATTACK)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Attack");
+						}
+						else if (cursor->selection == SPECIAL)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Special");
+						}
+						else if (cursor->selection == BLOCK)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Block");
+						}
+						else if (cursor->selection == TAUNT)
+						{
+							al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), width / 2, (height / 2) - 128, ALLEGRO_ALIGN_CENTER, "Editing: Taunt");
+						}
 					}
 					break;
 				}
@@ -1251,6 +1446,18 @@ void Game::Draw()
 					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 480, ALLEGRO_ALIGN_CENTER, "1280 X 960");
 					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 512, ALLEGRO_ALIGN_CENTER, "1400 X 1050");
 					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 544, ALLEGRO_ALIGN_CENTER, "1600 X 1200");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					break;
+				}
+				case CONTROLLER_SELECT:
+				{
+					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A CONTROLLER TO CUSTOMIZE");
+					for (unsigned int i = 0; i < controllers.size(); i++)
+					{
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 + (32 * i), ALLEGRO_ALIGN_CENTER, controllers[i]->name.c_str());
+					}
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					break;
 				}
@@ -1282,13 +1489,13 @@ void Game::Draw()
 				case 1:
 				{
 					//al_draw_bitmap_region(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, player2->x, player2->y, NULL);
-					al_draw_scaled_bitmap(player2->sprite, 0, 0, player2->width, player2->height, (player2->x - camera->x) / camera->scale, (player2->y - camera->y) / camera->scale, player2->width / camera->scale, player2->height / camera->scale, NULL);
+					al_draw_scaled_bitmap(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, (player2->x - camera->x) / camera->scale, (player2->y - camera->y) / camera->scale, player2->width / camera->scale, player2->height / camera->scale, NULL);
 					break;
 				}
 				case -1:
 				{
 					//al_draw_bitmap_region(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, player2->x - player2->mirrorOffset, player2->y, ALLEGRO_FLIP_HORIZONTAL);
-					al_draw_scaled_bitmap(player2->sprite, 0, 0, player2->width, player2->height, (player2->x - player2->mirrorOffset - camera->x) / camera->scale, (player2->y - camera->y) / camera->scale, player2->width / camera->scale, player2->height / camera->scale, ALLEGRO_FLIP_HORIZONTAL);
+					al_draw_scaled_bitmap(player2->sprite, 256 * (player2->frame / 30), 256 * player2->animationState, player2->width, player2->height, (player2->x - player2->mirrorOffset - camera->x) / camera->scale, (player2->y - camera->y) / camera->scale, player2->width / camera->scale, player2->height / camera->scale, ALLEGRO_FLIP_HORIZONTAL);
 					break;
 				}
 			}
