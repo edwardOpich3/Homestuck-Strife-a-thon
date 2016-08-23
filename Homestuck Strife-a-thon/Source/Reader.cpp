@@ -275,19 +275,6 @@ void Reader::LoadControls(Control **control)
 			control[0]->buttonHandles[ALLEGRO_KEY_A] = 8;
 			control[0]->buttonHandles[ALLEGRO_KEY_S] = 9;
 		}
-		else
-		{
-			control[0]->stickHandles[0][0][0] = 2;
-			control[0]->stickHandles[0][0][1] = 0;
-			control[0]->stickHandles[0][1][0] = 1;
-			control[0]->stickHandles[0][1][1] = 3;
-			control[0]->buttonHandles[0] = 4;
-			control[0]->buttonHandles[1] = 5;
-			control[0]->buttonHandles[2] = 6;
-			control[0]->buttonHandles[3] = 7;
-			control[0]->buttonHandles[4] = 8;
-			control[0]->buttonHandles[5] = 9;
-		}
 	}
 	else
 	{

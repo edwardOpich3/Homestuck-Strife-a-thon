@@ -214,44 +214,50 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 	if (e.type == ALLEGRO_EVENT_KEY_DOWN)
 	{
-		if (isCustomizing)
+		if (currentMenu == CONTROLS)
 		{
 			if (e.keyboard.keycode == ALLEGRO_KEY_BACKSPACE)
 			{
-				for (unsigned int i = 0; i < controllers[customizedControl]->buttonHandles.size(); i++)
+				if (isCustomizing || controllers[customizedControl]->name != "Keyboard")
 				{
-					if (controllers[customizedControl]->buttonHandles[i] == cursor->selection)
+					for (unsigned int i = 0; i < controllers[customizedControl]->buttonHandles.size(); i++)
 					{
-						controllers[customizedControl]->buttonHandles[i] = -1;
-					}
-				}
-				if (controllers[customizedControl]->name != "Keyboard")
-				{
-					for (unsigned int i = 0; i < controllers[customizedControl]->stickHandles.size(); i++)
-					{
-						for (unsigned int j = 0; j < controllers[customizedControl]->stickHandles[i].size(); j++)
+						if (controllers[customizedControl]->buttonHandles[i] == cursor->selection)
 						{
-							if (controllers[customizedControl]->stickHandles[i][j][0] == cursor->selection)
+							controllers[customizedControl]->buttonHandles[i] = -1;
+						}
+					}
+					if (controllers[customizedControl]->name != "Keyboard")
+					{
+						for (unsigned int i = 0; i < controllers[customizedControl]->stickHandles.size(); i++)
+						{
+							for (unsigned int j = 0; j < controllers[customizedControl]->stickHandles[i].size(); j++)
 							{
-								controllers[customizedControl]->stickHandles[i][j][0] = -1;
-							}
-							if (controllers[customizedControl]->stickHandles[i][j][1] == cursor->selection)
-							{
-								controllers[customizedControl]->stickHandles[i][j][1] = -1;
+								if (controllers[customizedControl]->stickHandles[i][j][0] == cursor->selection)
+								{
+									controllers[customizedControl]->stickHandles[i][j][0] = -1;
+								}
+								if (controllers[customizedControl]->stickHandles[i][j][1] == cursor->selection)
+								{
+									controllers[customizedControl]->stickHandles[i][j][1] = -1;
+								}
 							}
 						}
 					}
-				}
 
-				for (int i = 0; i < 10; i++)
-				{
-					controllers[customizedControl]->configList[i].clear();
+					for (int i = 0; i < 10; i++)
+					{
+						controllers[customizedControl]->configList[i].clear();
+					}
+					controllers[customizedControl]->PopulateConfigList();
+					if (isCustomizing)
+					{
+						isCleared = true;
+						isOverlapping = false;
+					}
 				}
-				controllers[customizedControl]->PopulateConfigList();
-				isCleared = true;
-				isOverlapping = false;
 			}
-			else if (controllers[customizedControl]->name == "Keyboard")
+			else if (controllers[customizedControl]->name == "Keyboard" && isCustomizing)
 			{
 				if (controllers[customizedControl]->buttonHandles[e.keyboard.keycode] == cursor->selection)
 				{
@@ -284,7 +290,7 @@ void Game::GetInput(ALLEGRO_EVENT e)
 				}
 			}
 		}
-		else
+		if(!isCustomizing)
 		{
 			for (unsigned int i = 0; i < controllers.size(); i++)
 			{
@@ -332,36 +338,39 @@ void Game::GetInput(ALLEGRO_EVENT e)
 	{
 		if (isCustomizing)
 		{
-			if (controllers[customizedControl]->name != "Keyboard")
+			if (controllers[customizedControl]->name == al_get_joystick_name(e.joystick.id))
 			{
-				if (controllers[customizedControl]->buttonHandles[e.joystick.button] == cursor->selection)
+				if (controllers[customizedControl]->name != "Keyboard")
 				{
-					isOverlapping = false;
-					isCleared = false;
-					isCustomizing = false;
-				}
-				else if (controllers[customizedControl]->buttonHandles[e.joystick.button] >= 0)
-				{
-					isOverlapping = true;
-					isCleared = false;
-				}
-				else
-				{
-					controllers[customizedControl]->buttonHandles[e.joystick.button] = cursor->selection;
-					for (int i = 0; i < 10; i++)
+					if (controllers[customizedControl]->buttonHandles[e.joystick.button] == cursor->selection)
 					{
-						controllers[customizedControl]->configList[i].clear();
+						isOverlapping = false;
+						isCleared = false;
+						isCustomizing = false;
 					}
-					controllers[customizedControl]->PopulateConfigList();
-
-					for (int i = 0; i < 10; i++)
+					else if (controllers[customizedControl]->buttonHandles[e.joystick.button] >= 0)
 					{
-						controllers[customizedControl]->buttons[i] = false;
+						isOverlapping = true;
+						isCleared = false;
 					}
+					else
+					{
+						controllers[customizedControl]->buttonHandles[e.joystick.button] = cursor->selection;
+						for (int i = 0; i < 10; i++)
+						{
+							controllers[customizedControl]->configList[i].clear();
+						}
+						controllers[customizedControl]->PopulateConfigList();
 
-					isCustomizing = false;
-					isCleared = false;
-					isOverlapping = false;
+						for (int i = 0; i < 10; i++)
+						{
+							controllers[customizedControl]->buttons[i] = false;
+						}
+
+						isCustomizing = false;
+						isCleared = false;
+						isOverlapping = false;
+					}
 				}
 			}
 		}
@@ -402,43 +411,46 @@ void Game::GetInput(ALLEGRO_EVENT e)
 	{
 		if (isCustomizing)
 		{
-			if (controllers[customizedControl]->name != "Keyboard")
+			if (controllers[customizedControl]->name == al_get_joystick_name(e.joystick.id))
 			{
-				if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] == cursor->selection && e.joystick.pos <= -0.5) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] == cursor->selection && e.joystick.pos >= 0.5))
+				if (controllers[customizedControl]->name != "Keyboard")
 				{
-					isOverlapping = false;
-					isCleared = false;
-					isCustomizing = false;
-				}
-				else if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] >= 0 && e.joystick.pos <= -0.5) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] >= 0 && e.joystick.pos >= 0.5))
-				{
-					isOverlapping = true;
-					isCleared = false;
-				}
-				else if(abs(e.joystick.pos) > 0.5)
-				{
-					if (e.joystick.pos < -0.5)
+					if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] == cursor->selection && e.joystick.pos <= -0.5) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] == cursor->selection && e.joystick.pos >= 0.5))
 					{
-						controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] = cursor->selection;
+						isOverlapping = false;
+						isCleared = false;
+						isCustomizing = false;
 					}
-					else if (e.joystick.pos > 0.5)
+					else if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] >= 0 && e.joystick.pos <= -0.5) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] >= 0 && e.joystick.pos >= 0.5))
 					{
-						controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] = cursor->selection;
+						isOverlapping = true;
+						isCleared = false;
 					}
-					for (int i = 0; i < 10; i++)
+					else if (abs(e.joystick.pos) > 0.5)
 					{
-						controllers[customizedControl]->configList[i].clear();
-					}
-					controllers[customizedControl]->PopulateConfigList();
+						if (e.joystick.pos < -0.5)
+						{
+							controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] = cursor->selection;
+						}
+						else if (e.joystick.pos > 0.5)
+						{
+							controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] = cursor->selection;
+						}
+						for (int i = 0; i < 10; i++)
+						{
+							controllers[customizedControl]->configList[i].clear();
+						}
+						controllers[customizedControl]->PopulateConfigList();
 
-					for (int i = 0; i < 10; i++)
-					{
-						controllers[customizedControl]->buttons[i] = false;
-					}
+						for (int i = 0; i < 10; i++)
+						{
+							controllers[customizedControl]->buttons[i] = false;
+						}
 
-					isCustomizing = false;
-					isCleared = false;
-					isOverlapping = false;
+						isCustomizing = false;
+						isCleared = false;
+						isOverlapping = false;
+					}
 				}
 			}
 		}
@@ -528,26 +540,26 @@ void Game::GetInput(ALLEGRO_EVENT e)
 				}
 				if (!match)		// We've found the new controller; time to set it up
 				{
-					controllers.insert(controllers.end() - 1, new Control(joyName));
+					controllers.insert(controllers.end(), new Control(joyName));
 
 					for (int j = 0; j < al_get_joystick_num_buttons(al_get_joystick(i)); j++)
 					{
-						controllers[controllers.size() - 2]->buttonHandles.push_back(-1);
+						controllers[controllers.size() - 1]->buttonHandles.push_back(-1);
 					}
 					for (int j = 0; j < al_get_joystick_num_sticks(al_get_joystick(i)); j++)
 					{
-						controllers[controllers.size() - 2]->stickHandles.push_back(std::vector<std::vector<float>>(0));
+						controllers[controllers.size() - 1]->stickHandles.push_back(std::vector<std::vector<float>>(0));
 						for (int k = 0; k < al_get_joystick_num_axes(al_get_joystick(i), j); k++)
 						{
-							controllers[controllers.size() - 2]->stickHandles[j].push_back(std::vector<float>(4));
-							controllers[controllers.size() - 2]->stickHandles[j][k][0] = -1;
-							controllers[controllers.size() - 2]->stickHandles[j][k][1] = -1;
-							controllers[controllers.size() - 2]->stickHandles[j][k][2] = 0.0f;
-							controllers[controllers.size() - 2]->stickHandles[j][k][3] = 0.0f;
+							controllers[controllers.size() - 1]->stickHandles[j].push_back(std::vector<float>(4));
+							controllers[controllers.size() - 1]->stickHandles[j][k][0] = -1;
+							controllers[controllers.size() - 1]->stickHandles[j][k][1] = -1;
+							controllers[controllers.size() - 1]->stickHandles[j][k][2] = 0.0f;
+							controllers[controllers.size() - 1]->stickHandles[j][k][3] = 0.0f;
 						}
 					}
 					reader->LoadControls(&controllers[controllers.size() - 2]);
-					controllers[controllers.size() - 2]->PopulateConfigList();
+					controllers[controllers.size() - 1]->PopulateConfigList();
 					break;
 				}
 			}
@@ -555,12 +567,12 @@ void Game::GetInput(ALLEGRO_EVENT e)
 		else if (newJoy - oldJoy < 0)	// A joystick was removed
 		{
 			// Like for finding a new joystick, we have to find the perpetrator by name matching; if the inactive joystick's name matches the one in the controller list, then we remove it.
-			for (int i = 0; i < oldJoy; i++)
+			for (int i = 0; i < oldJoy + 1; i++)
 			{
 				bool match = false;
 				for (int j = 0; j <  newJoy; j++)
 				{
-					if (controllers[i]->name == al_get_joystick_name(al_get_joystick(j)))
+					if (controllers[i]->name == al_get_joystick_name(al_get_joystick(j)) || controllers[i]->name == "Keyboard")
 					{
 						match = true;
 						break;
@@ -572,6 +584,9 @@ void Game::GetInput(ALLEGRO_EVENT e)
 					{
 						currentMenu = CONTROLLER_SELECT;
 						cursor->selection = 0;
+						isCustomizing = false;
+						isCleared = false;
+						isOverlapping = false;
 					}
 					else if (currentMenu == CONTROLLER_SELECT && cursor->selection > controllers.size() - 2)
 					{
@@ -621,25 +636,29 @@ void Game::Update()
 				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
 				//al_play_sample_instance(BGM);
 			}
-			if (controllers[0]->buttons[PAUSE])
+			for (unsigned int i = 0; i < controllers.size(); i++)
 			{
-				controllers[0]->buttons[PAUSE] = false;
-				al_stop_sample_instance(BGM);
+				if (controllers[i]->buttons[PAUSE])
+				{
+					controllers[i]->buttons[PAUSE] = false;
+					al_stop_sample_instance(BGM);
 
-				// Unload all content being used for the title screen
-				al_destroy_sample_instance(BGM);
-				al_destroy_sample(soundtrack);
+					// Unload all content being used for the title screen
+					al_destroy_sample_instance(BGM);
+					al_destroy_sample(soundtrack);
 
-				// Then load everything for the menu
-				cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
-				cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
-				soundtrack = al_load_sample("Audio/Music/character_select.ogg");
-				BGM = al_create_sample_instance(soundtrack);
-				al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
-				al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
-				//al_play_sample_instance(BGM);
+					// Then load everything for the menu
+					cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
+					cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
+					soundtrack = al_load_sample("Audio/Music/character_select.ogg");
+					BGM = al_create_sample_instance(soundtrack);
+					al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
+					al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
+					//al_play_sample_instance(BGM);
 
-				currentState = MENU;
+					currentState = MENU;
+					break;
+				}
 			}
 			break;
 		}
@@ -649,340 +668,380 @@ void Game::Update()
 			{
 				case MAIN:
 				{
-					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+					for (unsigned int i = 0; i < controllers.size(); i++)
 					{
-						controllers[0]->buttons[PAUSE] = false;
-						controllers[0]->buttons[JUMP] = false;
+						if (controllers[i]->buttons[PAUSE] || controllers[i]->buttons[JUMP])
+						{
+							controllers[i]->buttons[PAUSE] = false;
+							controllers[i]->buttons[JUMP] = false;
 
-						switch (cursor->selection)
-						{
-							case 0:
+							switch (cursor->selection)
 							{
-								currentMenu = CHARACTER;
-								cursor->selection = 0;
-								break;
+								case 0:
+								{
+									currentMenu = CHARACTER;
+									cursor->selection = 0;
+									break;
+								}
+								case 1:
+								{
+									currentMenu = OPTIONS;
+									cursor->selection = 0;
+									break;
+								}
 							}
-							case 1:
+							break;
+						}
+						if (controllers[i]->buttons[UP])
+						{
+							controllers[i]->buttons[UP] = false;
+							cursor->selection--;
+							if (cursor->selection < 0)
 							{
-								currentMenu = OPTIONS;
-								cursor->selection = 0;
-								break;
+								cursor->selection = 1;
 							}
+							break;
 						}
-					}
-					if (controllers[0]->buttons[UP])
-					{
-						controllers[0]->buttons[UP] = false;
-						cursor->selection--;
-						if (cursor->selection < 0)
+						if (controllers[i]->buttons[DOWN])
 						{
-							cursor->selection = 1;
+							controllers[i]->buttons[DOWN] = false;
+							cursor->selection++;
+							if (cursor->selection > 1)
+							{
+								cursor->selection = 0;
+							}
+							break;
 						}
-					}
-					if (controllers[0]->buttons[DOWN])
-					{
-						controllers[0]->buttons[DOWN] = false;
-						cursor->selection++;
-						if (cursor->selection > 1)
+						if (controllers[i]->buttons[ATTACK])
 						{
+							controllers[i]->buttons[ATTACK] = false;
+							currentState = TITLE;
 							cursor->selection = 0;
+							break;
 						}
-					}
-					if (controllers[0]->buttons[ATTACK])
-					{
-						controllers[0]->buttons[ATTACK] = false;
-						currentState = TITLE;
-						cursor->selection = 0;
 					}
 					break;
 				}
 				case OPTIONS:
 				{
-					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+					for (unsigned int i = 0; i < controllers.size(); i++)
 					{
-						controllers[0]->buttons[PAUSE] = false;
-						controllers[0]->buttons[JUMP] = false;
+						if (controllers[i]->buttons[PAUSE] || controllers[i]->buttons[JUMP])
+						{
+							controllers[i]->buttons[PAUSE] = false;
+							controllers[i]->buttons[JUMP] = false;
 
-						switch (cursor->selection)
-						{
-							case 0:
+							switch (cursor->selection)
 							{
-								currentMenu = SOUND;
-								cursor->selection = 0;
-								break;
+								case 0:
+								{
+									currentMenu = SOUND;
+									cursor->selection = 0;
+									break;
+								}
+								case 1:
+								{
+									currentMenu = VIDEO;
+									cursor->selection = 0;
+									break;
+								}
+								case 2:
+								{
+									currentMenu = CONTROLLER_SELECT;
+									cursor->selection = 0;
+									break;
+								}
 							}
-							case 1:
-							{
-								currentMenu = VIDEO;
-								cursor->selection = 0;
-								break;
-							}
-							case 2:
-							{
-								currentMenu = CONTROLLER_SELECT;
-								cursor->selection = 0;
-								break;
-							}
+							break;
 						}
-					}
-					if (controllers[0]->buttons[UP])
-					{
-						controllers[0]->buttons[UP] = false;
-						cursor->selection--;
-						if (cursor->selection < 0)
+						if (controllers[i]->buttons[UP])
 						{
-							cursor->selection = 2;
+							controllers[i]->buttons[UP] = false;
+							cursor->selection--;
+							if (cursor->selection < 0)
+							{
+								cursor->selection = 2;
+							}
+							break;
 						}
-					}
-					if (controllers[0]->buttons[DOWN])
-					{
-						controllers[0]->buttons[DOWN] = false;
-						cursor->selection++;
-						if (cursor->selection > 2)
+						if (controllers[i]->buttons[DOWN])
 						{
+							controllers[i]->buttons[DOWN] = false;
+							cursor->selection++;
+							if (cursor->selection > 2)
+							{
+								cursor->selection = 0;
+							}
+							break;
+						}
+						if (controllers[i]->buttons[ATTACK])
+						{
+							controllers[i]->buttons[ATTACK] = false;
+							currentMenu = MAIN;
 							cursor->selection = 0;
+							break;
 						}
-					}
-					if (controllers[0]->buttons[ATTACK])
-					{
-						controllers[0]->buttons[ATTACK] = false;
-						currentMenu = MAIN;
-						cursor->selection = 0;
 					}
 					break;
 				}
 				case CHARACTER:
 				{
-					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+					for (unsigned int i = 0; i < controllers.size(); i++)
 					{
-						controllers[0]->buttons[PAUSE] = false;
-						controllers[0]->buttons[JUMP] = false;
-						al_stop_sample_instance(BGM);
-
-						// Unload all content being used for the menu
-						al_destroy_sample_instance(BGM);
-						al_destroy_sample(soundtrack);
-
-						switch (cursor->selection)
+						if (controllers[i]->buttons[PAUSE] || controllers[i]->buttons[JUMP])
 						{
-							case 0:
+							controllers[i]->buttons[PAUSE] = false;
+							controllers[i]->buttons[JUMP] = false;
+							al_stop_sample_instance(BGM);
+
+							// Unload all content being used for the menu
+							al_destroy_sample_instance(BGM);
+							al_destroy_sample(soundtrack);
+
+							switch (cursor->selection)
 							{
-								player1 = new John(128, 128, &controllers[0]);
-								player1->sprite = al_load_bitmap("Graphics/Sprites/john.png");
+								case 0:
+								{
+									player1 = new John(128, 128, &controllers[0]);
+									player1->sprite = al_load_bitmap("Graphics/Sprites/john.png");
 
-								player2 = new John(896 - 512, 128, &controllers[1]);
-								player2->sprite = al_load_bitmap("Graphics/Sprites/john.png");
-								soundtrack = al_load_sample("Audio/Music/john.ogg");
-								BGM = al_create_sample_instance(soundtrack);
-								break;
+									player2 = new John(896 - 512, 128, &controllers[1]);
+									player2->sprite = al_load_bitmap("Graphics/Sprites/john.png");
+									soundtrack = al_load_sample("Audio/Music/john.ogg");
+									BGM = al_create_sample_instance(soundtrack);
+									break;
+								}
+								case 1:
+								{
+									player1 = new Rose(128, 128, &controllers[0]);
+									player2 = new John(896 - 256, 128, &controllers[1]);
+									player1->sprite = al_load_bitmap("Graphics/Sprites/john.png");
+									player2->sprite = al_load_bitmap("Graphics/Sprites/john.png");
+									soundtrack = al_load_sample("Audio/Music/rose.ogg");
+									BGM = al_create_sample_instance(soundtrack);
+									break;
+								}
 							}
-							case 1:
-							{
-								player1 = new Rose(128, 128, &controllers[0]);
-								player2 = new John(896 - 256, 128, &controllers[1]);
-								player1->sprite = al_load_bitmap("Graphics/Sprites/john.png");
-								player2->sprite = al_load_bitmap("Graphics/Sprites/john.png");
-								soundtrack = al_load_sample("Audio/Music/rose.ogg");
-								BGM = al_create_sample_instance(soundtrack);
-								break;
-							}
-						}
-						player2->direction = -1;
-						/*al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
-						al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
-						//al_play_sample_instance(BGM);
-						camera = new Camera(0, 0);*/
-						cursor->selection = 0;
-						currentMenu = STAGE;
-					}
-					if (controllers[0]->buttons[UP])
-					{
-						controllers[0]->buttons[UP] = false;
-						cursor->selection--;
-						if (cursor->selection < 0)
-						{
-							cursor->selection = 1;
-						}
-					}
-					if (controllers[0]->buttons[DOWN])
-					{
-						controllers[0]->buttons[DOWN] = false;
-						cursor->selection++;
-						if (cursor->selection > 1)
-						{
+							player2->direction = -1;
+							/*al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
+							al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
+							//al_play_sample_instance(BGM);
+							camera = new Camera(0, 0);*/
 							cursor->selection = 0;
+							currentMenu = STAGE;
+							break;
 						}
-					}
-					if (controllers[0]->buttons[ATTACK])
-					{
-						controllers[0]->buttons[ATTACK] = false;
-						currentMenu = MAIN;
-						cursor->selection = 0;
+						if (controllers[i]->buttons[UP])
+						{
+							controllers[i]->buttons[UP] = false;
+							cursor->selection--;
+							if (cursor->selection < 0)
+							{
+								cursor->selection = 1;
+							}
+							break;
+						}
+						if (controllers[i]->buttons[DOWN])
+						{
+							controllers[i]->buttons[DOWN] = false;
+							cursor->selection++;
+							if (cursor->selection > 1)
+							{
+								cursor->selection = 0;
+							}
+							break;
+						}
+						if (controllers[i]->buttons[ATTACK])
+						{
+							controllers[i]->buttons[ATTACK] = false;
+							currentMenu = MAIN;
+							cursor->selection = 0;
+							break;
+						}
 					}
 					break;
 				}
 				case STAGE:
 				{
-					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+					for (unsigned int i = 0; i < controllers.size(); i++)
 					{
-						controllers[0]->buttons[PAUSE] = false;
-						controllers[0]->buttons[JUMP] = false;
-
-						reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
-						reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight, levelNames[cursor->selection].c_str());
-						levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
-
-						reader->DrawLevel(levelTiles, &collisionBitmap, levelWidth, levelHeight, tile16List);
-						reader->DrawLevel(levelTiles, &levelBitmap, levelWidth, levelHeight, levelTileList);
-						for (unsigned int i = 0; i < levelTileList.size(); i++)
+						if (controllers[i]->buttons[PAUSE] || controllers[i]->buttons[JUMP])
 						{
-							al_destroy_bitmap(levelTileList[i]);
+							controllers[i]->buttons[PAUSE] = false;
+							controllers[i]->buttons[JUMP] = false;
+
+							reader->LoadTiles(&tile16List, &tile32List, &tile64List, &tile128List);
+							reader->LoadLevel(&levelTiles, &levelTileList, &levelWidth, &levelHeight, levelNames[cursor->selection].c_str());
+							levelTiles = reader->SeparateTiles(levelTiles, tile32List, tile64List, tile128List);
+
+							reader->DrawLevel(levelTiles, &collisionBitmap, levelWidth, levelHeight, tile16List);
+							reader->DrawLevel(levelTiles, &levelBitmap, levelWidth, levelHeight, levelTileList);
+							for (unsigned int j = 0; j < levelTileList.size(); j++)
+							{
+								al_destroy_bitmap(levelTileList[j]);
+							}
+
+							al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
+							al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
+							//al_play_sample_instance(BGM);
+							camera = new Camera(0, 0);
+							currentState = GAME;
+							break;
 						}
-
-						al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
-						al_attach_sample_instance_to_mixer(BGM, al_get_default_mixer());
-						//al_play_sample_instance(BGM);
-						camera = new Camera(0, 0);
-						currentState = GAME;
-					}
-					if (controllers[0]->buttons[UP])
-					{
-						controllers[0]->buttons[UP] = false;
-						cursor->selection--;
-						if (cursor->selection < 0)
+						if (controllers[i]->buttons[UP])
 						{
-							cursor->selection = levelNames.size() - 1;
+							controllers[i]->buttons[UP] = false;
+							cursor->selection--;
+							if (cursor->selection < 0)
+							{
+								cursor->selection = levelNames.size() - 1;
+							}
+							break;
 						}
-					}
-					if (controllers[0]->buttons[DOWN])
-					{
-						controllers[0]->buttons[DOWN] = false;
-						cursor->selection++;
-						if ((unsigned int)cursor->selection > levelNames.size() - 1)
+						if (controllers[i]->buttons[DOWN])
 						{
+							controllers[i]->buttons[DOWN] = false;
+							cursor->selection++;
+							if ((unsigned int)cursor->selection > levelNames.size() - 1)
+							{
+								cursor->selection = 0;
+							}
+							break;
+						}
+						if (controllers[i]->buttons[ATTACK])
+						{
+							controllers[i]->buttons[ATTACK] = false;
+							currentMenu = CHARACTER;
 							cursor->selection = 0;
+							al_destroy_bitmap(player1->sprite);
+							player1->sprite = NULL;
+							break;
 						}
-					}
-					if (controllers[0]->buttons[ATTACK])
-					{
-						controllers[0]->buttons[ATTACK] = false;
-						currentMenu = CHARACTER;
-						cursor->selection = 0;
-						al_destroy_bitmap(player1->sprite);
-						player1->sprite = NULL;
 					}
 					break;
 				}
 				case SOUND:
 				{
-					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+					for (unsigned int i = 0; i < controllers.size(); i++)
 					{
-						controllers[0]->buttons[PAUSE] = false;
-						controllers[0]->buttons[JUMP] = false;
-						currentMenu = OPTIONS;
-						cursor->selection = 0;
-					}
-					if (controllers[0]->buttons[ATTACK])
-					{
-						controllers[0]->buttons[ATTACK] = false;
-						currentMenu = OPTIONS;
-						cursor->selection = 0;
+						if (controllers[i]->buttons[PAUSE] || controllers[i]->buttons[JUMP])
+						{
+							controllers[i]->buttons[PAUSE] = false;
+							controllers[i]->buttons[JUMP] = false;
+							currentMenu = OPTIONS;
+							cursor->selection = 0;
+							break;
+						}
+						if (controllers[i]->buttons[ATTACK])
+						{
+							controllers[i]->buttons[ATTACK] = false;
+							currentMenu = OPTIONS;
+							cursor->selection = 0;
+							break;
+						}
 					}
 					break;
 				}
 				case VIDEO:
 				{
-					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+					for (unsigned int i = 0; i < controllers.size(); i++)
 					{
-						controllers[0]->buttons[PAUSE] = false;
-						controllers[0]->buttons[JUMP] = false;
-
-						switch (cursor->selection)
+						if (controllers[i]->buttons[PAUSE] || controllers[i]->buttons[JUMP])
 						{
-							case 0:
+							controllers[i]->buttons[PAUSE] = false;
+							controllers[i]->buttons[JUMP] = false;
+
+							switch (cursor->selection)
 							{
-								currentMenu = RESOLUTION;
+								case 0:
+								{
+									currentMenu = RESOLUTION;
+									cursor->selection = 0;
+									break;
+								}
+								case 1:
+								{
+									if (al_get_display_flags(display) & ALLEGRO_FULLSCREEN)
+									{
+										al_set_new_display_flags(ALLEGRO_WINDOWED);
+									}
+									else
+									{
+										al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+									}
+									al_destroy_display(display);
+									al_destroy_bitmap(buffer);
+
+									al_destroy_font(mainFnt);
+									al_destroy_font(mainFnt2X);
+									al_destroy_font(mainFnt3X);
+									al_destroy_font(mainFnt4X);
+
+									al_destroy_bitmap(titleSpr);
+
+									al_destroy_bitmap(tempBitmap1);
+									al_destroy_bitmap(tempBitmap2);
+
+									for (unsigned int j = 0; j < tile16List.size(); j++)
+									{
+										al_destroy_bitmap(tile16List[j]);
+									}
+
+									for (unsigned int j = 0; j < levelTileList.size(); j++)
+									{
+										al_destroy_bitmap(levelTileList[j]);
+									}
+
+									al_destroy_bitmap(cursorSpr);
+
+									display = al_create_display(width, height);
+									buffer = al_create_bitmap(width, height);
+
+									mainFnt = al_load_bitmap_font("Graphics/Fonts/mainFnt.png");
+									mainFnt2X = al_load_bitmap_font("Graphics/Fonts/mainFnt_2X.png");
+									mainFnt3X = al_load_bitmap_font("Graphics/Fonts/mainFnt_3X.png");
+									mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
+
+									titleSpr = al_load_bitmap("Graphics/Menu/title.png");
+
+									tempBitmap1 = al_create_bitmap(256, 256);
+									tempBitmap2 = al_create_bitmap(256, 256);
+
+									cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
+									cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
+
+									break;
+								}
+							}
+							break;
+						}
+						if (controllers[i]->buttons[UP])
+						{
+							controllers[i]->buttons[UP] = false;
+							cursor->selection--;
+							if (cursor->selection < 0)
+							{
+								cursor->selection = 1;
+							}
+							break;
+						}
+						if (controllers[i]->buttons[DOWN])
+						{
+							controllers[i]->buttons[DOWN] = false;
+							cursor->selection++;
+							if (cursor->selection > 1)
+							{
 								cursor->selection = 0;
-								break;
 							}
-							case 1:
-							{
-								if (al_get_display_flags(display) & ALLEGRO_FULLSCREEN)
-								{
-									al_set_new_display_flags(ALLEGRO_WINDOWED);
-								}
-								else
-								{
-									al_set_new_display_flags(ALLEGRO_FULLSCREEN);
-								}
-								al_destroy_display(display);
-								al_destroy_bitmap(buffer);
-
-								al_destroy_font(mainFnt);
-								al_destroy_font(mainFnt2X);
-								al_destroy_font(mainFnt3X);
-								al_destroy_font(mainFnt4X);
-
-								al_destroy_bitmap(titleSpr);
-
-								al_destroy_bitmap(tempBitmap1);
-								al_destroy_bitmap(tempBitmap2);
-
-								for (unsigned int i = 0; i < tile16List.size(); i++)
-								{
-									al_destroy_bitmap(tile16List[i]);
-								}
-
-								for (unsigned int i = 0; i < levelTileList.size(); i++)
-								{
-									al_destroy_bitmap(levelTileList[i]);
-								}
-
-								al_destroy_bitmap(cursorSpr);
-
-								display = al_create_display(width, height);
-								buffer = al_create_bitmap(width, height);
-
-								mainFnt = al_load_bitmap_font("Graphics/Fonts/mainFnt.png");
-								mainFnt2X = al_load_bitmap_font("Graphics/Fonts/mainFnt_2X.png");
-								mainFnt3X = al_load_bitmap_font("Graphics/Fonts/mainFnt_3X.png");
-								mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
-
-								titleSpr = al_load_bitmap("Graphics/Menu/title.png");
-
-								tempBitmap1 = al_create_bitmap(256, 256);
-								tempBitmap2 = al_create_bitmap(256, 256);
-
-								cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
-								cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
-
-								break;
-							}
+							break;
 						}
-					}
-					if (controllers[0]->buttons[UP])
-					{
-						controllers[0]->buttons[UP] = false;
-						cursor->selection--;
-						if (cursor->selection < 0)
+						if (controllers[i]->buttons[ATTACK])
 						{
-							cursor->selection = 1;
-						}
-					}
-					if (controllers[0]->buttons[DOWN])
-					{
-						controllers[0]->buttons[DOWN] = false;
-						cursor->selection++;
-						if (cursor->selection > 1)
-						{
+							controllers[i]->buttons[ATTACK] = false;
+							currentMenu = OPTIONS;
 							cursor->selection = 0;
+							break;
 						}
-					}
-					if (controllers[0]->buttons[ATTACK])
-					{
-						controllers[0]->buttons[ATTACK] = false;
-						currentMenu = OPTIONS;
-						cursor->selection = 0;
 					}
 					break;
 				}
@@ -992,205 +1051,232 @@ void Game::Update()
 					{
 						currentMenu = OPTIONS;
 						cursor->selection = 0;
+						isCustomizing = false;
+						isCleared = false;
+						isOverlapping = false;
 					}
 					else if (!isCustomizing)
 					{
-						if (controllers[customizedControl]->buttons[PAUSE] || controllers[customizedControl]->buttons[JUMP])
+						for (unsigned int i = 0; i < controllers.size(); i++)
 						{
-							for (unsigned int i = 0; i < 10; i++)
+							if (controllers[i]->buttons[PAUSE] || controllers[i]->buttons[JUMP])
 							{
-								controllers[customizedControl]->buttons[i] = false;
+								controllers[i]->buttons[PAUSE] = false;
+								controllers[i]->buttons[JUMP] = false;
+
+								for (unsigned int j = 0; j < 10; j++)
+								{
+									controllers[customizedControl]->buttons[j] = false;
+								}
+								isCustomizing = true;
+								break;
 							}
-							isCustomizing = true;
-						}
-						if (controllers[customizedControl]->buttons[UP])
-						{
-							controllers[customizedControl]->buttons[UP] = false;
-							cursor->selection--;
-							if (cursor->selection < 0)
+							if (controllers[i]->buttons[UP])
 							{
-								cursor->selection = 9;
+								controllers[i]->buttons[UP] = false;
+								cursor->selection--;
+								if (cursor->selection < 0)
+								{
+									cursor->selection = 9;
+								}
+								break;
 							}
-						}
-						if (controllers[customizedControl]->buttons[DOWN])
-						{
-							controllers[customizedControl]->buttons[DOWN] = false;
-							cursor->selection++;
-							if (cursor->selection > 9)
+							if (controllers[i]->buttons[DOWN])
 							{
+								controllers[i]->buttons[DOWN] = false;
+								cursor->selection++;
+								if (cursor->selection > 9)
+								{
+									cursor->selection = 0;
+								}
+								break;
+							}
+							if (controllers[i]->buttons[ATTACK])
+							{
+								controllers[i]->buttons[ATTACK] = false;
+								currentMenu = CONTROLLER_SELECT;
 								cursor->selection = 0;
+								break;
 							}
-						}
-						if (controllers[customizedControl]->buttons[ATTACK])
-						{
-							controllers[customizedControl]->buttons[ATTACK] = false;
-							currentMenu = CONTROLLER_SELECT;
-							cursor->selection = 0;
 						}
 					}
 					break;
 				}
 				case RESOLUTION:
 				{
-					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+					for (unsigned int i = 0; i < controllers.size(); i++)
 					{
-						controllers[0]->buttons[PAUSE] = false;
-						controllers[0]->buttons[JUMP] = false;
-
-						if (al_get_display_flags(display) & ALLEGRO_FULLSCREEN)
+						if (controllers[i]->buttons[PAUSE] || controllers[i]->buttons[JUMP])
 						{
-							al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+							controllers[i]->buttons[PAUSE] = false;
+							controllers[i]->buttons[JUMP] = false;
+
+							if (al_get_display_flags(display) & ALLEGRO_FULLSCREEN)
+							{
+								al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+							}
+							else
+							{
+								al_set_new_display_flags(ALLEGRO_WINDOWED);
+							}
+							al_destroy_display(display);
+							display = NULL;
+
+							al_destroy_bitmap(buffer);
+							buffer = NULL;
+
+							al_destroy_font(mainFnt);
+							al_destroy_font(mainFnt2X);
+							al_destroy_font(mainFnt3X);
+							al_destroy_font(mainFnt4X);
+
+							al_destroy_bitmap(titleSpr);
+
+							al_destroy_bitmap(tempBitmap1);
+							al_destroy_bitmap(tempBitmap2);
+
+							al_destroy_bitmap(cursorSpr);
+
+							switch (cursor->selection)
+							{
+								case 0:
+								{
+									width = 320;
+									height = 240;
+									break;
+								}
+								case 1:
+								{
+									width = 640;
+									height = 480;
+									break;
+								}
+								case 2:
+								{
+									width = 800;
+									height = 600;
+									break;
+								}
+								case 3:
+								{
+									width = 1024;
+									height = 768;
+									break;
+								}
+								case 4:
+								{
+									width = 1152;
+									height = 864;
+									break;
+								}
+								case 5:
+								{
+									width = 1280;
+									height = 960;
+									break;
+								}
+								case 6:
+								{
+									width = 1400;
+									height = 1050;
+									break;
+								}
+								case 7:
+								{
+									width = 1600;
+									height = 1200;
+									break;
+								}
+							}
+							display = al_create_display(width, height);
+
+							buffer = al_create_bitmap(width, height);
+
+							mainFnt = al_load_bitmap_font("Graphics/Fonts/mainFnt.png");
+							mainFnt2X = al_load_bitmap_font("Graphics/Fonts/mainFnt_2X.png");
+							mainFnt3X = al_load_bitmap_font("Graphics/Fonts/mainFnt_3X.png");
+							mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
+
+							titleSpr = al_load_bitmap("Graphics/Menu/title.png");
+
+							tempBitmap1 = al_create_bitmap(256, 256);
+							tempBitmap2 = al_create_bitmap(256, 256);
+
+							cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
+							cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
+							break;
 						}
-						else
+						if (controllers[i]->buttons[UP])
 						{
-							al_set_new_display_flags(ALLEGRO_WINDOWED);
+							controllers[i]->buttons[UP] = false;
+							cursor->selection--;
+							if (cursor->selection < 0)
+							{
+								cursor->selection = 7;
+							}
+							break;
 						}
-						al_destroy_display(display);
-						display = NULL;
-
-						al_destroy_bitmap(buffer);
-						buffer = NULL;
-
-						al_destroy_font(mainFnt);
-						al_destroy_font(mainFnt2X);
-						al_destroy_font(mainFnt3X);
-						al_destroy_font(mainFnt4X);
-
-						al_destroy_bitmap(titleSpr);
-
-						al_destroy_bitmap(tempBitmap1);
-						al_destroy_bitmap(tempBitmap2);
-
-						al_destroy_bitmap(cursorSpr);
-
-						switch (cursor->selection)
+						if (controllers[i]->buttons[DOWN])
 						{
-							case 0:
+							controllers[i]->buttons[DOWN] = false;
+							cursor->selection++;
+							if (cursor->selection > 7)
 							{
-								width = 320;
-								height = 240;
-								break;
+								cursor->selection = 0;
 							}
-							case 1:
-							{
-								width = 640;
-								height = 480;
-								break;
-							}
-							case 2:
-							{
-								width = 800;
-								height = 600;
-								break;
-							}
-							case 3:
-							{
-								width = 1024;
-								height = 768;
-								break;
-							}
-							case 4:
-							{
-								width = 1152;
-								height = 864;
-								break;
-							}
-							case 5:
-							{
-								width = 1280;
-								height = 960;
-								break;
-							}
-							case 6:
-							{
-								width = 1400;
-								height = 1050;
-								break;
-							}
-							case 7:
-							{
-								width = 1600;
-								height = 1200;
-								break;
-							}
+							break;
 						}
-						display = al_create_display(width, height);
-
-						buffer = al_create_bitmap(width, height);
-
-						mainFnt = al_load_bitmap_font("Graphics/Fonts/mainFnt.png");
-						mainFnt2X = al_load_bitmap_font("Graphics/Fonts/mainFnt_2X.png");
-						mainFnt3X = al_load_bitmap_font("Graphics/Fonts/mainFnt_3X.png");
-						mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
-
-						titleSpr = al_load_bitmap("Graphics/Menu/title.png");
-
-						tempBitmap1 = al_create_bitmap(256, 256);
-						tempBitmap2 = al_create_bitmap(256, 256);
-
-						cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
-						cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
-					}
-					if (controllers[0]->buttons[UP])
-					{
-						controllers[0]->buttons[UP] = false;
-						cursor->selection--;
-						if (cursor->selection < 0)
+						if (controllers[i]->buttons[ATTACK])
 						{
-							cursor->selection = 7;
-						}
-					}
-					if (controllers[0]->buttons[DOWN])
-					{
-						controllers[0]->buttons[DOWN] = false;
-						cursor->selection++;
-						if (cursor->selection > 7)
-						{
+							controllers[i]->buttons[ATTACK] = false;
+							currentMenu = VIDEO;
 							cursor->selection = 0;
+							break;
 						}
-					}
-					if (controllers[0]->buttons[ATTACK])
-					{
-						controllers[0]->buttons[ATTACK] = false;
-						currentMenu = VIDEO;
-						cursor->selection = 0;
 					}
 					break;
 				}
 				case CONTROLLER_SELECT:
 				{
-					if (controllers[0]->buttons[PAUSE] || controllers[0]->buttons[JUMP])
+					for (unsigned int i = 0; i < controllers.size(); i++)
 					{
-						controllers[0]->buttons[PAUSE] = false;
-						controllers[0]->buttons[JUMP] = false;
+						if (controllers[i]->buttons[PAUSE] || controllers[i]->buttons[JUMP])
+						{
+							controllers[i]->buttons[PAUSE] = false;
+							controllers[i]->buttons[JUMP] = false;
 
-						customizedControl = cursor->selection;
-						currentMenu = CONTROLS;
-						cursor->selection = 0;
-					}
-					if (controllers[0]->buttons[UP])
-					{
-						controllers[0]->buttons[UP] = false;
-						cursor->selection--;
-						if (cursor->selection < 0)
-						{
-							cursor->selection = controllers.size() - 1;
-						}
-					}
-					if (controllers[0]->buttons[DOWN])
-					{
-						controllers[0]->buttons[DOWN] = false;
-						cursor->selection++;
-						if (cursor->selection >= (signed int)controllers.size())
-						{
+							customizedControl = cursor->selection;
+							currentMenu = CONTROLS;
 							cursor->selection = 0;
+							break;
 						}
-					}
-					if (controllers[0]->buttons[ATTACK])
-					{
-						controllers[0]->buttons[ATTACK] = false;
-						currentMenu = OPTIONS;
-						cursor->selection = 0;
+						if (controllers[i]->buttons[UP])
+						{
+							controllers[i]->buttons[UP] = false;
+							cursor->selection--;
+							if (cursor->selection < 0)
+							{
+								cursor->selection = controllers.size() - 1;
+							}
+							break;
+						}
+						if (controllers[i]->buttons[DOWN])
+						{
+							controllers[i]->buttons[DOWN] = false;
+							cursor->selection++;
+							if (cursor->selection >= (signed int)controllers.size())
+							{
+								cursor->selection = 0;
+							}
+							break;
+						}
+						if (controllers[i]->buttons[ATTACK])
+						{
+							controllers[i]->buttons[ATTACK] = false;
+							currentMenu = OPTIONS;
+							cursor->selection = 0;
+							break;
+						}
 					}
 					break;
 				}
