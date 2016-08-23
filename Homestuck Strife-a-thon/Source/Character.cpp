@@ -163,7 +163,7 @@ void Character::FastFall(bool current, bool previous)
 		isFastFalling = true;
 		ySpeed = fastfallSpeed;
 	}
-	else if (isHanging && current && animationState != LEDGE_GRAB)
+	else if (isHanging && current && animationState == LEDGE_HOLD)
 	{
 		isFastFalling = true;
 		ySpeed = fastfallSpeed;

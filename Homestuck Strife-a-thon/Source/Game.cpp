@@ -20,8 +20,6 @@ Game::Game()
 
 	soundtrack = NULL;
 
-	controllers.push_back(new Control());
-	controllers.push_back(new Control("Keyboard"));
 	isCustomizing = false;
 	isCleared = false;
 	isOverlapping = false;
@@ -166,6 +164,14 @@ bool Game::Initialize()
 
 void Game::SetupInput()
 {
+	for (int i = al_get_num_joysticks(); i >= 0; i--)
+	{
+		controllers.push_back(new Control());
+		if (i == 0)
+		{
+			controllers[controllers.size() - 1]->name = "Keyboard";
+		}
+	}
 	for (unsigned int i = 0; i < controllers.size(); i++)
 	{
 		if (controllers[i]->name == "Keyboard")
@@ -398,24 +404,24 @@ void Game::GetInput(ALLEGRO_EVENT e)
 		{
 			if (controllers[customizedControl]->name != "Keyboard")
 			{
-				if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] == cursor->selection && e.joystick.pos <= 0) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] == cursor->selection && e.joystick.pos >= 0))
+				if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] == cursor->selection && e.joystick.pos <= -0.5) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] == cursor->selection && e.joystick.pos >= 0.5))
 				{
 					isOverlapping = false;
 					isCleared = false;
 					isCustomizing = false;
 				}
-				else if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] >= 0 && e.joystick.pos <= 0) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] >= 0 && e.joystick.pos >= 0))
+				else if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] >= 0 && e.joystick.pos <= -0.5) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] >= 0 && e.joystick.pos >= 0.5))
 				{
 					isOverlapping = true;
 					isCleared = false;
 				}
-				else
+				else if(abs(e.joystick.pos) > 0.5)
 				{
-					if (e.joystick.pos < 0)
+					if (e.joystick.pos < -0.5)
 					{
 						controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] = cursor->selection;
 					}
-					else if (e.joystick.pos > 0)
+					else if (e.joystick.pos > 0.5)
 					{
 						controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] = cursor->selection;
 					}
@@ -452,7 +458,7 @@ void Game::GetInput(ALLEGRO_EVENT e)
 								{
 									controllers[i]->stickHandles[j][k][2] = e.joystick.pos;
 									int temp;
-									if (e.joystick.pos < 0.0f && controllers[i]->stickHandles[j][k][3] >= 0.0f)
+									if (e.joystick.pos < -0.5f && controllers[i]->stickHandles[j][k][3] >= -0.5f)
 									{
 										temp = controllers[i]->stickHandles[j][k][0];
 										if (temp >= 0)
@@ -465,7 +471,7 @@ void Game::GetInput(ALLEGRO_EVENT e)
 											controllers[i]->buttons[temp] = false;
 										}
 									}
-									else if (e.joystick.pos > 0.0f && controllers[i]->stickHandles[j][k][3] <= 0.0f)
+									else if (e.joystick.pos > 0.5f && controllers[i]->stickHandles[j][k][3] <= 0.5f)
 									{
 										temp = controllers[i]->stickHandles[j][k][1];
 										if (temp >= 0)
@@ -478,7 +484,7 @@ void Game::GetInput(ALLEGRO_EVENT e)
 											controllers[i]->buttons[temp] = false;
 										}
 									}
-									else if (e.joystick.pos == 0.0f)
+									else if (e.joystick.pos < 0.5f && e.joystick.pos > -0.5f)
 									{
 										temp = controllers[i]->stickHandles[j][k][0];
 										if (temp >= 0)
@@ -502,7 +508,88 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 	else if (e.type == ALLEGRO_EVENT_JOYSTICK_CONFIGURATION)
 	{
+		int oldJoy = al_get_num_joysticks();
 		al_reconfigure_joysticks();
+		int newJoy = al_get_num_joysticks();
+		if (newJoy - oldJoy > 0)	// A joystick was added
+		{
+			// Get the handle on the new joystick by name matching; if one of the joysticks in allegro's vector doesn't match one in mine, then that's the new one!
+			for (int i = 0; i < newJoy; i++)
+			{
+				std::string joyName = al_get_joystick_name(al_get_joystick(i));
+				bool match = false;
+				for (int j = 0; j < oldJoy; j++)
+				{
+					if (joyName == controllers[j]->name)
+					{
+						match = true;
+						break;
+					}
+				}
+				if (!match)		// We've found the new controller; time to set it up
+				{
+					controllers.insert(controllers.end() - 1, new Control(joyName));
+
+					for (int j = 0; j < al_get_joystick_num_buttons(al_get_joystick(i)); j++)
+					{
+						controllers[controllers.size() - 2]->buttonHandles.push_back(-1);
+					}
+					for (int j = 0; j < al_get_joystick_num_sticks(al_get_joystick(i)); j++)
+					{
+						controllers[controllers.size() - 2]->stickHandles.push_back(std::vector<std::vector<float>>(0));
+						for (int k = 0; k < al_get_joystick_num_axes(al_get_joystick(i), j); k++)
+						{
+							controllers[controllers.size() - 2]->stickHandles[j].push_back(std::vector<float>(4));
+							controllers[controllers.size() - 2]->stickHandles[j][k][0] = -1;
+							controllers[controllers.size() - 2]->stickHandles[j][k][1] = -1;
+							controllers[controllers.size() - 2]->stickHandles[j][k][2] = 0.0f;
+							controllers[controllers.size() - 2]->stickHandles[j][k][3] = 0.0f;
+						}
+					}
+					reader->LoadControls(&controllers[controllers.size() - 2]);
+					controllers[controllers.size() - 2]->PopulateConfigList();
+					break;
+				}
+			}
+		}
+		else if (newJoy - oldJoy < 0)	// A joystick was removed
+		{
+			// Like for finding a new joystick, we have to find the perpetrator by name matching; if the inactive joystick's name matches the one in the controller list, then we remove it.
+			for (int i = 0; i < oldJoy; i++)
+			{
+				bool match = false;
+				for (int j = 0; j <  newJoy; j++)
+				{
+					if (controllers[i]->name == al_get_joystick_name(al_get_joystick(j)))
+					{
+						match = true;
+						break;
+					}
+				}
+				if (!match)
+				{
+					if (currentMenu == CONTROLS && i == customizedControl)
+					{
+						currentMenu = CONTROLLER_SELECT;
+						cursor->selection = 0;
+					}
+					else if (currentMenu == CONTROLLER_SELECT && cursor->selection > controllers.size() - 2)
+					{
+						cursor->selection = controllers.size() - 2;
+					}
+
+					controllers.erase(controllers.begin() + i);
+					for (unsigned int i = 0; i < controllers.size(); i++)
+					{
+						for (int j = 0; j < 10; j++)
+						{
+							controllers[i]->buttons[j] = false;
+						}
+					}
+					break;
+				}
+			}
+		}
 	}
 
 	// If the 'X' button on the window is pressed...

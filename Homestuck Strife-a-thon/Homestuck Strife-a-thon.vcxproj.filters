@@ -475,5 +475,6 @@
     <None Include="Levels\distanceTest2.lvl">
       <Filter>Resource Files\Levels</Filter>
     </None>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>
