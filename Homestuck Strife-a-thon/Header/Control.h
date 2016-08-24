@@ -20,7 +20,7 @@ public:
 	Control();
 	~Control();
 
-	void Control::operator=(Control other);
+	void Control::operator=(Control other);	// Self explanatory, but I'm explaining it anyway. Makes the left Control object exactly the same as the one on the right.
 
 	void PopulateConfigList();	// Populates the config list with the updated control assignments.
 };

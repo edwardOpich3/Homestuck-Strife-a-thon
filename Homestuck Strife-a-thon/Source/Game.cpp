@@ -202,9 +202,34 @@ void Game::SetupInput()
 			}
 		}
 
-		reader->LoadControls(&controllers[i]);
+		for (int j = 0; j < 10; j++)
+		{
+			controllers[i]->buttons[j] = false;
+			controllers[i]->buttonsPrev[j] = false;
+		}
+
+		if (controllers[i]->name == "Keyboard")
+		{
+			controllers[i]->buttonHandles[ALLEGRO_KEY_RIGHT] = 0;
+			controllers[i]->buttonHandles[ALLEGRO_KEY_UP] = 1;
+			controllers[i]->buttonHandles[ALLEGRO_KEY_LEFT] = 2;
+			controllers[i]->buttonHandles[ALLEGRO_KEY_DOWN] = 3;
+			controllers[i]->buttonHandles[ALLEGRO_KEY_ENTER] = 4;
+			controllers[i]->buttonHandles[ALLEGRO_KEY_Z] = 5;
+			controllers[i]->buttonHandles[ALLEGRO_KEY_X] = 6;
+			controllers[i]->buttonHandles[ALLEGRO_KEY_C] = 7;
+			controllers[i]->buttonHandles[ALLEGRO_KEY_A] = 8;
+			controllers[i]->buttonHandles[ALLEGRO_KEY_S] = 9;
+		}
+
 		controllers[i]->PopulateConfigList();
 	}
+	reader->LoadControls(&controllers);
+}
+
+void Game::WriteInput()
+{
+
 }
 
 void Game::GetInput(ALLEGRO_EVENT e)
@@ -563,7 +588,13 @@ void Game::GetInput(ALLEGRO_EVENT e)
 							controllers[controllers.size() - 1]->stickHandles[j][k][3] = 0.0f;
 						}
 					}
-					reader->LoadControls(&controllers[controllers.size() - 2]);
+
+					for (int j = 0; j < 10; j++)
+					{
+						controllers[controllers.size() - 1]->buttons[j] = false;
+						controllers[controllers.size() - 1]->buttonsPrev[j] = false;
+					}
+
 					controllers[controllers.size() - 1]->PopulateConfigList();
 					break;
 				}
@@ -1066,6 +1097,7 @@ void Game::Update()
 						isCustomizing = false;
 						isCleared = false;
 						isOverlapping = false;
+						WriteInput();
 					}
 					else if (!isCustomizing)
 					{
@@ -1108,6 +1140,7 @@ void Game::Update()
 								controllers[i]->buttons[ATTACK] = false;
 								currentMenu = CONTROLLER_SELECT;
 								cursor->selection = 0;
+								WriteInput();
 								break;
 							}
 						}

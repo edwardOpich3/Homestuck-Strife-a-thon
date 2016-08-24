@@ -83,8 +83,7 @@ public:
 	enum BUTTONS { RIGHT, UP, LEFT, DOWN, PAUSE, JUMP, ATTACK, SPECIAL, BLOCK, TAUNT };		// An enum for all of the commands.
 	enum GAME_STATES { SPLASH, TITLE, MENU, GAME };											// An enum for all of the game states.
 	enum MENUS { MAIN, OPTIONS, CHARACTER, STAGE, SOUND, VIDEO, CONTROLS, RESOLUTION, CONTROLLER_SELECT, PORT_CONFIG };		// An enum for all of the menu states.
-	//bool buttons[10] = { false, false, false, false, false, false, false, false, false, false };
-	//bool buttonsPrev[10] = { false, false, false, false, false, false, false, false, false, false };
+
 	int currentState;	// The current game state.
 	int currentMenu;	// The current menu.
 	int width;			// The width of the window.
@@ -99,6 +98,7 @@ public:
 	// Game Functions
 	bool Initialize();	// Sets up the game
 	void SetupInput();	// Inital input setup; only ran once, does an initial check of controllers and keyboard plugged in, and sets them to actually be able to interact.
+	void WriteInput();	// Someone configured their input, now we get to write it to the file. Carefully.
 	void GetInput(ALLEGRO_EVENT e);	// Gets input from every registered source.
 	void Update();	// Updates coordinates and states.
 	void Draw();	// Draws to the screen.
