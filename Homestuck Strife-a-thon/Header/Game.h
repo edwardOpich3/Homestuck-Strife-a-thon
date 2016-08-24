@@ -40,7 +40,7 @@ public:
 	ALLEGRO_SAMPLE_INSTANCE *BGM;	// The handle of the current song to be played.
 
 	// Controls
-	std::vector<Control*> controllers;	// The vector containing every controller currently plugged in, including the keyboard (last slot)
+	std::vector<Control*> controllers;	// The vector containing every controller currently plugged in, including the keyboard
 	bool isCustomizing;					// Is a player currently adjusting their controls?
 	bool isCleared;						// Has the player cleared a command of controls?
 	bool isOverlapping;					// Are two commands overlapping a control?
@@ -82,7 +82,7 @@ public:
 	// Technical Variables
 	enum BUTTONS { RIGHT, UP, LEFT, DOWN, PAUSE, JUMP, ATTACK, SPECIAL, BLOCK, TAUNT };		// An enum for all of the commands.
 	enum GAME_STATES { SPLASH, TITLE, MENU, GAME };											// An enum for all of the game states.
-	enum MENUS { MAIN, OPTIONS, CHARACTER, STAGE, SOUND, VIDEO, CONTROLS, RESOLUTION, CONTROLLER_SELECT };		// An enum for all of the menu states.
+	enum MENUS { MAIN, OPTIONS, CHARACTER, STAGE, SOUND, VIDEO, CONTROLS, RESOLUTION, CONTROLLER_SELECT, PORT_CONFIG };		// An enum for all of the menu states.
 	//bool buttons[10] = { false, false, false, false, false, false, false, false, false, false };
 	//bool buttonsPrev[10] = { false, false, false, false, false, false, false, false, false, false };
 	int currentState;	// The current game state.

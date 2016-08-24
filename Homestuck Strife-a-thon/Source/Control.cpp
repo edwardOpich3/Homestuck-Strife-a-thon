@@ -18,6 +18,20 @@ Control::~Control()
 }
 
 
+void Control::operator=(Control newControl)
+{
+	name = newControl.name;
+	buttonHandles = newControl.buttonHandles;
+	stickHandles = newControl.stickHandles;
+
+	for (int i = 0; i < 10; i++)
+	{
+		buttons[i] = newControl.buttons[i];
+		buttonsPrev[i] = newControl.buttonsPrev[i];
+		configList[i] = newControl.configList[i];
+	}
+}
+
 void Control::PopulateConfigList()
 {
 	for (int i = 0; i < 10; i++)

@@ -456,15 +456,20 @@ void Game::GetInput(ALLEGRO_EVENT e)
 		}
 		else
 		{
+			int outOfBoundsFixer = 0;
 			for (unsigned int i = 0; i < controllers.size(); i++)
 			{
+				if (controllers[i]->name == "Keyboard")
+				{
+					outOfBoundsFixer = 1;
+				}
 				if (controllers[i]->name == al_get_joystick_name(e.joystick.id))
 				{
-					for (int j = 0; j < al_get_joystick_num_sticks(al_get_joystick(i)); j++)
+					for (int j = 0; j < al_get_joystick_num_sticks(al_get_joystick(i - outOfBoundsFixer)); j++)
 					{
 						if (j == e.joystick.stick)
 						{
-							for (int k = 0; k < al_get_joystick_num_axes(al_get_joystick(i), j); k++)
+							for (int k = 0; k < al_get_joystick_num_axes(al_get_joystick(i - outOfBoundsFixer), j); k++)
 							{
 								if (k == e.joystick.axis)
 								{
@@ -588,7 +593,7 @@ void Game::GetInput(ALLEGRO_EVENT e)
 						isCleared = false;
 						isOverlapping = false;
 					}
-					else if (currentMenu == CONTROLLER_SELECT && cursor->selection > controllers.size() - 2)
+					else if (currentMenu == CONTROLLER_SELECT && (unsigned int)cursor->selection > controllers.size() - 2)
 					{
 						cursor->selection = controllers.size() - 2;
 					}
@@ -751,6 +756,13 @@ void Game::Update()
 									cursor->selection = 0;
 									break;
 								}
+								case 3:
+								{
+									currentMenu = PORT_CONFIG;
+									cursor->selection = 0;
+									customizedControl = 0;
+									break;
+								}
 							}
 							break;
 						}
@@ -760,7 +772,7 @@ void Game::Update()
 							cursor->selection--;
 							if (cursor->selection < 0)
 							{
-								cursor->selection = 2;
+								cursor->selection = 3;
 							}
 							break;
 						}
@@ -768,7 +780,7 @@ void Game::Update()
 						{
 							controllers[i]->buttons[DOWN] = false;
 							cursor->selection++;
-							if (cursor->selection > 2)
+							if (cursor->selection > 3)
 							{
 								cursor->selection = 0;
 							}
@@ -1280,6 +1292,32 @@ void Game::Update()
 					}
 					break;
 				}
+				case PORT_CONFIG:
+				{
+					for (unsigned int i = 0; i < controllers.size() && customizedControl < controllers.size(); i++)
+					{
+						for (int j = 0; j < 10; j++)
+						{
+							if (controllers[i]->buttons[j])
+							{
+								controllers[i]->buttons[j] = false;
+								controllers[customizedControl]->buttons[j] = false;
+
+								Control* temp = controllers[customizedControl];
+								controllers[customizedControl] = controllers[i];
+								controllers[i] = temp;
+								customizedControl++;
+								break;
+							}
+						}
+					}
+					if (customizedControl >= controllers.size())
+					{
+						currentMenu = OPTIONS;
+						cursor->selection = 0;
+					}
+					break;
+				}
 			}
 			break;
 		}
@@ -1463,6 +1501,7 @@ void Game::Draw()
 					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "SOUND");
 					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "VIDEO");
 					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384, ALLEGRO_ALIGN_CENTER, "CONTROLS");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416, ALLEGRO_ALIGN_CENTER, "PORT CONFIG");
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
 					break;
 				}
@@ -1632,6 +1671,13 @@ void Game::Draw()
 						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 + (32 * i), ALLEGRO_ALIGN_CENTER, controllers[i]->name.c_str());
 					}
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					break;
+				}
+				case PORT_CONFIG:
+				{
+					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_textf(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "PLEASE HIT A BUTTON ON CONTROLLER %i", customizedControl + 1);
 					break;
 				}
 			}

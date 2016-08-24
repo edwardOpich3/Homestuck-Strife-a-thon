@@ -20,6 +20,8 @@ public:
 	Control();
 	~Control();
 
+	void Control::operator=(Control other);
+
 	void PopulateConfigList();	// Populates the config list with the updated control assignments.
 };
 
