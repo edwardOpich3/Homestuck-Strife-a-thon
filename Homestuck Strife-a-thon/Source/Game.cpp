@@ -22,7 +22,6 @@ Game::Game()
 
 	isCustomizing = false;
 	isCleared = false;
-	isOverlapping = false;
 
 	// DEBUG
 	tempBitmap1 = NULL;
@@ -301,7 +300,6 @@ void Game::GetInput(ALLEGRO_EVENT e)
 					if (isCustomizing)
 					{
 						isCleared = true;
-						isOverlapping = false;
 					}
 				}
 			}
@@ -309,14 +307,8 @@ void Game::GetInput(ALLEGRO_EVENT e)
 			{
 				if (controllers[customizedControl]->buttonHandles[e.keyboard.keycode] == cursor->selection)
 				{
-					isOverlapping = false;
 					isCleared = false;
 					isCustomizing = false;
-				}
-				else if (controllers[customizedControl]->buttonHandles[e.keyboard.keycode] >= 0)
-				{
-					isOverlapping = true;
-					isCleared = false;
 				}
 				else
 				{
@@ -334,7 +326,6 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 					isCustomizing = false;
 					isCleared = false;
-					isOverlapping = false;
 				}
 			}
 		}
@@ -392,14 +383,8 @@ void Game::GetInput(ALLEGRO_EVENT e)
 				{
 					if (controllers[customizedControl]->buttonHandles[e.joystick.button] == cursor->selection)
 					{
-						isOverlapping = false;
 						isCleared = false;
 						isCustomizing = false;
-					}
-					else if (controllers[customizedControl]->buttonHandles[e.joystick.button] >= 0)
-					{
-						isOverlapping = true;
-						isCleared = false;
 					}
 					else
 					{
@@ -417,7 +402,6 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 						isCustomizing = false;
 						isCleared = false;
-						isOverlapping = false;
 					}
 				}
 			}
@@ -465,14 +449,8 @@ void Game::GetInput(ALLEGRO_EVENT e)
 				{
 					if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] == cursor->selection && e.joystick.pos <= -0.5) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] == cursor->selection && e.joystick.pos >= 0.5))
 					{
-						isOverlapping = false;
 						isCleared = false;
 						isCustomizing = false;
-					}
-					else if ((controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][0] >= 0 && e.joystick.pos <= -0.5) || (controllers[customizedControl]->stickHandles[e.joystick.stick][e.joystick.axis][1] >= 0 && e.joystick.pos >= 0.5))
-					{
-						isOverlapping = true;
-						isCleared = false;
 					}
 					else if (abs(e.joystick.pos) > 0.5)
 					{
@@ -497,7 +475,6 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 						isCustomizing = false;
 						isCleared = false;
-						isOverlapping = false;
 					}
 				}
 			}
@@ -645,7 +622,6 @@ void Game::GetInput(ALLEGRO_EVENT e)
 						cursor->selection = 0;
 						isCustomizing = false;
 						isCleared = false;
-						isOverlapping = false;
 					}
 					else if (currentMenu == CONTROLLER_SELECT && (unsigned int)cursor->selection > controllers.size() - 2)
 					{
@@ -1119,7 +1095,6 @@ void Game::Update()
 						cursor->selection = 0;
 						isCustomizing = false;
 						isCleared = false;
-						isOverlapping = false;
 						WriteInput(controllers[customizedControl]);
 					}
 					else if (!isCustomizing)
@@ -1653,10 +1628,6 @@ void Game::Draw()
 						if (isCleared)
 						{
 							al_draw_text(mainFnt, al_map_rgb(0, 0, 0), width / 2, (height / 2) + 32, ALLEGRO_ALIGN_CENTER, "Cleared.");
-						}
-						else if (isOverlapping)
-						{
-							al_draw_text(mainFnt, al_map_rgb(0, 0, 0), width / 2, (height / 2) + 32, ALLEGRO_ALIGN_CENTER, "That button/axis is being used for something else.");
 						}
 						if (cursor->selection == RIGHT)
 						{

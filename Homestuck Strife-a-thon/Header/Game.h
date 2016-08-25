@@ -43,7 +43,6 @@ public:
 	std::vector<Control*> controllers;	// The vector containing every controller currently plugged in, including the keyboard
 	bool isCustomizing;					// Is a player currently adjusting their controls?
 	bool isCleared;						// Has the player cleared a command of controls?
-	bool isOverlapping;					// Are two commands overlapping a control?
 	unsigned int customizedControl;		// The controller that's being customized.
 
 	// Players

@@ -283,7 +283,7 @@ void Reader::LoadControls(std::vector<Control*> *controllers)
 				}
 			}
 			myStream.close();
-			controllers[0][i]->PopulateConfigList();
 		}
+		controllers[0][i]->PopulateConfigList();
 	}
 }
