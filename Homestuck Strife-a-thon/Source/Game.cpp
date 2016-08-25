@@ -221,15 +221,38 @@ void Game::SetupInput()
 			controllers[i]->buttonHandles[ALLEGRO_KEY_A] = 8;
 			controllers[i]->buttonHandles[ALLEGRO_KEY_S] = 9;
 		}
-
-		controllers[i]->PopulateConfigList();
 	}
 	reader->LoadControls(&controllers);
 }
 
-void Game::WriteInput()
+void Game::WriteInput(Control *myControl)
 {
+	std::string path = "Config/Controllers/";
+	std::ofstream myStream;
 
+	path += myControl->name;
+	path += ".dat";
+	if (!al_filename_exists(path.c_str()))
+	{
+		myStream.open(path, myStream.binary | myStream.out);
+	}
+	else
+	{
+		myStream.open(path, myStream.binary | myStream.out | myStream.trunc);
+	}
+
+	for (unsigned int i = 0; i < myControl->buttonHandles.size(); i++)
+	{
+		myStream.put(myControl->buttonHandles[i] + 1);
+	}
+	for (unsigned int i = 0; i < myControl->stickHandles.size(); i++)
+	{
+		for (unsigned int j = 0; j < myControl->stickHandles[i].size(); j++)
+		{
+			myStream.put(myControl->stickHandles[i][j][0] + 1);
+			myStream.put(myControl->stickHandles[i][j][1] + 1);
+		}
+	}
 }
 
 void Game::GetInput(ALLEGRO_EVENT e)
@@ -1097,7 +1120,7 @@ void Game::Update()
 						isCustomizing = false;
 						isCleared = false;
 						isOverlapping = false;
-						WriteInput();
+						WriteInput(controllers[customizedControl]);
 					}
 					else if (!isCustomizing)
 					{
@@ -1140,7 +1163,7 @@ void Game::Update()
 								controllers[i]->buttons[ATTACK] = false;
 								currentMenu = CONTROLLER_SELECT;
 								cursor->selection = 0;
-								WriteInput();
+								WriteInput(controllers[customizedControl]);
 								break;
 							}
 						}

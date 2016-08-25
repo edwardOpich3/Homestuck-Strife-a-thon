@@ -252,73 +252,38 @@ void Reader::DrawLevel(std::vector<Tile> level, ALLEGRO_BITMAP **levelBitmap, in
 	}
 }
 
-void Reader::LoadControls(std::vector<Control*> *controllers){
+void Reader::LoadControls(std::vector<Control*> *controllers)
+{
+	std::string path;
+	std::ifstream myStream;
+	unsigned char temp[2];
 
-	if (!al_filename_exists("Config/controls.dat"))
+	for (unsigned int i = 0; i < controllers->size(); i++)
 	{
-		return;
-	}
-	else
-	{
-		std::vector<std::string> controllerNames;
-		std::ifstream myStream;
-		bool match = false;
-		unsigned char tempString = 0;
-		myStream.open("Config/controls.dat", myStream.binary | myStream.in);
-
-		// First, search for the name we need
-		for (unsigned int i = 0; i < controllers->size(); i++)
+		path = "Config/Controllers/";
+		path += controllers[0][i]->name;
+		path += ".dat";
+		if (al_filename_exists(path.c_str()))
 		{
-			if (myStream.peek() == -1)
+			myStream.open(path, myStream.binary | myStream.in);
+			for (unsigned int j = 0; j < controllers[0][i]->buttonHandles.size(); j++)
 			{
-				break;
+				myStream.read((char *)temp, 1);
+				controllers[0][i]->buttonHandles[j] = (temp[0] % 12) - 1;	// Note; this means that you have to write the file with all commands added by one! REMEMBER THIS!
 			}
-			match = false;
-			controllerNames.push_back(std::string());
-			while (myStream.peek() != (int)'\0' && myStream.peek() != -1)	// We're writing null-terminated strings up in this bitch
+			for (unsigned int j = 0; j < controllers[0][i]->stickHandles.size(); j++)
 			{
-				myStream.read((char *)tempString, 1);
-				controllerNames[i] += tempString;
-			}
-			myStream.read((char *)tempString, 1);
+				for (unsigned int k = 0; k < controllers[0][i]->stickHandles[j].size(); k++)
+				{
+					myStream.read((char *)temp, 1);
+					controllers[0][i]->stickHandles[j][k][0] = (temp[0] % 12) - 1;	// Guess what this means?
 
-			for (unsigned int j = 0; j < controllers->size(); j++)
-			{
-				if (controllers[0][j]->name == controllerNames[i])
-				{
-					match = true;
-					break;
+					myStream.read((char *)temp, 1);
+					controllers[0][i]->stickHandles[j][k][1] = (temp[0] % 12) - 1;	// Alternate your axes, negative first
 				}
 			}
-
-			if (match)	// Found the name, have a match, now load in the data into the appropriate places.
-			{
-				for (unsigned int j = 0; j < controllers[0][i]->buttonHandles.size(); j++)
-				{
-					myStream.read((char *)tempString, 1);
-					controllers[0][i]->buttonHandles[j] = (tempString % 12) - 1;	// Note; this means that you have to write the file with all commands added by one! REMEMBER THIS!
-				}
-				for (unsigned int j = 0; j < controllers[0][i]->stickHandles.size(); j++)
-				{
-					for (unsigned int k = 0; k < controllers[0][i]->stickHandles[j].size(); k++)
-					{
-						myStream.read((char *)tempString, 1);
-						controllers[0][i]->stickHandles[j][k][0] = (tempString % 12) - 1;	// Guess what this means?
-
-						myStream.read((char *)tempString, 1);
-						controllers[0][i]->stickHandles[j][k][1] = (tempString % 12) - 1;	// Alternate your axes, negative first
-					}
-				}
-				myStream.read((char *)tempString, 1);	// Read that 12 char that divides controllers!
-			}
-			else
-			{
-				while (myStream.peek() != 12 && myStream.peek() != -1)	// You see, I have to do 12 here instead of a null char because null chars are an actual value here.
-				{
-					myStream.read((char *)tempString, 1);
-				}
-				myStream.read((char *)tempString, 1);	// Read the 12 char that divides controllers!
-			}
+			myStream.close();
+			controllers[0][i]->PopulateConfigList();
 		}
 	}
 }
