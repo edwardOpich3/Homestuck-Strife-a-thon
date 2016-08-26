@@ -97,7 +97,6 @@ public:
 	// Game Functions
 	bool Initialize();	// Sets up the game
 	void SetupInput();	// Inital input setup; only ran once, does an initial check of controllers and keyboard plugged in, and sets them to actually be able to interact.
-	void WriteInput(Control *myControl);	// Someone configured their input, now we get to write it to the file. Carefully.
 	void GetInput(ALLEGRO_EVENT e);	// Gets input from every registered source.
 	void Update();	// Updates coordinates and states.
 	void Draw();	// Draws to the screen.

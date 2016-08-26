@@ -222,36 +222,7 @@ void Game::SetupInput()
 		}
 	}
 	reader->LoadControls(&controllers);
-}
-
-void Game::WriteInput(Control *myControl)
-{
-	std::string path = "Config/Controllers/";
-	std::ofstream myStream;
-
-	path += myControl->name;
-	path += ".dat";
-	if (!al_filename_exists(path.c_str()))
-	{
-		myStream.open(path, myStream.binary | myStream.out);
-	}
-	else
-	{
-		myStream.open(path, myStream.binary | myStream.out | myStream.trunc);
-	}
-
-	for (unsigned int i = 0; i < myControl->buttonHandles.size(); i++)
-	{
-		myStream.put(myControl->buttonHandles[i] + 1);
-	}
-	for (unsigned int i = 0; i < myControl->stickHandles.size(); i++)
-	{
-		for (unsigned int j = 0; j < myControl->stickHandles[i].size(); j++)
-		{
-			myStream.put(myControl->stickHandles[i][j][0] + 1);
-			myStream.put(myControl->stickHandles[i][j][1] + 1);
-		}
-	}
+	reader->LoadPortConfig(&controllers);
 }
 
 void Game::GetInput(ALLEGRO_EVENT e)
@@ -596,6 +567,7 @@ void Game::GetInput(ALLEGRO_EVENT e)
 					}
 
 					controllers[controllers.size() - 1]->PopulateConfigList();
+					reader->WritePortConfig(&controllers);
 					break;
 				}
 			}
@@ -1095,7 +1067,7 @@ void Game::Update()
 						cursor->selection = 0;
 						isCustomizing = false;
 						isCleared = false;
-						WriteInput(controllers[customizedControl]);
+						reader->WriteInput(controllers[customizedControl]);
 					}
 					else if (!isCustomizing)
 					{
@@ -1138,7 +1110,7 @@ void Game::Update()
 								controllers[i]->buttons[ATTACK] = false;
 								currentMenu = CONTROLLER_SELECT;
 								cursor->selection = 0;
-								WriteInput(controllers[customizedControl]);
+								reader->WriteInput(controllers[customizedControl]);
 								break;
 							}
 						}
@@ -1346,6 +1318,7 @@ void Game::Update()
 					{
 						currentMenu = OPTIONS;
 						cursor->selection = 0;
+						reader->WritePortConfig(&controllers);
 					}
 					break;
 				}

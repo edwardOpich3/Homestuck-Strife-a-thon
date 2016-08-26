@@ -256,7 +256,7 @@ void Reader::LoadControls(std::vector<Control*> *controllers)
 {
 	std::string path;
 	std::ifstream myStream;
-	unsigned char temp[2];
+	unsigned char temp[1];
 
 	for (unsigned int i = 0; i < controllers->size(); i++)
 	{
@@ -286,4 +286,121 @@ void Reader::LoadControls(std::vector<Control*> *controllers)
 		}
 		controllers[0][i]->PopulateConfigList();
 	}
+}
+
+void Reader::LoadPortConfig(std::vector<Control*> *controllers)
+{
+	std::ifstream myStream;
+	unsigned char temp[1];
+
+	if (al_filename_exists("Config/Controllers/Priority.dat"))
+	{
+		myStream.open("Config/Controllers/Priority.dat", myStream.binary | myStream.in);
+		for (unsigned int i = 0; i < controllers->size(); i++)
+		{
+			std::string name = "";
+			while (myStream.peek() != 0 && myStream.peek() != -1)
+			{
+				myStream.read((char *)temp, 1);
+				name.push_back(temp[0]);
+			}
+			myStream.read((char *)temp, 1);
+			for (unsigned int j = 0; j < controllers->size(); j++)
+			{
+				if (controllers[0][j]->name == name)
+				{
+					Control* temp = controllers[0][i];
+					controllers[0][i] = controllers[0][j];
+					controllers[0][j] = temp;
+					break;
+				}
+			}
+		}
+	}
+}
+
+void Reader::WriteInput(Control *myControl)
+{
+	std::string path = "Config/Controllers/";
+	std::ofstream myStream;
+
+	path += myControl->name;
+	path += ".dat";
+	if (!al_filename_exists(path.c_str()))
+	{
+		myStream.open(path, myStream.binary | myStream.out);
+	}
+	else
+	{
+		myStream.open(path, myStream.binary | myStream.out | myStream.trunc);
+	}
+
+	for (unsigned int i = 0; i < myControl->buttonHandles.size(); i++)
+	{
+		myStream.put(myControl->buttonHandles[i] + 1);
+	}
+	for (unsigned int i = 0; i < myControl->stickHandles.size(); i++)
+	{
+		for (unsigned int j = 0; j < myControl->stickHandles[i].size(); j++)
+		{
+			myStream.put(myControl->stickHandles[i][j][0] + 1);
+			myStream.put(myControl->stickHandles[i][j][1] + 1);
+		}
+	}
+}
+
+void Reader::WritePortConfig(std::vector<Control*> *controllers)
+{
+	std::ofstream myStream;
+	if (!al_filename_exists("Config/Controllers/Priority.dat"))
+	{
+		myStream.open("Config/Controllers/Priority.dat", myStream.binary | myStream.out);
+		for (unsigned int i = 0; i < controllers->size(); i++)
+		{
+			for (unsigned int j = 0; j < controllers[0][i]->name.size(); j++)
+			{
+				myStream.put(controllers[0][i]->name[j]);
+			}
+			myStream.put(0);
+		}
+	}
+	else
+	{
+		unsigned char temp[1];
+		std::ifstream input;
+		std::string configFile;
+		input.open("Config/Controllers/Priority.dat", input.binary | input.in);
+		while (input.peek() != -1)
+		{
+			input.read((char *)temp, 1);
+			configFile.push_back(temp[0]);
+		}
+		input.close();
+
+		int j = 0;
+		for (unsigned int i = 0; i < controllers->size(); i++)
+		{
+			if (j < configFile.size())
+			{
+				std::string temp = configFile.substr(j, temp.find((char)0, j));
+				for (unsigned int k = 0; k < controllers->size(); k++)
+				{
+					if (controllers[0][k]->name == temp)
+					{
+						configFile.replace(j, temp.size() - 1, temp);
+						j += temp.size() - 1;
+						break;
+					}
+				}
+			}
+			else
+			{
+				configFile += controllers[0][i]->name;
+				configFile.push_back(0);
+			}
+		}
+		myStream.open("Config/Controllers/Priority.dat", myStream.binary | myStream.out | myStream.trunc);
+		myStream.write(configFile.c_str(), configFile.size());
+	}
+	myStream.close();
 }

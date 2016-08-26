@@ -218,6 +218,12 @@
     <None Include="Audio\Music\title.ogg">
       <DeploymentContent>true</DeploymentContent>
     </None>
+    <None Include="Config\Controllers\Keyboard.dat">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
+    <None Include="Config\Controllers\XInput Joystick 0.dat">
+      <DeploymentContent>true</DeploymentContent>
+    </None>
     <None Include="Levels\Battlefield.lvl">
       <DeploymentContent>true</DeploymentContent>
     </None>
@@ -445,13 +451,14 @@
       <Optimization>MaxSpeed</Optimization>
       <FunctionLevelLinking>true</FunctionLevelLinking>
       <IntrinsicFunctions>true</IntrinsicFunctions>
-      <AdditionalIncludeDirectories>C:\allegro\include; C:\Users\Edward-Game\Documents\Visual Studio 2015\Projects\Personal\Homestuck Strife-a-thon\Homestuck Strife-a-thon</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>C:\Users\Edward-Game\Documents\Visual Studio 2015\Projects\Personal\Homestuck Strife-a-thon\Homestuck Strife-a-thon</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <GenerateDebugInformation>true</GenerateDebugInformation>
       <EnableCOMDATFolding>true</EnableCOMDATFolding>
       <OptimizeReferences>true</OptimizeReferences>
-      <AdditionalLibraryDirectories>c:/allegro/lib</AdditionalLibraryDirectories>
+      <AdditionalLibraryDirectories>
+      </AdditionalLibraryDirectories>
       <AdditionalDependencies>kernel32.lib;user32.lib;gdi32.lib;winspool.lib;comdlg32.lib;advapi32.lib;shell32.lib;ole32.lib;oleaut32.lib;uuid.lib;odbc32.lib;odbccp32.lib;%(AdditionalDependencies)</AdditionalDependencies>
       <SubSystem>Windows</SubSystem>
     </Link>

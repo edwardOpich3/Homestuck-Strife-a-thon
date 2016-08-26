@@ -53,9 +53,6 @@
     <Filter Include="Resource Files\Levels\tiles32">
       <UniqueIdentifier>{2509ebcb-7f7a-42cf-833b-e94102989442}</UniqueIdentifier>
     </Filter>
-    <Filter Include="Resource Files\Levels\tiles64">
-      <UniqueIdentifier>{54a4f091-1985-42ce-9b00-86538239c65f}</UniqueIdentifier>
-    </Filter>
     <Filter Include="Resource Files\Levels\tiles128">
       <UniqueIdentifier>{14d16c13-dd4a-454d-b1d5-f65ad5a5ddb6}</UniqueIdentifier>
     </Filter>
@@ -67,6 +64,15 @@
     </Filter>
     <Filter Include="Resource Files\Graphics\Levels\0 - LOWAS\tiles">
       <UniqueIdentifier>{b3ea2986-7be5-490f-9ea2-15c26bf99e1e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Levels\tiles32\tiles64">
+      <UniqueIdentifier>{54a4f091-1985-42ce-9b00-86538239c65f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Config">
+      <UniqueIdentifier>{4cf1cff2-66d6-4be3-853c-f41eb3569429}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resource Files\Config\Controllers">
+      <UniqueIdentifier>{89be0aab-626e-41f1-b637-d1e64c63e7b9}</UniqueIdentifier>
     </Filter>
   </ItemGroup>
   <ItemGroup>
@@ -350,31 +356,31 @@
       <Filter>Resource Files\Levels\tiles32</Filter>
     </None>
     <None Include="Levels\tiles64\tiles64_0.tile">
-      <Filter>Resource Files\Levels\tiles64</Filter>
+      <Filter>Resource Files\Levels\tiles32\tiles64</Filter>
     </None>
     <None Include="Levels\tiles64\tiles64_1.tile">
-      <Filter>Resource Files\Levels\tiles64</Filter>
+      <Filter>Resource Files\Levels\tiles32\tiles64</Filter>
     </None>
     <None Include="Levels\tiles64\tiles64_2.tile">
-      <Filter>Resource Files\Levels\tiles64</Filter>
+      <Filter>Resource Files\Levels\tiles32\tiles64</Filter>
     </None>
     <None Include="Levels\tiles64\tiles64_3.tile">
-      <Filter>Resource Files\Levels\tiles64</Filter>
+      <Filter>Resource Files\Levels\tiles32\tiles64</Filter>
     </None>
     <None Include="Levels\tiles64\tiles64_4.tile">
-      <Filter>Resource Files\Levels\tiles64</Filter>
+      <Filter>Resource Files\Levels\tiles32\tiles64</Filter>
     </None>
     <None Include="Levels\tiles64\tiles64_5.tile">
-      <Filter>Resource Files\Levels\tiles64</Filter>
+      <Filter>Resource Files\Levels\tiles32\tiles64</Filter>
     </None>
     <None Include="Levels\tiles64\tiles64_6.tile">
-      <Filter>Resource Files\Levels\tiles64</Filter>
+      <Filter>Resource Files\Levels\tiles32\tiles64</Filter>
     </None>
     <None Include="Levels\tiles64\tiles64_7.tile">
-      <Filter>Resource Files\Levels\tiles64</Filter>
+      <Filter>Resource Files\Levels\tiles32\tiles64</Filter>
     </None>
     <None Include="Levels\tiles64\tiles64_8.tile">
-      <Filter>Resource Files\Levels\tiles64</Filter>
+      <Filter>Resource Files\Levels\tiles32\tiles64</Filter>
     </None>
     <None Include="Levels\tiles128\tiles128_0.tile">
       <Filter>Resource Files\Levels\tiles128</Filter>
@@ -476,5 +482,11 @@
       <Filter>Resource Files\Levels</Filter>
     </None>
     <None Include="packages.config" />
+    <None Include="Config\Controllers\Keyboard.dat">
+      <Filter>Resource Files\Config\Controllers</Filter>
+    </None>
+    <None Include="Config\Controllers\XInput Joystick 0.dat">
+      <Filter>Resource Files\Config\Controllers</Filter>
+    </None>
   </ItemGroup>
 </Project>

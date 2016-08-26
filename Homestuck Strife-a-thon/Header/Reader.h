@@ -24,6 +24,10 @@ public:
 	//void SectionLevel(std::vector<std::vector<Tile>> *level, int width, int height);	Outdated; Delete when confirmed no longer needed
 	void DrawLevel(std::vector<Tile> level, ALLEGRO_BITMAP **levelBitmap, int width, int height, std::vector<ALLEGRO_BITMAP*> tile16List);	// Draws the level to a bitmap, when converted to 16 size tiles. This works for both the visible map and the collision map, just pass in a different set of tiles.
 
-	void LoadControls(std::vector<Control*> *controllers);	// Loads the control configs. Currently only sets default values; will not do that in the future.
+	void LoadControls(std::vector<Control*> *controllers);	// Loads the control configs.
+	void LoadPortConfig(std::vector<Control*> *controllers);	// Loads the port configuration.
+
+	void WriteInput(Control *myControl);	// Someone configured their input, now we get to write it to the file. Carefully.
+	void WritePortConfig(std::vector<Control*> *controllers);	// The port configuration has been adjusted, either because someone unplugged or cause they used the menu. Re-order accordingly.
 };
 
