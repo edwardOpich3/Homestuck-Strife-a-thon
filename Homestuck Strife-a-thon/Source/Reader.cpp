@@ -368,39 +368,48 @@ void Reader::WritePortConfig(std::vector<Control*> *controllers)
 	{
 		unsigned char temp[1];
 		std::ifstream input;
-		std::string configFile;
+		std::vector<std::string> configFile;
 		input.open("Config/Controllers/Priority.dat", input.binary | input.in);
+		int i = 0;
+		configFile.push_back(std::string());
 		while (input.peek() != -1)
 		{
 			input.read((char *)temp, 1);
-			configFile.push_back(temp[0]);
+			if (temp[0] > 0)
+			{
+				configFile[i].push_back(temp[0]);
+			}
+			if (temp[0] == 0 && input.peek() != -1)
+			{
+				configFile.push_back(std::string());
+				i++;
+			}
 		}
 		input.close();
 
-		int j = 0;
+		unsigned int j = 0;
 		for (unsigned int i = 0; i < controllers->size(); i++)
 		{
-			if (j < configFile.size())
+			if (j >= configFile.size())
 			{
-				std::string temp = configFile.substr(j, temp.find((char)0, j));
-				for (unsigned int k = 0; k < controllers->size(); k++)
-				{
-					if (controllers[0][k]->name == temp)
-					{
-						configFile.replace(j, temp.size() - 1, temp);
-						j += temp.size() - 1;
-						break;
-					}
-				}
+				configFile.push_back(controllers[0][i]->name);
 			}
-			else
+			for (unsigned int k = 0; k < controllers->size() && j < configFile.size(); k++)
 			{
-				configFile += controllers[0][i]->name;
-				configFile.push_back(0);
+				if (controllers[0][k]->name == configFile[j])
+				{
+					configFile[j] = controllers[0][i]->name;
+					j++;
+					break;
+				}
 			}
 		}
 		myStream.open("Config/Controllers/Priority.dat", myStream.binary | myStream.out | myStream.trunc);
-		myStream.write(configFile.c_str(), configFile.size());
+		for (unsigned int i = 0; i < configFile.size(); i++)
+		{
+			myStream.write(configFile[i].c_str(), configFile[i].size());
+			myStream.put(0);
+		}
 	}
 	myStream.close();
 }

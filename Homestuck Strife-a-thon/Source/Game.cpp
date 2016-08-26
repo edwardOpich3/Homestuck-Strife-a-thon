@@ -521,9 +521,9 @@ void Game::GetInput(ALLEGRO_EVENT e)
 
 	else if (e.type == ALLEGRO_EVENT_JOYSTICK_CONFIGURATION)
 	{
-		int oldJoy = al_get_num_joysticks();
+		int oldJoy = al_get_num_joysticks() + 1;
 		al_reconfigure_joysticks();
-		int newJoy = al_get_num_joysticks();
+		int newJoy = al_get_num_joysticks() + 1;
 		if (newJoy - oldJoy > 0)	// A joystick was added
 		{
 			// Get the handle on the new joystick by name matching; if one of the joysticks in allegro's vector doesn't match one in mine, then that's the new one!
@@ -567,7 +567,8 @@ void Game::GetInput(ALLEGRO_EVENT e)
 					}
 
 					controllers[controllers.size() - 1]->PopulateConfigList();
-					reader->WritePortConfig(&controllers);
+					reader->LoadPortConfig(&controllers);
+					reader->LoadControls(&controllers);
 					break;
 				}
 			}
@@ -578,7 +579,7 @@ void Game::GetInput(ALLEGRO_EVENT e)
 			for (int i = 0; i < oldJoy + 1; i++)
 			{
 				bool match = false;
-				for (int j = 0; j <  newJoy; j++)
+				for (int j = 0; j < newJoy - 1; j++)
 				{
 					if (controllers[i]->name == al_get_joystick_name(al_get_joystick(j)) || controllers[i]->name == "Keyboard")
 					{
