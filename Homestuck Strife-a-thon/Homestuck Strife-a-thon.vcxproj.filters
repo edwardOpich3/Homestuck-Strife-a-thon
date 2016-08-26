@@ -305,6 +305,15 @@
     <Image Include="Graphics\Levels\0 - LOWAS\tiles\21.png">
       <Filter>Resource Files\Graphics\Levels\0 - LOWAS\tiles</Filter>
     </Image>
+    <Image Include="Graphics\Menu\downArrow.png">
+      <Filter>Resource Files\Graphics\Menu</Filter>
+    </Image>
+    <Image Include="Graphics\Menu\scrollBar.png">
+      <Filter>Resource Files\Graphics\Menu</Filter>
+    </Image>
+    <Image Include="Graphics\Menu\upArrow.png">
+      <Filter>Resource Files\Graphics\Menu</Filter>
+    </Image>
   </ItemGroup>
   <ItemGroup>
     <None Include="Levels\tiles32\tiles32_0.tile">

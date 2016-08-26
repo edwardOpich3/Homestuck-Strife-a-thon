@@ -176,6 +176,31 @@ int Reader::ReadInt(unsigned char temp[4])
 	return myInt;
 }
 
+void Reader::WriteInt(int myInt, unsigned char *temp)
+{
+	for (int i = 0; i < 4; i++)
+	{
+		temp[i] = 0;
+	}
+
+	while (myInt / (256 * 256 * 256) > 1)
+	{
+		myInt -= (256 * 256 * 256);
+		temp[3]++;
+	}
+	while (myInt / (256 * 256) > 1)
+	{
+		myInt -= (256 * 256);
+		temp[2]++;
+	}
+	while (myInt / 256 > 0)
+	{
+		myInt -= 256;
+		temp[1]++;
+	}
+	temp[0] = myInt;
+}
+
 std::vector<Tile> Reader::SeparateTiles(std::vector<Tile> myLevel, std::vector<std::vector<Tile>> tile32List, std::vector<std::vector<Tile>> tile64List, std::vector<std::vector<Tile>> tile128List)
 {
 	std::vector<Tile> temp;
@@ -319,6 +344,37 @@ void Reader::LoadPortConfig(std::vector<Control*> *controllers)
 	}
 }
 
+void Reader::LoadVideo(ALLEGRO_DISPLAY **display, int *width, int *height)
+{
+	if (al_filename_exists("Config/Video.dat"))
+	{
+		std::ifstream myStream;
+		unsigned char temp[4];
+
+		myStream.open("Config/Video.dat", myStream.binary | myStream.in);
+
+		myStream.read((char *)temp, 4);
+		*width = ReadInt(temp);
+
+		myStream.read((char *)temp, 4);
+		*height = ReadInt(temp);
+
+		for (int i = 0; i < 4; i++)
+		{
+			temp[i] = 0;
+		}
+
+		myStream.read((char *)temp, 1);
+		if (temp[0])
+		{
+			al_set_target_backbuffer(*display);
+			al_set_new_display_flags(ALLEGRO_FULLSCREEN);
+		}
+
+		myStream.close();
+	}
+}
+
 void Reader::WriteInput(Control *myControl)
 {
 	std::string path = "Config/Controllers/";
@@ -412,4 +468,32 @@ void Reader::WritePortConfig(std::vector<Control*> *controllers)
 		}
 	}
 	myStream.close();
+}
+
+void Reader::WriteVideo(ALLEGRO_DISPLAY *display)
+{
+	std::ofstream myStream;
+	unsigned char temp[4];
+	myStream.open("Config/Video.dat", myStream.binary | myStream.out | myStream.trunc);
+
+	WriteInt(al_get_display_width(display), temp);
+	for (int i = 0; i < 4; i++)
+	{
+		myStream.put(temp[i]);
+	}
+
+	WriteInt(al_get_display_height(display), temp);
+	for (int i = 0; i < 4; i++)
+	{
+		myStream.put(temp[i]);
+	}
+
+	if (al_get_display_flags(display) & ALLEGRO_FULLSCREEN)
+	{
+		myStream.put(1);
+	}
+	else
+	{
+		myStream.put(0);
+	}
 }

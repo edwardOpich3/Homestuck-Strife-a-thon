@@ -31,8 +31,8 @@ public:
 
 	// Graphics
 	ALLEGRO_BITMAP *titleSpr;	// The title screen graphic.
-	
-	ALLEGRO_BITMAP *cursorSpr;	// The cursor's sprite; this should be abolished.
+	ALLEGRO_BITMAP *upArrow;	// The Up Arrow for the menus.
+	ALLEGRO_BITMAP *downArrow;	// The Down Arrow for the menus.
 
 	// Music
 	ALLEGRO_SAMPLE *soundtrack;	// The current song.
@@ -67,6 +67,7 @@ public:
 
 	// Cursor
 	Cursor *cursor;		// A cursor.
+	Cursor *scrollBar;	// A scrollBar cursor.
 
 	// Reader
 	Reader *reader;		// A reader to load in data.

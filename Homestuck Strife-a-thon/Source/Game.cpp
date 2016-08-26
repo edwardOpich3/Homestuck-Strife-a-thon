@@ -15,8 +15,8 @@ Game::Game()
 	mainFnt4X = NULL;
 
 	titleSpr = NULL;
-
-	cursorSpr = NULL;
+	upArrow = NULL;
+	downArrow = NULL;
 
 	soundtrack = NULL;
 
@@ -53,6 +53,7 @@ bool Game::Initialize()
 		return false;
 	}
 
+	reader->LoadVideo(&display, &width, &height);
 	display = al_create_display(width, height);
 
 	if (!display)
@@ -656,8 +657,10 @@ void Game::Update()
 					al_destroy_sample(soundtrack);
 
 					// Then load everything for the menu
-					cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
-					cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
+					upArrow = al_load_bitmap("Graphics/Menu/upArrow.png");
+					downArrow = al_load_bitmap("Graphics/Menu/downArrow.png");
+					cursor = new Cursor(((5 * width) / 12), 320, al_load_bitmap("Graphics/Menu/cursor.png"));
+					scrollBar = new Cursor((width / 2) + 196, 316, al_load_bitmap("Graphics/Menu/scrollBar.png"));
 					soundtrack = al_load_sample("Audio/Music/character_select.ogg");
 					BGM = al_create_sample_instance(soundtrack);
 					al_set_sample_instance_playmode(BGM, ALLEGRO_PLAYMODE_LOOP);
@@ -665,6 +668,7 @@ void Game::Update()
 					//al_play_sample_instance(BGM);
 
 					currentState = MENU;
+					scrollBar->selection = 2;
 					break;
 				}
 			}
@@ -688,13 +692,25 @@ void Game::Update()
 								case 0:
 								{
 									currentMenu = CHARACTER;
+									scrollBar->selection = 2;
 									cursor->selection = 0;
+									cursor->offset = cursor->selection - cursor->offsetLimit;
+									if (cursor->offset < 0)
+									{
+										cursor->offset = 0;
+									}
 									break;
 								}
 								case 1:
 								{
 									currentMenu = OPTIONS;
+									scrollBar->selection = 4;
 									cursor->selection = 0;
+									cursor->offset = cursor->selection - cursor->offsetLimit;
+									if (cursor->offset < 0)
+									{
+										cursor->offset = 0;
+									}
 									break;
 								}
 							}
@@ -708,6 +724,11 @@ void Game::Update()
 							{
 								cursor->selection = 1;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[DOWN])
@@ -718,6 +739,11 @@ void Game::Update()
 							{
 								cursor->selection = 0;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[ATTACK])
@@ -725,6 +751,11 @@ void Game::Update()
 							controllers[i]->buttons[ATTACK] = false;
 							currentState = TITLE;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 					}
@@ -744,19 +775,37 @@ void Game::Update()
 								case 0:
 								{
 									currentMenu = SOUND;
+									scrollBar->selection = 2;
 									cursor->selection = 0;
+									cursor->offset = cursor->selection - cursor->offsetLimit;
+									if (cursor->offset < 0)
+									{
+										cursor->offset = 0;
+									}
 									break;
 								}
 								case 1:
 								{
 									currentMenu = VIDEO;
+									scrollBar->selection = 2;
 									cursor->selection = 0;
+									cursor->offset = cursor->selection - cursor->offsetLimit;
+									if (cursor->offset < 0)
+									{
+										cursor->offset = 0;
+									}
 									break;
 								}
 								case 2:
 								{
 									currentMenu = CONTROLLER_SELECT;
+									scrollBar->selection = controllers.size();
 									cursor->selection = 0;
+									cursor->offset = cursor->selection - cursor->offsetLimit;
+									if (cursor->offset < 0)
+									{
+										cursor->offset = 0;
+									}
 									break;
 								}
 								case 3:
@@ -765,6 +814,11 @@ void Game::Update()
 									cursor->selection = 0;
 									customizedControl = 0;
 									break;
+									cursor->offset = cursor->selection - cursor->offsetLimit;
+									if (cursor->offset < 0)
+									{
+										cursor->offset = 0;
+									}
 								}
 							}
 							break;
@@ -777,6 +831,11 @@ void Game::Update()
 							{
 								cursor->selection = 3;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[DOWN])
@@ -787,13 +846,24 @@ void Game::Update()
 							{
 								cursor->selection = 0;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[ATTACK])
 						{
 							controllers[i]->buttons[ATTACK] = false;
 							currentMenu = MAIN;
+							scrollBar->selection = 2;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 					}
@@ -843,7 +913,13 @@ void Game::Update()
 							//al_play_sample_instance(BGM);
 							camera = new Camera(0, 0);*/
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							currentMenu = STAGE;
+							scrollBar->selection = levelNames.size();
 							break;
 						}
 						if (controllers[i]->buttons[UP])
@@ -853,6 +929,11 @@ void Game::Update()
 							if (cursor->selection < 0)
 							{
 								cursor->selection = 1;
+							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
 							}
 							break;
 						}
@@ -864,13 +945,24 @@ void Game::Update()
 							{
 								cursor->selection = 0;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[ATTACK])
 						{
 							controllers[i]->buttons[ATTACK] = false;
 							currentMenu = MAIN;
+							scrollBar->selection = 2;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 					}
@@ -911,6 +1003,11 @@ void Game::Update()
 							{
 								cursor->selection = levelNames.size() - 1;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[DOWN])
@@ -921,13 +1018,24 @@ void Game::Update()
 							{
 								cursor->selection = 0;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[ATTACK])
 						{
 							controllers[i]->buttons[ATTACK] = false;
 							currentMenu = CHARACTER;
+							scrollBar->selection = 2;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							al_destroy_bitmap(player1->sprite);
 							player1->sprite = NULL;
 							break;
@@ -945,13 +1053,24 @@ void Game::Update()
 							controllers[i]->buttons[JUMP] = false;
 							currentMenu = OPTIONS;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[ATTACK])
 						{
 							controllers[i]->buttons[ATTACK] = false;
 							currentMenu = OPTIONS;
+							scrollBar->selection = 4;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 					}
@@ -971,7 +1090,13 @@ void Game::Update()
 								case 0:
 								{
 									currentMenu = RESOLUTION;
+									scrollBar->selection = 6;
 									cursor->selection = 0;
+									cursor->offset = cursor->selection - cursor->offsetLimit;
+									if (cursor->offset < 0)
+									{
+										cursor->offset = 0;
+									}
 									break;
 								}
 								case 1:
@@ -993,6 +1118,8 @@ void Game::Update()
 									al_destroy_font(mainFnt4X);
 
 									al_destroy_bitmap(titleSpr);
+									al_destroy_bitmap(upArrow);
+									al_destroy_bitmap(downArrow);
 
 									al_destroy_bitmap(tempBitmap1);
 									al_destroy_bitmap(tempBitmap2);
@@ -1007,7 +1134,8 @@ void Game::Update()
 										al_destroy_bitmap(levelTileList[j]);
 									}
 
-									al_destroy_bitmap(cursorSpr);
+									al_destroy_bitmap(cursor->sprite);
+									al_destroy_bitmap(scrollBar->sprite);
 
 									display = al_create_display(width, height);
 									buffer = al_create_bitmap(width, height);
@@ -1018,13 +1146,17 @@ void Game::Update()
 									mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
 
 									titleSpr = al_load_bitmap("Graphics/Menu/title.png");
+									upArrow = al_load_bitmap("Graphics/Menu/upArrow.png");
+									downArrow = al_load_bitmap("Graphics/Menu/downArrow.png");
 
 									tempBitmap1 = al_create_bitmap(256, 256);
 									tempBitmap2 = al_create_bitmap(256, 256);
 
-									cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
-									cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
+									cursor = new Cursor(((5 * width) / 12), 320, al_load_bitmap("Graphics/Menu/cursor.png"));
+									scrollBar = new Cursor((width / 2) + 196, 316, al_load_bitmap("Graphics/Menu/scrollBar.png"));
+									scrollBar->selection = 2;
 
+									reader->WriteVideo(display);
 									break;
 								}
 							}
@@ -1038,6 +1170,11 @@ void Game::Update()
 							{
 								cursor->selection = 1;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[DOWN])
@@ -1048,13 +1185,24 @@ void Game::Update()
 							{
 								cursor->selection = 0;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[ATTACK])
 						{
 							controllers[i]->buttons[ATTACK] = false;
 							currentMenu = OPTIONS;
+							scrollBar->selection = 4;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 					}
@@ -1066,6 +1214,11 @@ void Game::Update()
 					{
 						currentMenu = OPTIONS;
 						cursor->selection = 0;
+						cursor->offset = cursor->selection - cursor->offsetLimit;
+						if (cursor->offset < 0)
+						{
+							cursor->offset = 0;
+						}
 						isCustomizing = false;
 						isCleared = false;
 						reader->WriteInput(controllers[customizedControl]);
@@ -1094,6 +1247,11 @@ void Game::Update()
 								{
 									cursor->selection = 9;
 								}
+								cursor->offset = cursor->selection - cursor->offsetLimit;
+								if (cursor->offset < 0)
+								{
+									cursor->offset = 0;
+								}
 								break;
 							}
 							if (controllers[i]->buttons[DOWN])
@@ -1104,13 +1262,24 @@ void Game::Update()
 								{
 									cursor->selection = 0;
 								}
+								cursor->offset = cursor->selection - cursor->offsetLimit;
+								if (cursor->offset < 0)
+								{
+									cursor->offset = 0;
+								}
 								break;
 							}
 							if (controllers[i]->buttons[ATTACK])
 							{
 								controllers[i]->buttons[ATTACK] = false;
 								currentMenu = CONTROLLER_SELECT;
+								scrollBar->selection = controllers.size();
 								cursor->selection = 0;
+								cursor->offset = cursor->selection - cursor->offsetLimit;
+								if (cursor->offset < 0)
+								{
+									cursor->offset = 0;
+								}
 								reader->WriteInput(controllers[customizedControl]);
 								break;
 							}
@@ -1147,60 +1316,51 @@ void Game::Update()
 							al_destroy_font(mainFnt4X);
 
 							al_destroy_bitmap(titleSpr);
+							al_destroy_bitmap(upArrow);
+							al_destroy_bitmap(downArrow);
 
 							al_destroy_bitmap(tempBitmap1);
 							al_destroy_bitmap(tempBitmap2);
 
-							al_destroy_bitmap(cursorSpr);
+							al_destroy_bitmap(cursor->sprite);
+							al_destroy_bitmap(scrollBar->sprite);
 
 							switch (cursor->selection)
 							{
 								case 0:
 								{
-									width = 320;
-									height = 240;
-									break;
-								}
-								case 1:
-								{
 									width = 640;
 									height = 480;
 									break;
 								}
-								case 2:
+								case 1:
 								{
 									width = 800;
 									height = 600;
 									break;
 								}
-								case 3:
+								case 2:
 								{
 									width = 1024;
 									height = 768;
 									break;
 								}
-								case 4:
+								case 3:
 								{
 									width = 1152;
 									height = 864;
 									break;
 								}
-								case 5:
+								case 4:
 								{
 									width = 1280;
 									height = 960;
 									break;
 								}
-								case 6:
+								case 5:
 								{
 									width = 1400;
 									height = 1050;
-									break;
-								}
-								case 7:
-								{
-									width = 1600;
-									height = 1200;
 									break;
 								}
 							}
@@ -1214,12 +1374,16 @@ void Game::Update()
 							mainFnt4X = al_load_bitmap_font("Graphics/Fonts/mainFnt_4X.png");
 
 							titleSpr = al_load_bitmap("Graphics/Menu/title.png");
+							upArrow = al_load_bitmap("Graphics/Menu/upArrow.png");
+							downArrow = al_load_bitmap("Graphics/Menu/downArrow.png");
 
 							tempBitmap1 = al_create_bitmap(256, 256);
 							tempBitmap2 = al_create_bitmap(256, 256);
 
-							cursorSpr = al_load_bitmap("Graphics/Menu/cursor.png");
-							cursor = new Cursor(((5 * width) / 12), 320, cursorSpr);
+							cursor = new Cursor(((5 * width) / 12), 320, al_load_bitmap("Graphics/Menu/cursor.png"));
+							scrollBar = new Cursor((width / 2) + 196, 316, al_load_bitmap("Graphics/Menu/scrollBar.png"));
+							scrollBar->selection = 6;
+							reader->WriteVideo(display);
 							break;
 						}
 						if (controllers[i]->buttons[UP])
@@ -1228,7 +1392,12 @@ void Game::Update()
 							cursor->selection--;
 							if (cursor->selection < 0)
 							{
-								cursor->selection = 7;
+								cursor->selection = 5;
+							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
 							}
 							break;
 						}
@@ -1236,9 +1405,14 @@ void Game::Update()
 						{
 							controllers[i]->buttons[DOWN] = false;
 							cursor->selection++;
-							if (cursor->selection > 7)
+							if (cursor->selection > 5)
 							{
 								cursor->selection = 0;
+							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
 							}
 							break;
 						}
@@ -1246,7 +1420,13 @@ void Game::Update()
 						{
 							controllers[i]->buttons[ATTACK] = false;
 							currentMenu = VIDEO;
+							scrollBar->selection = 2;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 					}
@@ -1263,7 +1443,13 @@ void Game::Update()
 
 							customizedControl = cursor->selection;
 							currentMenu = CONTROLS;
+							scrollBar->selection = 10;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[UP])
@@ -1273,6 +1459,11 @@ void Game::Update()
 							if (cursor->selection < 0)
 							{
 								cursor->selection = controllers.size() - 1;
+							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
 							}
 							break;
 						}
@@ -1284,6 +1475,11 @@ void Game::Update()
 							{
 								cursor->selection = 0;
 							}
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 						if (controllers[i]->buttons[ATTACK])
@@ -1291,6 +1487,11 @@ void Game::Update()
 							controllers[i]->buttons[ATTACK] = false;
 							currentMenu = OPTIONS;
 							cursor->selection = 0;
+							cursor->offset = cursor->selection - cursor->offsetLimit;
+							if (cursor->offset < 0)
+							{
+								cursor->offset = 0;
+							}
 							break;
 						}
 					}
@@ -1318,7 +1519,13 @@ void Game::Update()
 					if (customizedControl >= controllers.size())
 					{
 						currentMenu = OPTIONS;
+						scrollBar->selection = 4;
 						cursor->selection = 0;
+						cursor->offset = cursor->selection - cursor->offsetLimit;
+						if (cursor->offset < 0)
+						{
+							cursor->offset = 0;
+						}
 						reader->WritePortConfig(&controllers);
 					}
 					break;
@@ -1491,65 +1698,107 @@ void Game::Draw()
 				case MAIN:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
+
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "STRIFE!");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "OPTIONS");
+
+					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
+
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
 					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "MAIN MENU");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "STRIFE!");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "OPTIONS");
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
+					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
+					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
+					al_draw_bitmap(downArrow, (width / 2) + 196, 456, NULL);
 					break;
 				}
 				case OPTIONS:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
+					
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "SOUND");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "VIDEO");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "CONTROLS");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "PORT CONFIG");
+
+					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
+
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
 					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "OPTIONS");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "SOUND");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "VIDEO");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384, ALLEGRO_ALIGN_CENTER, "CONTROLS");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416, ALLEGRO_ALIGN_CENTER, "PORT CONFIG");
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
+					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
+					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
+					al_draw_bitmap(downArrow, (width / 2) + 196, 456, NULL);
 					break;
 				}
 				case CHARACTER:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
+					
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "John Egbert");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Rose Lalonde");
+
+					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
+
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
 					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE YOUR CHARACTER");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "John Egbert");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "Rose Lalonde");
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
+					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
+					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
+					al_draw_bitmap(downArrow, (width / 2) + 196, 456, NULL);
 					break;
 				}
 				case STAGE:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A STAGE");
+					
 					for (unsigned int i = 0; i < levelNames.size(); i++)
 					{
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 + (i * 32), ALLEGRO_ALIGN_CENTER, levelNames[i].c_str());
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 + (i * 32) - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, levelNames[i].c_str());
 					}
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+
+					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
+
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A STAGE");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
+					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
+					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
+					al_draw_bitmap(downArrow, (width / 2) + 196, 456, NULL);
 					break;
 				}
 				case SOUND:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
+					
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "lol there's nothing here yet");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "GO BACK");
+
+					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
+
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
 					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "SOUND");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "lol there's nothing here yet");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "GO BACK");
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, 352 - (cursor->height / 4), NULL);
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, 352 - (cursor->height / 4) - cursor->offset * 32, NULL);
+					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
+					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
+					al_draw_bitmap(downArrow, (width / 2) + 196, 456, NULL);
 					break;
 				}
 				case VIDEO:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
+					
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "RESOLUTION");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "FULLSCREEN");
+
+					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
+
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
 					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "VIDEO");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "RESOLUTION");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "FULLSCREEN");
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
+					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
+					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
+					al_draw_bitmap(downArrow, (width / 2) + 196, 456, NULL);
 					break;
 				}
 				case CONTROLS:
@@ -1557,18 +1806,17 @@ void Game::Draw()
 					if (!isCustomizing)
 					{
 						al_clear_to_color(al_map_rgb(255, 255, 255));
-						al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-						al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A COMMAND TO CUSTOMIZE");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "Right");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "Up");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384, ALLEGRO_ALIGN_CENTER, "Left");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416, ALLEGRO_ALIGN_CENTER, "Down");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 448, ALLEGRO_ALIGN_CENTER, "Pause");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 480, ALLEGRO_ALIGN_CENTER, "Jump");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 512, ALLEGRO_ALIGN_CENTER, "Attack");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 544, ALLEGRO_ALIGN_CENTER, "Special");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 576, ALLEGRO_ALIGN_CENTER, "Block");
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 608, ALLEGRO_ALIGN_CENTER, "Taunt");
+						
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Right");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Up");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Left");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Down");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 448 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Pause");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 480 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Jump");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 512 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Attack");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 544 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Special");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 576 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Block");
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 608 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "Taunt");
 
 						std::string list;
 						for (int i = 0; i < 10; i++)
@@ -1589,10 +1837,17 @@ void Game::Draw()
 									list += ", ";
 								}
 							}
-							al_draw_text(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 320 + (32 * i), ALLEGRO_ALIGN_CENTER, list.c_str());
+							al_draw_text(mainFnt, al_map_rgb(0, 0, 0), 3 * width / 4, 320 + (32 * i) - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, list.c_str());
 						}
 
-						al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+						al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
+
+						al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+						al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A COMMAND TO CUSTOMIZE");
+						al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
+						al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
+						al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
+						al_draw_bitmap(downArrow, (width / 2) + 196, 456, NULL);
 					}
 					else
 					{
@@ -1649,29 +1904,40 @@ void Game::Draw()
 				case RESOLUTION:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "640 X 480");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "800 X 600");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "1024 X 768");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "1152 X 864");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 448 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "1280 X 960");
+					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 480 - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, "1400 X 1050");
+
+					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
+
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
 					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A RESOLUTION");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320, ALLEGRO_ALIGN_CENTER, "320 X 240");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 352, ALLEGRO_ALIGN_CENTER, "640 X 480");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 384, ALLEGRO_ALIGN_CENTER, "800 X 600");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 416, ALLEGRO_ALIGN_CENTER, "1024 X 768");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 448, ALLEGRO_ALIGN_CENTER, "1152 X 864");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 480, ALLEGRO_ALIGN_CENTER, "1280 X 960");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 512, ALLEGRO_ALIGN_CENTER, "1400 X 1050");
-					al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 544, ALLEGRO_ALIGN_CENTER, "1600 X 1200");
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
+					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
+					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
+					al_draw_bitmap(downArrow, (width / 2) + 196, 456, NULL);
 					break;
 				}
 				case CONTROLLER_SELECT:
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
-					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A CONTROLLER TO CUSTOMIZE");
+					
 					for (unsigned int i = 0; i < controllers.size(); i++)
 					{
-						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 + (32 * i), ALLEGRO_ALIGN_CENTER, controllers[i]->name.c_str());
+						al_draw_text(mainFnt, al_map_rgb(0, 0, 0), (width / 2), 320 + (32 * i) - cursor->offset * 32, ALLEGRO_ALIGN_CENTER, controllers[i]->name.c_str());
 					}
-					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4), NULL);
+
+					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
+
+					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A CONTROLLER TO CUSTOMIZE");
+					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
+					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
+					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
+					al_draw_bitmap(downArrow, (width / 2) + 196, 456, NULL);
 					break;
 				}
 				case PORT_CONFIG:

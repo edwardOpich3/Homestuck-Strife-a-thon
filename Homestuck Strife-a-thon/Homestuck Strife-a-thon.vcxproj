@@ -117,7 +117,16 @@
     <Image Include="Graphics\Menu\cursor.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
+    <Image Include="Graphics\Menu\downArrow.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Menu\scrollBar.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
     <Image Include="Graphics\Menu\title.png">
+      <DeploymentContent>true</DeploymentContent>
+    </Image>
+    <Image Include="Graphics\Menu\upArrow.png">
       <DeploymentContent>true</DeploymentContent>
     </Image>
     <Image Include="Graphics\Sprites\dave.png">
