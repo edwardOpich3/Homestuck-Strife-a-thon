@@ -23,7 +23,6 @@ public:
 	void WriteInt(int myInt, unsigned char *temp);	// Converts an integer to 32 bits.
 
 	std::vector<Tile> SeparateTiles(std::vector<Tile> myLevel, std::vector<std::vector<Tile>> tile32List, std::vector<std::vector<Tile>> tile64List, std::vector<std::vector<Tile>> tile128List);	// Converts 32, 64, and 128 size tiles into 16 size tiles.
-	//void SectionLevel(std::vector<std::vector<Tile>> *level, int width, int height);	Outdated; Delete when confirmed no longer needed
 	void DrawLevel(std::vector<Tile> level, ALLEGRO_BITMAP **levelBitmap, int width, int height, std::vector<ALLEGRO_BITMAP*> tile16List);	// Draws the level to a bitmap, when converted to 16 size tiles. This works for both the visible map and the collision map, just pass in a different set of tiles.
 
 	void LoadControls(std::vector<Control*> *controllers);	// Loads the control configs.

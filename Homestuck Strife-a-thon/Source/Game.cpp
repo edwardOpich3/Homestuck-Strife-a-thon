@@ -1486,6 +1486,7 @@ void Game::Update()
 						{
 							controllers[i]->buttons[ATTACK] = false;
 							currentMenu = OPTIONS;
+							scrollBar->selection = 4;
 							cursor->selection = 0;
 							cursor->offset = cursor->selection - cursor->offsetLimit;
 							if (cursor->offset < 0)
@@ -1705,7 +1706,7 @@ void Game::Draw()
 					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
 
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "MAIN MENU");
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "MAIN MENU");
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
 					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
 					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
@@ -1724,7 +1725,7 @@ void Game::Draw()
 					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
 
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "OPTIONS");
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "OPTIONS");
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
 					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
 					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
@@ -1741,7 +1742,7 @@ void Game::Draw()
 					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
 
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE YOUR CHARACTER");
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "CHOOSE YOUR CHARACTER");
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
 					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
 					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
@@ -1760,7 +1761,7 @@ void Game::Draw()
 					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
 
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A STAGE");
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "CHOOSE A STAGE");
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
 					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
 					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
@@ -1777,7 +1778,7 @@ void Game::Draw()
 					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
 
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "SOUND");
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "SOUND");
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, 352 - (cursor->height / 4) - cursor->offset * 32, NULL);
 					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
 					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
@@ -1794,7 +1795,7 @@ void Game::Draw()
 					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
 
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "VIDEO");
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "VIDEO");
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
 					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
 					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
@@ -1843,7 +1844,8 @@ void Game::Draw()
 						al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
 
 						al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-						al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A COMMAND TO CUSTOMIZE");
+						al_draw_text(mainFnt2X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "CHOOSE A COMMAND");
+						al_draw_text(mainFnt2X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "BACKSPACE CLEARS A COMMAND");
 						al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
 						al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
 						al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
@@ -1914,7 +1916,7 @@ void Game::Draw()
 					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
 
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A RESOLUTION");
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "CHOOSE A RESOLUTION");
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
 					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
 					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
@@ -1933,7 +1935,7 @@ void Game::Draw()
 					al_draw_filled_rectangle(0, 0, width, 320, al_map_rgb(255, 255, 255));
 
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "CHOOSE A CONTROLLER TO CUSTOMIZE");
+					al_draw_text(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "CHOOSE A CONTROLLER");
 					al_draw_bitmap(cursor->sprite, cursor->x - cursor->width, cursor->y + (cursor->selection * 32) - (cursor->height / 4) - cursor->offset * 32, NULL);
 					al_draw_bitmap(upArrow, (width / 2) + 196, 296, NULL);
 					al_draw_bitmap(scrollBar->sprite, (width / 2) + 196, (int)(scrollBar->y + 106 * (cursor->selection / ((float)scrollBar->selection - 1))), NULL);
@@ -1944,7 +1946,7 @@ void Game::Draw()
 				{
 					al_clear_to_color(al_map_rgb(255, 255, 255));
 					al_draw_bitmap(titleSpr, (width / 2) - (al_get_bitmap_width(titleSpr) / 2), 64, NULL);
-					al_draw_textf(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 256, ALLEGRO_ALIGN_CENTER, "PLEASE HIT A BUTTON ON CONTROLLER %i", customizedControl + 1);
+					al_draw_textf(mainFnt3X, al_map_rgb(0, 0, 0), (width / 2), 224, ALLEGRO_ALIGN_CENTER, "PLEASE HIT A BUTTON ON CONTROLLER %i", customizedControl + 1);
 					break;
 				}
 			}

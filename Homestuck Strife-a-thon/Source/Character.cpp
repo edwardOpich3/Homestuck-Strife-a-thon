@@ -309,7 +309,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (leftGround = collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < collisionBox.y + collisionBox.height + 16; leftGround++)
+		for (leftGround = collisionBox.y + ((3 * collisionBox.height) / 4); leftGround < collisionBox.y + collisionBox.height + 64; leftGround++)
 		{
 			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
@@ -340,7 +340,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 							}
 						}
 					}
-					else if (leftGround >= collisionBox.y + collisionBox.height + 15 && xSpeed == 0 && direction < 0 && animationState != CROUCH)
+					else if (leftGround >= collisionBox.y + collisionBox.height + 63 && xSpeed == 0 && direction < 0 && animationState != CROUCH)
 					{
 						if (animationState != BALANCING)
 						{
@@ -361,7 +361,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 		g = 0;
 		b = 0;
 		a = 0;
-		for (rightGround = collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < collisionBox.y + collisionBox.height + 16; rightGround++)
+		for (rightGround = collisionBox.y + ((3 * collisionBox.height) / 4); rightGround < collisionBox.y + collisionBox.height + 64; rightGround++)
 		{
 			for (int i = collisionBox.width / 2; i >= 0; i--)
 			{
@@ -392,7 +392,7 @@ void Character::Collision(ALLEGRO_BITMAP** collisionBitmap, int levelWidth, int 
 							}
 						}
 					}
-					else if (rightGround >= collisionBox.y + collisionBox.height + 15 && xSpeed == 0 && direction > 0 && animationState != CROUCH)
+					else if (rightGround >= collisionBox.y + collisionBox.height + 63 && xSpeed == 0 && direction > 0 && animationState != CROUCH)
 					{
 						if (animationState != BALANCING)
 						{
