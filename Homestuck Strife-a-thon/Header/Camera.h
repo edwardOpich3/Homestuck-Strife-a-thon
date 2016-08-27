@@ -15,6 +15,7 @@ public:
 	float xAcc, yAcc, zAcc;	// The constant of acceleration in any of the directions, to be added when accelerating, and subtracted when decelerating.
 	int centerX, centerY;	// The position of the center of the camera; it is scaled and positioned relative to this.
 	float distance;		// The distance from the center point to the furthest player; the scale is based on this.
+	float distanceX, distanceY;		// Used to stop the camera from bugging out
 	float minDist;	// The constant for the minimum allowed distance from the center; this determines the smallest the scale can be.
 
 	// Constructor & Destructor

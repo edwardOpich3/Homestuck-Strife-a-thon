@@ -1991,6 +1991,10 @@ void Game::Draw()
 			// DEBUG!
 			//al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%i %i %i", player1->runTimer, buttonsPrev[RIGHT], player1->isRunning);
 			al_draw_textf(mainFnt3X, al_map_rgb(255, 255, 255), 0, 0, NULL, "%0.1f", camera->zSpeed);
+			al_draw_filled_circle((camera->centerX - camera->x) / camera->scale, (camera->centerY - camera->y) / camera->scale, 10, al_map_rgb(255, 0, 0));
+			al_draw_filled_circle(width / 2, height / 2, 10, al_map_rgb(0, 0, 255));
+			al_draw_line((player1->x + (player1->width / 2) - camera->x) / camera->scale, (player1->y + (player1->height / 2) - camera->y) / camera->scale, (camera->centerX - camera->x) / camera->scale, (camera->centerY - camera->y) / camera->scale, al_map_rgb(255, 0, 0), 10);
+			al_draw_line((player1->x + (player1->width / 2) - camera->x) / camera->scale, (player1->y + (player1->height / 2) - camera->y) / camera->scale, width / 2, height / 2, al_map_rgb(0, 0, 255), 10);
 
 			break;
 		}

@@ -44,7 +44,6 @@ void Camera::CalculateCenter(int p1CenterX, int p1CenterY, int p2CenterX, int p2
 
 void Camera::CalculateDistance(int p1CenterX, int p1CenterY, int p2CenterX, int p2CenterY)
 {
-	int distanceX, distanceY;
 	if (abs(centerX - p1CenterX) > abs(centerX - p2CenterX))
 	{
 		distanceX = centerX - p1CenterX;
@@ -74,11 +73,11 @@ void Camera::Update(int levelWidth, int levelHeight, int width, int height)
 
 	if (scale * width > levelWidth)
 	{
-		scale = levelWidth / width;
+		scale = levelWidth / (float)width;
 	}
 	if (scale * height > levelHeight)
 	{
-		scale = levelHeight / height;
+		scale = levelHeight / (float)height;
 	}
 
 	x = centerX - ((scale * width) / 2);
@@ -103,7 +102,19 @@ void Camera::Update(int levelWidth, int levelHeight, int width, int height)
 
 	if (x + (scale * width / 2) != centerX || y + (scale * height / 2) != centerY)
 	{
-		distance -= sqrtf((abs(x + (scale * width / 2) - centerX) * abs(x + (scale * width / 2) - centerX)) + (abs(y + (scale * height / 2) - centerY) * abs(y + (scale * height / 2) - centerY))) / 2;
+		//distance -= sqrtf((abs(x + (scale * width / 2) - centerX) * abs(x + (scale * width / 2) - centerX)) + (abs(y + (scale * height / 2) - centerY) * abs(y + (scale * height / 2) - centerY))) / 2;
+		if (abs(distanceX) > abs(distanceY))
+		{
+			distance -= abs(x + (scale * width / 2) - centerX) / 2;
+		}
+		else
+		{
+			distance -= abs(y + (scale * height / 2) - centerY) / 2;
+		}
+		if (distance < minDist)
+		{
+			distance = minDist;
+		}
 		scale = 2 * (abs(distance) + 128) / width;
 
 		if (scale * width > levelWidth)
